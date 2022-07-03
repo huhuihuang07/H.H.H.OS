@@ -58,7 +58,7 @@ printString:
 	ret	
 
 DefineStr:
-	ErrorStr db "Not find target"
+	ErrorStr db "Not find loader ..."
 	ErrorLen equ $ - ErrorStr
 
 Buffer:
