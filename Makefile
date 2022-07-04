@@ -2,34 +2,38 @@
 
 build:
 
-bootSrc:=boot.asm
-bootBin:=boot.bin
-bootTxt:=boot.txt
+bootSrc := boot.asm
+bootBin := boot.bin
 
-loadSrc:=load.asm
-loadBin:=load.bin
-loadTxt:=load.txt
+loadSrc := load.asm
+loadBin := load.bin
 
-blfuncSrc:=blfunc.asm
+kmainSrc  := kmain.c
+kmainObj  := kmain.o
 
-commonSrc:=common.asm
+kentrySrc := kentry.asm
+kentryObj := kentry.obj
 
-dataImg:=data.img
+kernelBin := kernel.bin
+kernelElf := kernel.elf
 
-RM:=rm -rf
+kernelLds := kernel.lds
 
-MOUNT:=mount -o loop
-UMOUNT:=umount
+blfuncSrc := blfunc.asm
+commonSrc := common.asm
 
-MNTPATH:=/mnt/rootb
+dataImg := data.img
 
-$(bootTxt):$(bootBin)
-	$(RM) $@
-	ndisasm -o 0x7c00 $^ >> $@
+RM := rm -rf
 
-$(loadTxt):$(loadBin)
-	$(RM) $@
-	ndisasm -b32 -o 0x9000 $^ >> $@
+MOUNT  := mount -o loop
+UMOUNT := umount
+
+MNTPATH := /mnt/rootb
+
+CFLAGS := -m32 -fno-builtin -fno-stack-protector
+
+rmFiles := $(dataImg) $(bootBin) $(loadBin) $(kernelBin) $(kernelElf) $(kentryObj) $(kmainObj)
 
 $(bootBin):$(bootSrc) $(blfuncSrc)
 	nasm $< -o $@
@@ -41,14 +45,29 @@ $(loadBin):$(loadSrc) $(blfuncSrc) $(commonSrc)
 	sudo cp $@ $(MNTPATH)/$@
 	sudo $(UMOUNT) $(MNTPATH)
 
+$(kentryObj):$(kentrySrc)
+	nasm -f elf $^ -o $@
+
+$(kmainObj):$(kmainSrc)
+	gcc $(CFLAGS) -c $^ -o $@
+
+$(kernelElf):$(kentryObj) $(kmainObj)
+	ld -m elf_i386 -s -T$(kernelLds) $^ -o $@	
+
+$(kernelBin):$(kernelElf)
+	objcopy -O binary -R .note -R .comment -S $< $@	
+	sudo $(MOUNT) $(dataImg) $(MNTPATH)
+	sudo cp $@ $(MNTPATH)/$@
+	sudo $(UMOUNT) $(MNTPATH)
+
 $(dataImg):
 	bximage $@ -q -fd -size=1.44
 
 clean:
-	$(RM) $(dataImg) $(bootBin) $(bootTxt) $(loadBin) $(loadTxt)
+	$(RM) $(rmFiles)
 	@echo "clean Success!"
 
-build:$(dataImg) $(bootBin) $(bootTxt) $(loadBin) $(loadTxt)
+build:$(dataImg) $(bootBin) $(loadBin) $(kernelBin)
 	@echo "build Success!"
 
 rebuild:

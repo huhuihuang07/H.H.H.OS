@@ -6,8 +6,9 @@ org BootAddress
 %include "common.asm"
 
 interface:
-	BaseOfStack equ BootAddress - DIR_Length
-	LoadAddress equ 0xA000
+	MagicNumber equ 0x7c00
+	BaseOfStack equ MagicNumber - DIR_Length
+	LoadAddress equ 0xa000
 
 	TargetStr db  "KERNEL  BIN"
 	TargetLen equ $ - TargetStr
@@ -27,7 +28,7 @@ GdtPtr:
 
 ; GDT Selector
 FlatModeCodeSelector      equ (0x0001 << 3) + SA_TIG + SA_RPL0
-Video32Selector           equ (0x0004 << 3) + SA_TIG + SA_RPL3
+Video32Selector           equ (0x0002 << 3) + SA_TIG + SA_RPL3
 ; end of [section .gdt]
 
 [section .idt]
@@ -80,7 +81,7 @@ BLMain:
 	add eax, IDT_ENTRY
 	mov dword [IdtPtr + 0x02], eax
 
-	; 1. load GDT and loda IDT
+	; 1. load GDT and load IDT
 	lgdt [GdtPtr]
 	lidt [IdtPtr]
 
