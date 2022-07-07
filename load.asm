@@ -99,7 +99,7 @@ BLMain:
 	mov cr0, eax
 
 	; 5. jump to 32 bits code
-	jmp dword FLAT_MODE_CODE_DESC : LoadAddress
+	jmp dword FlatModeCodeSelector : LoadAddress
 
 ; initialize descriptor item
 ; esi --> code segment label
