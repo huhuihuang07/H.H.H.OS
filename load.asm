@@ -6,8 +6,9 @@ org BootAddress
 %include "common.asm"
 
 interface:
-	BaseOfStack equ BootAddress - DIR_Length
-	LoadAddress equ 0xA000
+	MagicNumber equ 0x7c00
+	BaseOfStack equ MagicNumber - DIR_Length
+	LoadAddress equ 0xa000
 
 	TargetStr db  "KERNEL  BIN"
 	TargetLen equ $ - TargetStr
@@ -18,6 +19,7 @@ interface:
 GDT_ENTRY           :      Descriptor         0,            0,                  0
 FLAT_MODE_CODE_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_C + DA_LIMIT_4K + DA_DPL0
 VIDEO32_DESC        :      Descriptor     0xB8000,       0x07FFF,          DA_32 + DA_DRWA + DA_DPL3
+KERNELDATA_DESC     :      Descriptor         0,     KernelDataLen - 1,    DA_32 + DA_DRWA + DA_DPL0
 ; end of global descriptor table
 
 GdtLen         equ          $ - GDT_ENTRY
@@ -27,7 +29,8 @@ GdtPtr:
 
 ; GDT Selector
 FlatModeCodeSelector      equ (0x0001 << 3) + SA_TIG + SA_RPL0
-Video32Selector           equ (0x0004 << 3) + SA_TIG + SA_RPL3
+Video32Selector           equ (0x0002 << 3) + SA_TIG + SA_RPL3
+KernelDataSelector        equ (0x0003 << 3) + SA_TIG + SA_RPL0
 ; end of [section .gdt]
 
 [section .idt]
@@ -45,7 +48,15 @@ IdtPtr:
 			dw          IdtLen - 1 ; IDT 界限
 			dd          0          ; IDT 基地址
 
-; end of [section .idt]			
+; end of [section .idt]		
+
+[section .kernelData]
+[bits 32]
+KERNELDATA_SEGMENT:
+	MemorySize       dw        0
+	MemorySizeOffset equ 	MemorySizeOffset - $$  
+KernelDataLen     equ       $ - KERNELDATA_SEGMENT	
+; end of [section .kernelData]	
 
 [section .s16]
 [bits 16]
@@ -64,7 +75,12 @@ BLMain:
 	cmp dx, 0
 	jz Error
 
+	call getMemorySize
+
 	; initialize GDT for 32 bits code segment
+	mov esi, KERNELDATA_SEGMENT
+	mov edi, KERNELDATA_DESC
+	call InitDescItem
 
 	; initialize GDT pointer struct
 	xor eax, eax
@@ -80,7 +96,7 @@ BLMain:
 	add eax, IDT_ENTRY
 	mov dword [IdtPtr + 0x02], eax
 
-	; 1. load GDT and loda IDT
+	; 1. load GDT and load IDT
 	lgdt [GdtPtr]
 	lidt [IdtPtr]
 
@@ -98,7 +114,7 @@ BLMain:
 	mov cr0, eax
 
 	; 5. jump to 32 bits code
-	jmp dword FLAT_MODE_CODE_DESC : LoadAddress
+	jmp dword FlatModeCodeSelector : LoadAddress
 
 ; initialize descriptor item
 ; esi --> code segment label
@@ -118,6 +134,38 @@ InitDescItem:
 	pop eax
 
 	ret
+
+; get Memory Size
+getMemorySize:
+	push eax
+	push ebx
+	push ecx
+
+	mov eax, 0xe801
+
+	int 0x15
+
+	jc getError
+
+	shl eax, 10 ; 15M以下内存容量（单位1Kb）
+
+	shl ebx, 16 ; 16M以上内存容量（单位64Kb）
+
+	mov ecx, 1  ; 1M的内存黑洞
+	shl ecx, 20
+
+	add eax, ebx
+	add eax, ecx
+
+	mov bx, MemorySize
+
+	mov dword [bx], eax
+
+getError:
+	pop ecx
+	pop ebx
+	pop eax
+	ret	
 
 ; print error info
 Error:
