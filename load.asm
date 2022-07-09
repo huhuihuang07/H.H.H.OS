@@ -23,9 +23,6 @@ KERNELDATA_DESC     :      Descriptor         0,     KernelDataLen - 1,    DA_32
 ; end of global descriptor table
 
 GdtLen         equ          $ - GDT_ENTRY
-GdtPtr:
-				dw           GdtLen - 1 ; GDT 界限
-				dd           0          ; GDT 基地址
 
 ; GDT Selector
 FlatModeCodeSelector      equ (0x0001 << 3) + SA_TIG + SA_RPL0
@@ -44,17 +41,30 @@ IDT_ENTRY:
 ; end of interrupt descriptor table
 
 IdtLen      equ         $ - IDT_ENTRY
-IdtPtr:
-			dw          IdtLen - 1 ; IDT 界限
-			dd          0          ; IDT 基地址
-
 ; end of [section .idt]		
 
 [section .kernelData]
 [bits 32]
 KERNELDATA_SEGMENT:
-	MemorySize       dw        0
-	MemorySizeOffset equ 	MemorySizeOffset - $$  
+	; GDT pointer
+	GdtPtr:
+			dw          GdtLen - 1 ; GDT 界限
+			dd          0          ; GDT 基地址
+
+	; IDT pointer		
+	IdtPtr:
+			dw          IdtLen - 1 ; IDT 界限
+			dd          0          ; IDT 基地址
+
+
+	; Memory size
+	MemorySize       dw  0
+
+	; Memory usage information
+	ARDSNumber       db  0
+	ARDSPointer:	
+		times 5 * 20 dw  0
+
 KernelDataLen     equ       $ - KERNELDATA_SEGMENT	
 ; end of [section .kernelData]	
 
@@ -141,6 +151,10 @@ getMemorySize:
 	push ebx
 	push ecx
 
+	push edi
+
+; get memory size
+eax_0xe801:
 	mov eax, 0xe801
 
 	int 0x15
@@ -157,11 +171,36 @@ getMemorySize:
 	add eax, ebx
 	add eax, ecx
 
-	mov bx, MemorySize
+	mov di, MemorySize
 
-	mov dword [bx], eax
+	mov dword [di], eax
+
+; get detailed memory usage information
+eax_0xe820:
+	xor ebx, ebx	
+	mov di, ARDSPointer
+
+getMemoryInfo:
+	mov eax, 0xe820
+	mov edx, 0x534d4150 ; "SMAP"
+	mov ecx, 0x14
+
+	int 0x15
+
+	jc getError
+
+	add di, 0x14
+
+	mov cl, byte [ARDSNumber]
+	inc cl
+	mov byte [ARDSNumber], cl
+
+	cmp ebx, 0
+	jnz getMemoryInfo
 
 getError:
+	pop edi 
+
 	pop ecx
 	pop ebx
 	pop eax

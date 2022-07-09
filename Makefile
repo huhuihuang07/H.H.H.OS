@@ -2,20 +2,31 @@
 
 build:
 
+DIR_DEPS := deps
+DIR_EXES := exes
+DIR_OBJS := objs
+
+DIRS := $(DIR_DEPS) $(DIR_EXES) $(DIR_OBJS)	
+
+kernelSrc := kmain.c
+
 bootSrc := boot.asm
 bootBin := boot.bin
+bootBin := $(addprefix $(DIR_OBJS)/, $(bootBin))
 
 loadSrc := load.asm
 loadBin := load.bin
-
-kmainSrc  := kmain.c
-kmainObj  := kmain.o
+loadBin := $(addprefix $(DIR_OBJS)/, $(loadBin))
 
 kentrySrc := kentry.asm
 kentryObj := kentry.obj
+kentryObj := $(addprefix $(DIR_OBJS)/, $(kentryObj))
 
 kernelBin := kernel.bin
+kernelBin := $(addprefix $(DIR_OBJS)/, $(kernelBin))
+
 kernelElf := kernel.elf
+kernelElf := $(addprefix $(DIR_OBJS)/, $(kernelElf))
 
 kernelLds := kernel.lds
 
@@ -33,41 +44,73 @@ MNTPATH := /mnt/rootb
 
 CFLAGS := -m32 -fno-builtin -fno-stack-protector
 
-rmFiles := $(dataImg) $(bootBin) $(loadBin) $(kernelBin) $(kernelElf) $(kentryObj) $(kmainObj)
+SRCS := $(kernelSrc)
 
-$(bootBin):$(bootSrc) $(blfuncSrc)
+OBJS := $(patsubst %.c, %.o, $(SRCS))
+OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS))
+
+DEPS := $(patsubst %.c, %.dep, $(SRCS))
+DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS))
+
+rmFiles := $(dataImg) $(DIRS)
+
+ifeq ("$(MAKECMDGOALS)", "rebuild")
+-include $(DEPS)	
+endif
+
+ifeq ("$(MAKECMDGOALS)", "build")
+-include $(DEPS)	
+endif
+
+ifeq ("$(MAKECMDGOALS)", "")
+-include $(DEPS)	
+endif
+
+$(bootBin) : $(bootSrc) $(blfuncSrc)
 	nasm $< -o $@
 	dd if=$@ of=$(dataImg) bs=512 count=1 conv=notrunc
 
-$(loadBin):$(loadSrc) $(blfuncSrc) $(commonSrc)
+$(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
 	nasm $< -o $@
 	sudo $(MOUNT) $(dataImg) $(MNTPATH)
-	sudo cp $@ $(MNTPATH)/$@
+	sudo cp $@ $(MNTPATH)/$(notdir $@)
 	sudo $(UMOUNT) $(MNTPATH)
 
-$(kentryObj):$(kentrySrc)
+$(kentryObj) : $(kentrySrc)
 	nasm -f elf $^ -o $@
 
-$(kmainObj):$(kmainSrc)
-	gcc $(CFLAGS) -c $^ -o $@
+$(DIR_OBJS)/%.o : %.c
+	gcc $(CFLAGS) -c $(filter %.c, $^) -o $@
 
-$(kernelElf):$(kentryObj) $(kmainObj)
+$(kernelElf) : $(kentryObj) $(OBJS)
 	ld -m elf_i386 -s -T$(kernelLds) $^ -o $@	
 
-$(kernelBin):$(kernelElf)
+$(kernelBin) : $(kernelElf)
 	objcopy -O binary -R .note -R .comment -S $< $@	
 	sudo $(MOUNT) $(dataImg) $(MNTPATH)
-	sudo cp $@ $(MNTPATH)/$@
+	sudo cp $@ $(MNTPATH)/$(notdir $@)
 	sudo $(UMOUNT) $(MNTPATH)
 
 $(dataImg):
 	bximage $@ -q -fd -size=1.44
 
+$(DIRS):
+	mkdir $@
+
+ifeq ("$(wildcard $(DIR_DEPS))", "")
+$(DIR_DEPS)/%.dep : $(DIR_DEPS) %.c
+else
+$(DIR_DEPS)/%.dep : %.c	
+endif
+	@echo "Creating $@ ..."
+	@set -e; \
+	gcc -MM -E $(filter %.c, $^) | sed 's,\(.*\)\.o[ :]*,objs/\1.o : ,g' > $@
+
 clean:
 	$(RM) $(rmFiles)
 	@echo "clean Success!"
 
-build:$(dataImg) $(bootBin) $(loadBin) $(kernelBin)
+build:$(DIR_OBJS) $(dataImg) $(bootBin) $(loadBin) $(kernelBin)
 	@echo "build Success!"
 
 rebuild:
