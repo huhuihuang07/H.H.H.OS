@@ -8,7 +8,8 @@ DIR_OBJS := objs
 
 DIRS := $(DIR_DEPS) $(DIR_EXES) $(DIR_OBJS)	
 
-kernelSrc := kmain.c
+kernelSrc := kmain.c \
+			screen.c
 
 bootSrc := boot.asm
 bootBin := boot.bin

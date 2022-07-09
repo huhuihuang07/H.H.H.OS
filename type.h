@@ -2,12 +2,18 @@
 #define TYPE_H
 
 #ifndef nullptr
-#define nullptr (void* (0))
+#define nullptr (void*)0
 #endif
 
 #ifndef NULL
 #define NULL 0
 #endif
+
+typedef enum
+{
+	false = 0,
+	true = !false,
+}bool;
 
 typedef unsigned char u8;
 
