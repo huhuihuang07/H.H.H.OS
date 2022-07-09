@@ -52,7 +52,7 @@ OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS))
 DEPS := $(patsubst %.c, %.dep, $(SRCS))
 DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS))
 
-rmFiles := $(dataImg) $(bootBin) $(loadBin) $(kernelBin) $(kernelElf) $(kentryObj) $(kmainObj) $(DIRS)
+rmFiles := $(dataImg) $(DIRS)
 
 ifeq ("$(MAKECMDGOALS)", "rebuild")
 -include $(DEPS)	
