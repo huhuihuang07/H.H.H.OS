@@ -1,14 +1,11 @@
-BootAddress equ 0x9000
-
-org BootAddress
-
 %include "blfunc.asm"
 %include "common.asm"
 
+org BaseOfLoader
+
 interface:
-	MagicNumber equ 0x7c00
-	BaseOfStack equ MagicNumber - DIR_Length
-	LoadAddress equ 0xa000
+	BaseOfStack equ BaseOfBoot - DIR_Length
+	LoadAddress equ BaseOfKernel
 
 	TargetStr db  "KERNEL  BIN"
 	TargetLen equ $ - TargetStr
@@ -18,16 +15,20 @@ interface:
 ;                                           段基址         段界限               段属性
 GDT_ENTRY           :      Descriptor         0,            0,                  0
 FLAT_MODE_CODE_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_C + DA_LIMIT_4K + DA_DPL0
-VIDEO32_DESC        :      Descriptor     0xB8000,       0x07FFF,          DA_32 + DA_DRWA + DA_DPL3
+VIDEO32_DESC        :      Descriptor     0xB8000,       0x07FFF,          DA_32 + DA_DRWA + DA_DPL0
 KERNELDATA_DESC     :      Descriptor         0,     KernelDataLen - 1,    DA_32 + DA_DRWA + DA_DPL0
+FLAT_MODE_DATA_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL0
+CODE32_DESC         :      Descriptor         0,   Code32SegmentLen - 1,   DA_32 + DA_C + DA_DPL0
 ; end of global descriptor table
 
 GdtLen         equ          $ - GDT_ENTRY
 
 ; GDT Selector
 FlatModeCodeSelector      equ (0x0001 << 3) + SA_TIG + SA_RPL0
-Video32Selector           equ (0x0002 << 3) + SA_TIG + SA_RPL3
+Video32Selector           equ (0x0002 << 3) + SA_TIG + SA_RPL0
 KernelDataSelector        equ (0x0003 << 3) + SA_TIG + SA_RPL0
+FlatModeDataSelector      equ (0x0004 << 3) + SA_TIG + SA_RPL0
+Code32Selector            equ (0x0005 << 3) + SA_TIG + SA_RPL0
 ; end of [section .gdt]
 
 [section .idt]
@@ -92,6 +93,10 @@ BLMain:
 	mov edi, KERNELDATA_DESC
 	call InitDescItem
 
+	mov esi, CODE32_SEGMENT
+	mov edi, CODE32_DESC
+	call InitDescItem
+
 	; initialize GDT pointer struct
 	xor eax, eax
 	mov ax, ds
@@ -124,7 +129,7 @@ BLMain:
 	mov cr0, eax
 
 	; 5. jump to 32 bits code
-	jmp dword FlatModeCodeSelector : LoadAddress
+	jmp dword Code32Selector : 0
 
 ; initialize descriptor item
 ; esi --> code segment label
@@ -247,6 +252,24 @@ Error_Segment:
 	ErrorLen equ $ - ErrorStr
 
 ; end of [section .errorStr]	
+
+[section .code32]
+[bits 32]
+CODE32_SEGMENT:
+	mov ax, Video32Selector
+	mov gs, ax
+
+	mov ax, FlatModeDataSelector
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+
+	mov ss, ax
+	mov esp, BaseOfLoader
+
+	jmp dword FlatModeCodeSelector : BaseOfKernel
+Code32SegmentLen     equ       $ - CODE32_SEGMENT
+; end of [section .code32]
 
 [section .buffer]
 [bits 16]

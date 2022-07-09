@@ -1,12 +1,11 @@
-BootAddress equ 0x7c00
-
-org BootAddress
-
 %include "blfunc.asm"
+%include "common.asm"
+
+org BaseOfBoot
 
 interface:
-	BaseOfStack equ BootAddress - DIR_Length
-	LoadAddress equ 0x9000
+	BaseOfStack equ BaseOfBoot - DIR_Length
+	LoadAddress equ BaseOfLoader
 
 	TargetStr db  "LOAD    BIN"
 	TargetLen equ $ - TargetStr
