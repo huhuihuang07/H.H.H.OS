@@ -178,15 +178,7 @@ u16 PrintString(const char* buffer)
 
 u16 PrintIntDec(int n)
 {
-	u16 ret = 0;
-
-	if(n < 0){
-		ret += PrintChar('-') + PrintIntDec(-n);
-	}else{
-		ret += PrintIntRadix(n, SCREEN_DECIMAL);
-	}
-
-	return ret;
+	return n < 0 ? (PrintChar('-') + PrintIntDec(-n)) : (PrintIntRadix(n, SCREEN_DECIMAL));
 }
 
 u16 PrintIntHex(int n)
