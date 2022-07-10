@@ -25,4 +25,22 @@ typedef unsigned long long u64;
 
 typedef unsigned int size_t;
 
+typedef char* va_list;
+
+#ifndef _INTSIZEOF
+#define _INTSIZEOF(tp)   ( (sizeof(tp) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#endif
+
+#ifndef va_start
+#define va_start(p_list,arg)  ( p_list = (va_list)&arg + _INTSIZEOF(arg) )
+#endif
+
+#ifndef va_arg
+#define va_arg(p_list,tp)    ( *(tp *)((p_list += _INTSIZEOF(tp)) - _INTSIZEOF(tp)) )
+#endif
+
+#ifndef va_end
+#define va_end(p_list)      ( p_list = (va_list)0 )
+#endif
+
 #endif //!TYPE_H

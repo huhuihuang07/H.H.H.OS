@@ -1,9 +1,13 @@
 #include "kmain.h"
 #include "screen.h"
 
-void KMain()
+int KMain(int argc, char* argv[])
 {
-	if(ClearScreen()){
-		PrintString("D.T.Sof\ttWa\nre");
+	printf("argc : %d\n", argc);
+	
+	for(int i = 0; i != argc; ++i){
+		printf("argv : %s\n", argv[i]);
 	}
+
+	return 0;
 }
