@@ -67,7 +67,7 @@ ifeq ("$(MAKECMDGOALS)", "")
 -include $(DEPS)	
 endif
 
-$(bootBin) : $(bootSrc) $(blfuncSrc)
+$(bootBin) : $(bootSrc) $(blfuncSrc) $(commonSrc)
 	nasm $< -o $@
 	dd if=$@ of=$(dataImg) bs=512 count=1 conv=notrunc
 
@@ -78,7 +78,7 @@ $(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
 	sudo $(UMOUNT) $(MNTPATH)
 
 $(kentryObj) : $(kentrySrc)
-	nasm -f elf $^ -o $@
+	nasm -f elf $< -o $@
 
 $(DIR_OBJS)/%.o : %.c
 	gcc $(CFLAGS) -c $(filter %.c, $^) -o $@
