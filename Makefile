@@ -9,7 +9,9 @@ DIR_OBJS := objs
 DIRS := $(DIR_DEPS) $(DIR_EXES) $(DIR_OBJS)	
 
 kernelSrc := kmain.c \
-			screen.c
+			screen.c \
+			kernel.c \
+			global.c
 
 bootSrc := boot.asm
 bootBin := boot.bin
@@ -77,7 +79,7 @@ $(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
 	sudo cp $@ $(MNTPATH)/$(notdir $@)
 	sudo $(UMOUNT) $(MNTPATH)
 
-$(kentryObj) : $(kentrySrc)
+$(kentryObj) : $(kentrySrc) $(commonSrc)
 	nasm -f elf $< -o $@
 
 $(DIR_OBJS)/%.o : %.c

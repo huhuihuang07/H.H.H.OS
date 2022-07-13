@@ -12,13 +12,13 @@ MASTER_OCW1_PORT equ 0x21
 MASTER_OCW2_PORT equ 0x20
 MASTER_OCW3_PORT equ 0x20
 
-SALAVE_ICW1_PORT equ 0xa0
-SALAVE_ICW2_PORT equ 0xa1
-SALAVE_ICW3_PORT equ 0xa1
-SALAVE_ICW4_PORT equ 0xa1
-SALAVE_OCW1_PORT equ 0xa1
-SALAVE_OCW2_PORT equ 0xa0
-SALAVE_OCW3_PORT equ 0xa0
+SLAVE_ICW1_PORT equ 0xa0
+SLAVE_ICW2_PORT equ 0xa1
+SLAVE_ICW3_PORT equ 0xa1
+SLAVE_ICW4_PORT equ 0xa1
+SLAVE_OCW1_PORT equ 0xa1
+SLAVE_OCW2_PORT equ 0xa0
+SLAVE_OCW3_PORT equ 0xa0
 
 MASTER_EOI_PORT  equ 0x20
 MASTER_IMR_PORT  equ 0x21
@@ -48,7 +48,7 @@ DA_DPL2 equ 0x40 ; DPL = 2
 DA_DPL3 equ 0x80 ; DPL = 3
 
 ; Special Attribute
-DA_LDT      equ 0x82 ; 局部段描述符表 
+DA_LDT equ 0x82 ; 局部段描述符表 
 
 ; Gate Attribute 门描述符属性
 DA_TaskGate equ 0x85 ; 任意门类型值
@@ -67,18 +67,25 @@ SA_RPL3 equ 3 ; RPL = 3
 SA_TIG equ 0 ; GDT 全局段描述符表
 SA_TIL equ 4 ; LDT 局部段描述符表
 
+; GDT Selector
+FlatModeCodeSelector   equ (0x0001 << 3) + SA_TIG + SA_RPL0
+Video32Selector        equ (0x0002 << 3) + SA_TIG + SA_RPL0
+KernelDataSelector     equ (0x0003 << 3) + SA_TIG + SA_RPL0
+FlatModeDataSelector   equ (0x0004 << 3) + SA_TIG + SA_RPL0
+Code32Selector         equ (0x0005 << 3) + SA_TIG + SA_RPL0
+
 ; 描述符
 ; usage: Descriptor Base, Limit, Attribute
 ;        Base:      dd
 ;        Limit:     dd (low 20 bits available)
 ;        Attribute: dw (lower 4 bits of higher byte are always 0)
-%macro Descriptor 3                          ; 段基址， 段界限， 段属性
-	dw %2 & 0xffff							 ; 段界限1	
-	dw %1 & 0xffff                           ; 段基址1
-	db (%1 >> 16) & 0xff                     ; 段基址2
-	dw ((%2 >> 16) & 0x0f00) | (%3 & 0xf0ff) ; 属性1 + 段界限2 + 属性2
-	db (%1 >> 24) & 0xff                     ; 段基址3
-%endmacro                                    ; 共8字节
+%macro Descriptor 3                                 ; 段基址， 段界限， 段属性
+	dw %2 & 0xffff					       		    ; 段界限1	
+	dw %1 & 0xffff                                  ; 段基址1
+	db (%1 >> 16) & 0xff                            ; 段基址2
+	dw (((%2 >> 16) & 0x000f) << 8) | (%3 & 0xf0ff) ; 属性1 + 段界限2 + 属性2
+	db (%1 >> 24) & 0xff                            ; 段基址3
+%endmacro                                           ; 共8字节
 
 ; 门描述符
 ; usage: Gate Selector, offset, DCount, Attribute

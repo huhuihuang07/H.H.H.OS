@@ -3,8 +3,13 @@
 
 #include "type.h"
 
+#ifndef SCREEN_WIDTH
 #define SCREEN_WIDTH  80
+#endif
+
+#ifndef SCREEN_HEIGHT
 #define SCREEN_HEIGHT 25
+#endif
 
 typedef enum{
 	SCREEN_GRAY   = 0x07,
@@ -24,20 +29,20 @@ typedef enum{
 }PrintRadix;
 
 typedef struct{
-	u16 width;
-	u16 height;
+	u8 width;
+	u8 height;
 	PrintColor color;
 }PrintInfo;
 
 bool ClearScreen();
-bool SetPrintPos(u16 w, u16 h);
+bool SetPrintPos(u8 w, u8 h);
 bool SetPrintColor(PrintColor color);
-u8 PrintChar(char c);
 u16 PrintString(const char* buffer);
 u16 PrintIntDec(int n);
 u16 PrintIntHex(int n);
 u16 PrintAddress(u32 n);
 
+u8 putchar(char c);
 u16 printk(const char* format, va_list v_arg);
 u16 printf(const char* format, ...);
 

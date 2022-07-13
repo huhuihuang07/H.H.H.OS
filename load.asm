@@ -23,12 +23,6 @@ CODE32_DESC         :      Descriptor         0,   Code32SegmentLen - 1,   DA_32
 
 GdtLen         equ          $ - GDT_ENTRY
 
-; GDT Selector
-FlatModeCodeSelector      equ (0x0001 << 3) + SA_TIG + SA_RPL0
-Video32Selector           equ (0x0002 << 3) + SA_TIG + SA_RPL0
-KernelDataSelector        equ (0x0003 << 3) + SA_TIG + SA_RPL0
-FlatModeDataSelector      equ (0x0004 << 3) + SA_TIG + SA_RPL0
-Code32Selector            equ (0x0005 << 3) + SA_TIG + SA_RPL0
 ; end of [section .gdt]
 
 [section .idt]
@@ -59,12 +53,12 @@ KERNELDATA_SEGMENT:
 
 
 	; Memory size
-	MemorySize       dw  0
+	MemorySize       dd  0
 
 	; Memory usage information
 	ARDSNumber       db  0
 	ARDSPointer:	
-		times 5 * 20 dw  0
+		times 5 * 20 dd  0
 
 KernelDataLen     equ       $ - KERNELDATA_SEGMENT	
 ; end of [section .kernelData]	

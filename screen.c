@@ -2,7 +2,7 @@
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 
-static bool SetCursorPos(u16 w, u16 h)
+static bool SetCursorPos(u8 w, u8 h)
 {
 	bool ret = (w < SCREEN_WIDTH) && (h < SCREEN_HEIGHT);
 
@@ -42,7 +42,7 @@ static u16 PrintIntRadix(int n, PrintRadix radix)
 	if((SCREEN_BINARY <= radix) && (radix <= SCREEN_HEXADEC)){
 
 		if(n < radix){
-			ret += PrintChar("0123456789abcdef"[n]);
+			ret += putchar("0123456789abcdef"[n]);
 		}else{
 			ret += PrintIntRadix(n / radix, radix) + PrintIntRadix(n % radix, radix);
 		}
@@ -54,11 +54,11 @@ static u16 PrintIntRadix(int n, PrintRadix radix)
 
 bool ClearScreen()
 {
-	u32 ret = 0;
+	u16 ret = 0;
 
-	for(u16 i = 0; i != SCREEN_WIDTH; ++i){
-		for(u16 j = 0; j != SCREEN_HEIGHT; ++j){
-			if(SetPrintPos(i, j) && PrintChar(' ')){
+	for(u8 i = 0; i != SCREEN_WIDTH; ++i){
+		for(u8 j = 0; j != SCREEN_HEIGHT; ++j){
+			if(SetPrintPos(i, j) && putchar(' ')){
 				ret++;
 			}
 		}
@@ -67,7 +67,7 @@ bool ClearScreen()
 	return ret == (SCREEN_WIDTH * SCREEN_HEIGHT);
 }
 
-bool SetPrintPos(u16 w, u16 h)
+bool SetPrintPos(u8 w, u8 h)
 {
 	bool ret = (w < SCREEN_WIDTH) && (h < SCREEN_HEIGHT);
 
@@ -98,7 +98,7 @@ bool SetPrintColor(PrintColor color)
 	return ret;
 }
 
-u8 PrintChar(char c)
+u8 putchar(char c)
 {
 	bool ret = ('\n' == c) || ('\t' == c);
 
@@ -114,13 +114,12 @@ u8 PrintChar(char c)
 				printInfo.height = 0;
 			}
 		}else{
-			ret = PrintChar(' ');
+			ret = putchar(' ');
 		}
 
 	}else{
-		ret = (printInfo.width < SCREEN_WIDTH) && (printInfo.height < SCREEN_HEIGHT);
 
-		if(ret){
+		if(ret = (printInfo.width < SCREEN_WIDTH) && (printInfo.height < SCREEN_HEIGHT)){
 			u32 edi = (printInfo.height * SCREEN_WIDTH + printInfo.width) << 1;
 			u8 ah = printInfo.color;
 			char al = c;
@@ -165,7 +164,7 @@ u16 PrintString(const char* buffer)
 
 		while('\0' != buffer[ret]){
 
-			if(PrintChar(buffer[ret])){
+			if(putchar(buffer[ret])){
 				ret++;
 			}else{
 				break;
@@ -178,7 +177,7 @@ u16 PrintString(const char* buffer)
 
 u16 PrintIntDec(int n)
 {
-	return n < 0 ? (PrintChar('-') + PrintIntDec(-n)) : (PrintIntRadix(n, SCREEN_DECIMAL));
+	return n < 0 ? (putchar('-') + PrintIntDec(-n)) : (PrintIntRadix(n, SCREEN_DECIMAL));
 }
 
 u16 PrintIntHex(int n)
@@ -209,7 +208,7 @@ u16 printk(const char* format, va_list v_arg)
 		for(u16 i = 0; '\0' != format[i]; ++i){
 
 			if((!flag) && ('%' != format[i])){
-				ret += PrintChar(format[i]);
+				ret += putchar(format[i]);
 			}else{
 				if(flag){
 					switch (format[i]){
@@ -218,10 +217,10 @@ u16 printk(const char* format, va_list v_arg)
 						case 'x' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
 						case 'X' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
 						case 'u' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_DECIMAL); break;}
-						case 'c' : {ret += PrintChar(va_arg(v_arg, char)); break;}
+						case 'c' : {ret += putchar(va_arg(v_arg, char)); break;}
 						case 's' : {ret += PrintString(va_arg(v_arg, const char*)); break;}
 						case 'p' : {ret += PrintAddress(va_arg(v_arg, u32)); break;}
-						default  : {ret += PrintChar(format[i]);}
+						default  : {ret += putchar(format[i]);}
 					}
 
 					flag = false;
@@ -240,7 +239,6 @@ u16 printf(const char* format, ...)
 	u16 ret = 0;
 
 	if(nullptr != format){
-
 		va_list v_arg;
 
 		va_start(v_arg, format);
@@ -248,7 +246,6 @@ u16 printf(const char* format, ...)
 		ret = printk(format, v_arg);
 
 		va_end(v_arg);
-
 	}
 
 	return ret;
