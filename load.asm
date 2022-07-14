@@ -190,9 +190,7 @@ getMemoryInfo:
 
 	add di, 0x14
 
-	mov cl, byte [ARDSNumber]
-	inc cl
-	mov byte [ARDSNumber], cl
+	inc byte [ARDSNumber]
 
 	cmp ebx, 0
 	jnz getMemoryInfo
@@ -203,36 +201,6 @@ getError:
 	pop ecx
 	pop ebx
 	pop eax
-	ret	
-
-; print error info
-Error:
-	mov bp, ErrorStr
-	mov cx, ErrorLen
-
-	call printString
-
-last:
-	hlt
-	jmp last
-
-; print string
-; es:bp --> string address
-; cx    --> string length
-printString:
-	push ax
-	push bx
-	push dx
-
-	xor dx,dx
-	mov ax, 0x1301
-	mov bx, 0x0007
-
-	int 0x10
-
-	pop dx
-	pop bx
-	pop ax
 
 	ret	
 

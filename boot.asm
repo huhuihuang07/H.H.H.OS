@@ -25,37 +25,6 @@ BLMain:
 
 	jmp 0:LoadAddress
 	
-; print error info
-Error:
-	mov bp, ErrorStr
-	mov cx, ErrorLen
-
-	call printString
-
-last:
-	hlt
-	jmp last
-
-; print string
-; es:bp --> string address
-; cx    --> string length
-printString:
-	push ax
-	push bx
-	push dx
-
-	xor dx,dx
-	mov ax, 0x1301
-	mov bx, 0x0007
-
-	int 0x10
-
-	pop dx
-	pop bx
-	pop ax
-
-	ret	
-
 DefineStr:
 	ErrorStr db "Not find loader ..."
 	ErrorLen equ $ - ErrorStr
