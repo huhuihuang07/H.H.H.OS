@@ -11,6 +11,22 @@
 #define SCREEN_HEIGHT 25
 #endif
 
+#ifndef CRT_ADDR_REG 
+#define CRT_ADDR_REG 0x3d4
+#endif
+
+#ifndef CRT_DATA_REG
+#define CRT_DATA_REG 0x3d5
+#endif
+
+#ifndef CRT_CURSOR_H
+#define CRT_CURSOR_H 0x0e
+#endif 
+
+#ifndef CRT_CURSOR_L
+#define CRT_CURSOR_L 0x0f
+#endif 
+
 typedef enum{
 	SCREEN_GRAY   = 0x07,
 	SCREEN_BLUE   = 0x09,
@@ -45,5 +61,7 @@ u16 PrintAddress(u32 n);
 u8 putchar(char c);
 u16 printk(const char* format, va_list v_arg);
 u16 printf(const char* format, ...);
+
+extern void printChar(u32 position, u16 value);
 
 #endif //!SCREEN_H

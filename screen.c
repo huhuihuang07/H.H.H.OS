@@ -1,4 +1,5 @@
 #include "screen.h"
+#include "io.h"
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 
@@ -9,27 +10,13 @@ static bool SetCursorPos(u8 w, u8 h)
 	if(ret){
 		u16 bx = h * SCREEN_WIDTH + w;
 
-		asm volatile(
-			"movw %0,      %%bx\n"
-			"\n"
-			"movw $0x03d4, %%dx\n"
-			"movb $0x0e,   %%al\n"
-			"outb %%al,    %%dx\n"
-			"movw $0x03d5, %%dx\n"
-			"movb %%bh,    %%al\n"
-			"outb %%al,    %%dx\n"
-			"\n"
-			"movw $0x03d4, %%dx\n"
-			"movb $0x0f,   %%al\n"
-			"outb %%al,    %%dx\n"
-			"movw $0x03d5, %%dx\n"
-			"movb %%bl,    %%al\n"
-			"outb %%al,    %%dx\n"
-			"\n"
-			:
-			: "r"(bx)
-			: "ax", "bx", "dx"
-		);
+		outb(CRT_ADDR_REG, CRT_CURSOR_H);
+
+		outb(CRT_DATA_REG, (bx >> 8) & 0xff);
+
+		outb(CRT_ADDR_REG, CRT_CURSOR_L);
+		
+		outb(CRT_DATA_REG, bx & 0xff);
 	}
 
 	return ret;
@@ -120,19 +107,10 @@ u8 putchar(char c)
 	}else{
 
 		if(ret = (printInfo.width < SCREEN_WIDTH) && (printInfo.height < SCREEN_HEIGHT)){
-			u32 edi = (printInfo.height * SCREEN_WIDTH + printInfo.width) << 1;
-			u8 ah = printInfo.color;
-			char al = c;
+			u32 edi = printInfo.height * SCREEN_WIDTH + printInfo.width;
+			u16 ax = (printInfo.color << 8) | c;
 
-			asm volatile (
-				"movl %0,          %%edi\n"
-				"movb %1,          %%ah \n"
-				"movb %2,          %%al \n"
-				"movw %%ax, %%gs:(%%edi)\n"
-				: 
-				: "r"(edi), "r"(ah), "r"(al)
-				: "ax", "edi"
-			);
+			printChar(edi, ax);
 
 			printInfo.width += 1;
 

@@ -9,6 +9,10 @@
 #define NULL 0
 #endif
 
+#ifndef _packed
+#define __attribute__ ((packed))
+#endif
+
 typedef enum
 {
 	false = 0,

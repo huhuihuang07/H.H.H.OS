@@ -13,6 +13,10 @@ kernelSrc := kmain.c \
 			kernel.c \
 			global.c
 
+kernelAsm := kentry.asm \
+			 screen.asm \
+			 io.asm			
+
 bootSrc := boot.asm
 bootBin := boot.bin
 bootBin := $(addprefix $(DIR_OBJS)/, $(bootBin))
@@ -20,10 +24,6 @@ bootBin := $(addprefix $(DIR_OBJS)/, $(bootBin))
 loadSrc := load.asm
 loadBin := load.bin
 loadBin := $(addprefix $(DIR_OBJS)/, $(loadBin))
-
-kentrySrc := kentry.asm
-kentryObj := kentry.obj
-kentryObj := $(addprefix $(DIR_OBJS)/, $(kentryObj))
 
 kernelBin := kernel.bin
 kernelBin := $(addprefix $(DIR_OBJS)/, $(kernelBin))
@@ -46,6 +46,9 @@ UMOUNT := umount
 MNTPATH := /mnt/rootb
 
 CFLAGS := -m32 -fno-builtin -fno-stack-protector
+
+ASM_OBJS := $(patsubst %.asm, %.obj, $(kernelAsm))
+ASM_OBJS := $(addprefix $(DIR_OBJS)/, $(ASM_OBJS))
 
 SRCS := $(kernelSrc)
 
@@ -79,13 +82,13 @@ $(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
 	sudo cp $@ $(MNTPATH)/$(notdir $@)
 	sudo $(UMOUNT) $(MNTPATH)
 
-$(kentryObj) : $(kentrySrc) $(commonSrc)
-	nasm -f elf $< -o $@
-
 $(DIR_OBJS)/%.o : %.c
 	gcc $(CFLAGS) -c $(filter %.c, $^) -o $@
 
-$(kernelElf) : $(kentryObj) $(OBJS)
+$(DIR_OBJS)/%.obj : %.asm $(commonSrc)	
+	nasm -f elf $< -o $@
+
+$(kernelElf) : $(ASM_OBJS) $(OBJS)
 	ld -m elf_i386 -s -T$(kernelLds) $^ -o $@	
 
 $(kernelBin) : $(kernelElf)
