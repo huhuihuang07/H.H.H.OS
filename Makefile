@@ -9,11 +9,13 @@ DIR_OBJS := objs
 DIRS := $(DIR_DEPS) $(DIR_EXES) $(DIR_OBJS)	
 
 kernelSrc := kmain.c \
+			  task.c \
 			screen.c \
 			kernel.c \
 			global.c
 
 kernelAsm := kentry.asm \
+			   task.asm \
 			 screen.asm \
 			 io.asm			
 

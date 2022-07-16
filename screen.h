@@ -12,11 +12,11 @@
 #endif
 
 #ifndef CRT_ADDR_REG 
-#define CRT_ADDR_REG 0x3d4
+#define CRT_ADDR_REG 0x03d4
 #endif
 
 #ifndef CRT_DATA_REG
-#define CRT_DATA_REG 0x3d5
+#define CRT_DATA_REG 0x03d5
 #endif
 
 #ifndef CRT_CURSOR_H
@@ -62,6 +62,6 @@ u8 putchar(char c);
 u16 printk(const char* format, va_list v_arg);
 u16 printf(const char* format, ...);
 
-extern void printChar(u32 position, u16 value);
+extern void printChar(const u32 position, const u16 value);
 
 #endif //!SCREEN_H

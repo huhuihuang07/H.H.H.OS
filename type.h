@@ -10,7 +10,15 @@
 #endif
 
 #ifndef _packed
-#define __attribute__ ((packed))
+#define _packed __attribute__ ((packed))
+#endif
+
+#ifndef EOF
+#define EOF -1 // End of file
+#endif
+
+#ifndef EOS
+#define EOS '\0' // 字符串结尾
 #endif
 
 typedef enum

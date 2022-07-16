@@ -140,7 +140,7 @@ u16 PrintString(const char* buffer)
 
 	if(nullptr != buffer){
 
-		while('\0' != buffer[ret]){
+		while(EOS != buffer[ret]){
 
 			if(putchar(buffer[ret])){
 				ret++;
@@ -164,7 +164,7 @@ u16 PrintIntHex(int n)
 }
 
 u16 PrintAddress(u32 n){
-	char buffer[] = {'0', 'x', '0', '0', '0', '0', '0', '0', '0', '0', '\0'};
+	char buffer[] = {'0', 'x', '0', '0', '0', '0', '0', '0', '0', '0', EOS};
 
 	for(u8 i = 9; (1 != i) && (0 != n); --i){
 
@@ -183,7 +183,7 @@ u16 printk(const char* format, va_list v_arg)
 	bool flag = false;
 
 	if(nullptr != format){
-		for(u16 i = 0; '\0' != format[i]; ++i){
+		for(u16 i = 0; EOS != format[i]; ++i){
 
 			if((!flag) && ('%' != format[i])){
 				ret += putchar(format[i]);

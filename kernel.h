@@ -39,14 +39,10 @@ typedef struct{
 	u32 Type;
 }ARDS;
 
-#pragma pack(1)
-
 typedef struct{
 	u8 ARDSNumber;
 	ARDS ards[20];
-}MemInfo;
-
-#pragma pack()
+}_packed MemInfo;
 
 bool setDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute);
 bool getDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute);
