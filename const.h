@@ -43,7 +43,7 @@
 #define DA_DPL0  0x00 // DPL = 0
 #define DA_DPL1  0x20 // DPL = 1
 #define DA_DPL2  0x40 // DPL = 2
-#define DA_DPL3  0x80 // DPL = 3
+#define DA_DPL3  0x60 // DPL = 3
 
 #define SA_RPL_MASK 0xfffc
 #define SA_TI_MASK  0xfffb
@@ -68,11 +68,30 @@
 #define SA_TIG  0 // GDT 全局段描述符表
 #define SA_TIL  4 // LDT 局部段描述符表
 
+#define GDT_FlatModeCodeIndex 0x0001
+#define GDT_Video32Index      0x0002
+#define GDT_KernelDataIndex   0x0003
+#define GDT_FlatModeDataIndex 0x0004
+#define GDT_Code32Index       0x0005
+#define GDT_LDTIndex          0x0006
+#define GDT_TSSIndex          0x0007
+
 // GDT Selector GDT 选择子
-#define FlatModeCodeSelector    (0x0001 << 3) + SA_TIG + SA_RPL0
-#define Video32Selector         (0x0002 << 3) + SA_TIG + SA_RPL0
-#define KernelDataSelector      (0x0003 << 3) + SA_TIG + SA_RPL0
-#define FlatModeDataSelector    (0x0004 << 3) + SA_TIG + SA_RPL0
-#define Code32Selector          (0x0005 << 3) + SA_TIG + SA_RPL0
+#define GDT_FlatModeCodeSelector    (GDT_FlatModeCodeIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_Video32Selector         (GDT_Video32Index << 3) + SA_TIG + SA_RPL0
+#define GDT_KernelDataSelector      (GDT_KernelDataIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_FlatModeDataSelector    (GDT_FlatModeDataIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_Code32Selector          (GDT_Code32Index << 3) + SA_TIG + SA_RPL0
+#define GDT_LdtSelector             (GDT_LDTIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_TssSelector             (GDT_TSSIndex << 3) + SA_TIG + SA_RPL0
+
+#define LDT_Code32Index  0x0000
+#define LDT_Data32Index  0x0001
+#define LDT_Stack32Index 0x0002
+
+// LDT Selector LDT 选择子
+#define LDT_Code32Selector			 (LDT_Code32Index << 3) + SA_TIL + SA_RPL3
+#define LDT_Data32Selector           (LDT_Data32Index << 3) + SA_TIL + SA_RPL3
+#define LDT_Stack32Selector          (LDT_Stack32Index << 3) + SA_TIL + SA_RPL3
 
 #endif //!CONST_H

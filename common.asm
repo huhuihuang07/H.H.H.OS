@@ -45,7 +45,7 @@ DA_LIMIT_4K equ 0x8000 ; 单位大小4K
 DA_DPL0 equ 0x00 ; DPL = 0
 DA_DPL1 equ 0x20 ; DPL = 1
 DA_DPL2 equ 0x40 ; DPL = 2
-DA_DPL3 equ 0x80 ; DPL = 3
+DA_DPL3 equ 0x60 ; DPL = 3
 
 ; Special Attribute
 DA_LDT equ 0x82 ; 局部段描述符表 
@@ -69,10 +69,12 @@ SA_TIL equ 4 ; LDT 局部段描述符表
 
 ; GDT Selector
 FlatModeCodeSelector   equ (0x0001 << 3) + SA_TIG + SA_RPL0
-Video32Selector        equ (0x0002 << 3) + SA_TIG + SA_RPL0
+Video32Selector        equ (0x0002 << 3) + SA_TIG + SA_RPL3
 KernelDataSelector     equ (0x0003 << 3) + SA_TIG + SA_RPL0
 FlatModeDataSelector   equ (0x0004 << 3) + SA_TIG + SA_RPL0
 Code32Selector         equ (0x0005 << 3) + SA_TIG + SA_RPL0
+LdtSelector            equ (0x0006 << 3) + SA_TIG + SA_RPL0
+TssSelector            equ (0x0007 << 3) + SA_TIG + SA_RPL0
 
 ; 描述符
 ; usage: Descriptor Base, Limit, Attribute
