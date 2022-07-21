@@ -12,6 +12,7 @@ kernelSrc := kmain.c \
 			  task.c \
 			screen.c \
 			kernel.c \
+			string.c \
 			global.c
 
 kernelAsm := kentry.asm \

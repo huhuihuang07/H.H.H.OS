@@ -18,7 +18,7 @@
 #endif
 
 #ifndef EOS
-#define EOS '\0' // 字符串结尾
+#define EOS '\0' // End of string
 #endif
 
 typedef enum

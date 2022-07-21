@@ -195,7 +195,7 @@ u16 printk(const char* format, va_list v_arg)
 						case 'x' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
 						case 'X' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
 						case 'u' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_DECIMAL); break;}
-						case 'c' : {ret += putchar(va_arg(v_arg, char)); break;}
+						case 'c' : {ret += putchar(va_arg(v_arg, int)); break;}
 						case 's' : {ret += PrintString(va_arg(v_arg, const char*)); break;}
 						case 'p' : {ret += PrintAddress(va_arg(v_arg, u32)); break;}
 						default  : {ret += putchar(format[i]);}

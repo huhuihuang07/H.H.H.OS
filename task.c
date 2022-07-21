@@ -22,10 +22,6 @@ void taskA()
 
 	while(true){
 
-		SetPrintPos(0, 0);
-
-		printf("This is Task A : ");
-
 		putchar('A' + i);
 
 		i = (i + 1) % 26;
