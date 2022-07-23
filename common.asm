@@ -3,33 +3,6 @@ BaseOfBoot   equ 0x7c00
 BaseOfLoader equ 0x9000
 BaseOfKernel equ 0xa000
 
-; PIC-8259A Ports
-MASTER_ICW1_PORT equ 0x20
-MASTER_ICW2_PORT equ 0x21
-MASTER_ICW3_PORT equ 0x21
-MASTER_ICW4_PORT equ 0x21
-MASTER_OCW1_PORT equ 0x21
-MASTER_OCW2_PORT equ 0x20
-MASTER_OCW3_PORT equ 0x20
-
-SLAVE_ICW1_PORT equ 0xa0
-SLAVE_ICW2_PORT equ 0xa1
-SLAVE_ICW3_PORT equ 0xa1
-SLAVE_ICW4_PORT equ 0xa1
-SLAVE_OCW1_PORT equ 0xa1
-SLAVE_OCW2_PORT equ 0xa0
-SLAVE_OCW3_PORT equ 0xa0
-
-MASTER_EOI_PORT  equ 0x20
-MASTER_IMR_PORT  equ 0x21
-MASTER_IRR_PORT  equ 0x20
-MASTER_ISR_PORT  equ 0x20
-
-SLAVE_EOI_PORT   equ 0xa0
-SLAVE_IMR_PORT   equ 0xa1
-SLAVE_IRR_PORT   equ 0xa0
-SLAVE_ISR_PORT   equ 0xa0
-
 ; Segment Attribute 段属性
 DA_32       equ 0x4000 ; 保护模式下32位段
 DA_DR       equ 0x90   ; 只读数据段
@@ -81,13 +54,13 @@ TssSelector            equ (0x0007 << 3) + SA_TIG + SA_RPL0
 ;        Base:      dd
 ;        Limit:     dd (low 20 bits available)
 ;        Attribute: dw (lower 4 bits of higher byte are always 0)
-%macro Descriptor 3                                 ; 段基址， 段界限， 段属性
-	dw %2 & 0xffff					       		    ; 段界限1	
-	dw %1 & 0xffff                                  ; 段基址1
-	db (%1 >> 16) & 0xff                            ; 段基址2
-	dw (((%2 >> 16) & 0x000f) << 8) | (%3 & 0xf0ff) ; 属性1 + 段界限2 + 属性2
-	db (%1 >> 24) & 0xff                            ; 段基址3
-%endmacro                                           ; 共8字节
+%macro Descriptor 3                         ; 段基址， 段界限， 段属性
+	dw %2 & 0xffff					       	; 段界限1	
+	dw %1 & 0xffff                          ; 段基址1
+	db (%1 >> 16) & 0xff                    ; 段基址2
+	dw ((%2 >> 8) & 0x0f00) | (%3 & 0xf0ff) ; 属性1 + 段界限2 + 属性2
+	db (%1 >> 24) & 0xff                    ; 段基址3
+%endmacro                                   ; 共8字节
 
 ; 门描述符
 ; usage: Gate Selector, offset, DCount, Attribute

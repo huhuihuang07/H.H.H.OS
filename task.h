@@ -48,7 +48,9 @@ typedef struct
 	u8 stack[512];      // sizeof(u8) * 512 = 512
 }Task;
 
-void initTask();
+Task* gCurrentTaskAddr;
+
+void InitTask();
 
 extern void RunTask(const Task* const pTask);
 

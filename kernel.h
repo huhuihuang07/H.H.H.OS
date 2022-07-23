@@ -44,10 +44,10 @@ typedef struct{
 	ARDS ards[20];
 }_packed MemInfo;
 
-bool setDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute);
-bool getDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute);
+bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute);
+bool GetDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute);
 
-bool getGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute);
-bool setGateValue(Gate* pGate, u16* pSelector, u32* pOffset, u8* pParamterCount, u8* pAttribute);
+bool SetGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute);
+bool GetGateValue(Gate* pGate, u16* pSelector, u32* pOffset, u8* pParamterCount, u8* pAttribute);
 
 #endif //!KERNEL_H

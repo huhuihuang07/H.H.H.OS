@@ -1,6 +1,6 @@
 #include "kernel.h"
 
-bool setDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
+bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
 {
 	bool ret = (nullptr != pDescriptor);
 
@@ -16,7 +16,7 @@ bool setDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
 	return ret;
 }
 
-bool getDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute)
+bool GetDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute)
 {
 	bool ret = pDescriptor && pBase && pLimit && pAttribute;
 
@@ -29,7 +29,7 @@ bool getDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttrib
 	return ret;
 }
 
-bool getGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute)
+bool SetGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute)
 {
 	bool ret = (nullptr != pGate);
 
@@ -44,7 +44,7 @@ bool getGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 at
 	return ret;
 }
 
-bool setGateValue(Gate* pGate, u16* pSelector, u32* pOffset, u8* pParamterCount, u8* pAttribute)
+bool GetGateValue(Gate* pGate, u16* pSelector, u32* pOffset, u8* pParamterCount, u8* pAttribute)
 {
 	bool ret = pGate && pSelector && pOffset && pParamterCount && pAttribute;
 

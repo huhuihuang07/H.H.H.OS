@@ -2,6 +2,9 @@
 #include "global.h"
 #include "kernel.h"
 #include "screen.h"
+#include "handler.h"
+
+Task* gCurrentTaskAddr = nullptr;
 
 static Task a = {0};
 
@@ -16,9 +19,13 @@ static void Delay()
 
 void taskA()
 {
-	u32 i = 0;
+	static u32 i = 0;
 
 	while(true){
+
+		SetPrintPos(0, 0);
+
+		printf("This is TaskA : ");
 
 		putchar('A' + i);
 
@@ -29,18 +36,18 @@ void taskA()
 }
 
 
-void initTask()
+void InitTask()
 {
 
-	setDescValue(gGdtInfo.entry + GDT_LDTIndex, &a.ldt, sizeof(a.ldt) - 1, DA_LDT + DA_DPL0);
-	setDescValue(gGdtInfo.entry + GDT_TSSIndex, &a.tss, sizeof(a.tss) - 1, DA_386TSS + DA_DPL0);
+	SetDescValue(gGdtInfo.entry + GDT_LDTIndex, &a.ldt, sizeof(a.ldt) - 1, DA_LDT + DA_DPL0);
+	SetDescValue(gGdtInfo.entry + GDT_TSSIndex, &a.tss, sizeof(a.tss) - 1, DA_386TSS + DA_DPL0);
 
 	a.ldtSelector = GDT_LdtSelector;
 	a.tssSelector = GDT_TssSelector;
 
-	setDescValue(a.ldt + LDT_Code32Index, 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
-	setDescValue(a.ldt + LDT_Data32Index, 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
-	setDescValue(a.ldt + LDT_Stack32Index, &a.stack,  &a.stack + sizeof(a.stack), DA_32 + DA_DRW + DA_DPL3);
+	SetDescValue(a.ldt + LDT_Code32Index, 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(a.ldt + LDT_Data32Index, 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(a.ldt + LDT_Stack32Index, &a.stack,  &a.stack + sizeof(a.stack), DA_32 + DA_DRW + DA_DPL3);
 
 	a.rv.gs = GDT_Video32Selector;
 
@@ -55,11 +62,15 @@ void initTask()
 	a.rv.cs = LDT_Code32Selector;
 	a.rv.eip = taskA;
 
-	a.rv.eflags = 0x3002;
+	a.rv.eflags = 0x3202;
 
 	a.tss.ss0 = GDT_FlatModeDataSelector;
 	a.tss.esp0 = &a.rv + sizeof(a.rv);
 	a.tss.iomb = sizeof(a.tss);
 
-	RunTask(&a);
+	TimerInit();
+
+	gCurrentTaskAddr = &a;
+
+	RunTask(gCurrentTaskAddr);
 }

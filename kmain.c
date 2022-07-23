@@ -6,7 +6,9 @@
 
 int KMain(int argc, char* argv[])
 {
-	initTask();
+	InitInterrupt();
+
+	InitTask();
 
 	return 0;
 }

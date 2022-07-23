@@ -114,6 +114,15 @@ BLMain:
 	; 2. close interrupt
 	cli
 
+	; set IOPL to 3
+	pushf
+	pop eax
+
+	or eax, 0x3000
+
+	push eax
+	popf
+
 	; 3. open A20
 	in al, 0x92
 	or al, 0000_0010b
