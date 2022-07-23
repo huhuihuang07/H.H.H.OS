@@ -29,6 +29,8 @@ printChar:
 	pop edi
 	pop eax
 
+	mov eax, 1
+
 	leave
 	ret
 

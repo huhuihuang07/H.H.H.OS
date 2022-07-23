@@ -72,7 +72,7 @@ int memcmp(const void* lhs, const void* rhs, size_t count)
 
 void* memset(void* dest, int ch, size_t count)
 {
-	char* ptr = (char*)dest;
+	int* ptr = (int*)dest;
 
 	while(count--){
 		*ptr++ = ch;

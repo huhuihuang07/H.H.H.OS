@@ -1,14 +1,20 @@
 #include "screen.h"
 #include "io.h"
+#include "string.h"
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 
+static u16 SCREEN_ERASER = (SCREEN_GRAY << 8) | ' ';
+
+static u16 SCREEN_POS = 0;
+
+// 设置当前光标位置
 static bool SetCursorPos(u8 w, u8 h)
 {
 	bool ret = (w < SCREEN_WIDTH) && (h < SCREEN_HEIGHT);
 
 	if(ret){
-		u16 bx = h * SCREEN_WIDTH + w;
+		u32 bx = (h + SCREEN_POS) * SCREEN_WIDTH + w;
 
 		outb(CRT_ADDR_REG, CRT_CURSOR_H);
 
@@ -20,6 +26,49 @@ static bool SetCursorPos(u8 w, u8 h)
 	}
 
 	return ret;
+}
+
+// 设置当前文本模式显存开始位置
+static bool SetScreenPos(u8 w, u8 h)
+{
+	bool ret = true;
+
+	if(ret){
+		u32 bx = h * SCREEN_WIDTH + w;
+
+		outb(CRT_ADDR_REG, CRT_START_ADDR_H);
+
+		outb(CRT_DATA_REG, (bx >> 8) & 0xff);
+
+		outb(CRT_ADDR_REG, CRT_START_ADDR_L);
+		
+		outb(CRT_DATA_REG, bx & 0xff);
+	}
+
+	return ret;
+}
+
+// 向上滚屏
+static void scrollUp()
+{
+	SCREEN_POS += 1;
+
+	printInfo.height -= 1;
+
+	u32 address = (SCREEN_POS + SCREEN_HEIGHT) * SCREEN_WIDTH << 1;
+
+	if(address < SCREEN_MEM_SIZE)
+	{
+		memset(SCREEN_MEM_BASE + address, SCREEN_ERASER, SCREEN_WIDTH);
+	}else{
+		memcpy(SCREEN_MEM_BASE, SCREEN_MEM_BASE + (SCREEN_POS * SCREEN_WIDTH << 1), (SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1);
+
+		memset(SCREEN_MEM_BASE + ((SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1), SCREEN_ERASER, SCREEN_WIDTH);
+
+		SCREEN_POS = 0;
+	}
+
+	SetScreenPos(0, SCREEN_POS);
 }
 
 static u16 PrintIntRadix(int n, PrintRadix radix)
@@ -39,19 +88,34 @@ static u16 PrintIntRadix(int n, PrintRadix radix)
 	return ret;
 }
 
-bool ClearScreen()
+static bool ClearScreen()
 {
 	u16 ret = 0;
 
+	SetPrintPos(0, 0);
+
 	for(u8 i = 0; i != SCREEN_WIDTH; ++i){
 		for(u8 j = 0; j != SCREEN_HEIGHT; ++j){
-			if(SetPrintPos(i, j) && putchar(' ')){
+			if(putchar(SCREEN_ERASER)){
 				ret++;
 			}
 		}
 	}
 
 	return ret == (SCREEN_WIDTH * SCREEN_HEIGHT);
+}
+
+
+void InitScreen()
+{
+	if(ClearScreen())
+	{
+		SCREEN_POS = 0;
+
+		SetScreenPos(0, SCREEN_POS);
+
+		SetPrintPos(0, 0);
+	}
 }
 
 bool SetPrintPos(u8 w, u8 h)
@@ -98,21 +162,21 @@ u8 putchar(char c)
 			printInfo.height += 1;
 
 			if(SCREEN_HEIGHT == printInfo.height){
-				printInfo.height = 0;
+				scrollUp();
 			}
 		}else{
-			ret = putchar(' ');
+			ret = putchar(SCREEN_ERASER);
 		}
 
 	}else{
 
 		if(ret = (printInfo.width < SCREEN_WIDTH) && (printInfo.height < SCREEN_HEIGHT)){
-			u32 edi = printInfo.height * SCREEN_WIDTH + printInfo.width;
+
+			u32 edi = (printInfo.height + SCREEN_POS) * SCREEN_WIDTH + printInfo.width;
+
 			u16 ax = (printInfo.color << 8) | c;
 
-			printChar(edi, ax);
-
-			printInfo.width += 1;
+			printInfo.width += printChar(edi, ax);
 
 			if(SCREEN_WIDTH == printInfo.width){
 
@@ -121,7 +185,7 @@ u8 putchar(char c)
 				printInfo.height += 1;
 
 				if(SCREEN_HEIGHT == printInfo.height){
-					printInfo.height = 0;
+					scrollUp();
 				}
 			}
 		}
@@ -140,7 +204,7 @@ u16 PrintString(const char* buffer)
 
 	if(nullptr != buffer){
 
-		while(EOS != buffer[ret]){
+		while(buffer[ret]){
 
 			if(putchar(buffer[ret])){
 				ret++;

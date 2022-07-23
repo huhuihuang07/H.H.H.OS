@@ -8,13 +8,13 @@ extern gMemInfo
 extern gMemSize
 
 extern KMain
-extern ClearScreen
+extern InitScreen
 
 [section .text]
 [bits 32]
 _start:
 
-	call ClearScreen
+	call InitScreen
 
 	call InitGlobal
 

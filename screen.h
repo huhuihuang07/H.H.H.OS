@@ -11,12 +11,28 @@
 #define SCREEN_HEIGHT 25
 #endif
 
+#ifndef SCREEN_MEM_BASE
+#define SCREEN_MEM_BASE 0xB8000
+#endif
+
+#ifndef SCREEN_MEM_SIZE
+#define SCREEN_MEM_SIZE 0x4000
+#endif
+
 #ifndef CRT_ADDR_REG 
 #define CRT_ADDR_REG 0x03d4
 #endif
 
 #ifndef CRT_DATA_REG
 #define CRT_DATA_REG 0x03d5
+#endif
+
+#ifndef CRT_START_ADDR_H
+#define CRT_START_ADDR_H 0x0c
+#endif
+
+#ifndef CRT_START_ADDR_L
+#define CRT_START_ADDR_L 0x0d
 #endif
 
 #ifndef CRT_CURSOR_H
@@ -50,7 +66,9 @@ typedef struct{
 	PrintColor color;
 }PrintInfo;
 
-bool ClearScreen();
+void InitScreen();
+
+static bool ClearScreen();
 bool SetPrintPos(u8 w, u8 h);
 bool SetPrintColor(PrintColor color);
 u16 PrintString(const char* buffer);
@@ -62,6 +80,6 @@ u8 putchar(char c);
 u16 printk(const char* format, va_list v_arg);
 u16 printf(const char* format, ...);
 
-extern void printChar(const u32 position, const u16 value);
+extern int printChar(const u32 position, const u16 value);
 
 #endif //!SCREEN_H

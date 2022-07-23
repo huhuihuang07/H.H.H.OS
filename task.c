@@ -7,18 +7,16 @@ static Task a = {0};
 
 static void Delay()
 {
-
 	for(int i = 0; i != 1000; ++i){
 		for(int j = 0; j != 1000; ++j){
 			asm volatile("nop");
 		}
 	}
-
 }
 
 void taskA()
 {
-	static u8 i = 0;
+	u32 i = 0;
 
 	while(true){
 
