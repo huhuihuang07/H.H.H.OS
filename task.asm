@@ -10,8 +10,6 @@ RunTask:
 
 	mov esp, [ebp + 8]
 
-	lldt word [esp + 96]
-
 	pop gs
 	pop fs
 	pop es

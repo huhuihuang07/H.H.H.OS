@@ -49,15 +49,17 @@ static TSS gTSS;
 
 typedef void (* pFunc)();
 
-volatile  Task* gCurrentTaskAddr;
+volatile Task* gCurrentTaskAddr;
 
 static void InitTask(Task* pTask, pFunc enctry);
 
-static void PrepareData(volatile Task* pTask);
+static void PrepareForRun(volatile Task* pTask);
 
 void TaskModuleInit();
 
 void LaunchTask();
+
+void Schedule();
 
 extern void RunTask(volatile const Task* const pTask);
 

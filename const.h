@@ -1,6 +1,7 @@
 #ifndef CONST_H
 #define CONST_H
 
+// global variable
 #define BaseOfBoot    0x7c00
 #define BaseOfLoader  0x9000
 #define BaseOfKernel  0xa000

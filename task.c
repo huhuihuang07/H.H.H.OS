@@ -9,6 +9,8 @@ static TSS gTSS = {0};
 
 static Task a = {0};
 
+static Task b = {0};
+
 void TaskA()
 {
 	static u32 i = 0;
@@ -22,6 +24,24 @@ void TaskA()
 		putchar('A' + i);
 
 		i = (i + 1) % 26;
+
+		Delay(1);
+	}
+}
+
+void TaskB()
+{
+	static u32 i = 0;
+
+	while(true){
+
+		SetPrintPos(0, 1);
+
+		printf("This is TaskB : ");
+
+		putchar('0' + i);
+
+		i = (i + 1) % 10;
 
 		Delay(1);
 	}
@@ -46,11 +66,19 @@ static void InitTSS()
 	);
 }
 
-static void PrepareData(volatile Task* pTask)
+static void PrepareForRun(volatile Task* pTask)
 {
-	gTSS.esp0 = (u32) (u32)(StructOffset(pTask, Task, rv)) + sizeof(RegisterValue);
+	gTSS.esp0 = (u32)(StructOffset(pTask, Task, rv)) + sizeof(RegisterValue);
 
 	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_LDTIndex), (u32)(StructOffset(pTask, Task, ldt)), sizeof(pTask->ldt) - 1, DA_LDT + DA_DPL0);
+
+	asm volatile(
+		"movw %0, %%ax\n"
+		"lldt     %%ax\n"
+		:
+		: "r"(pTask->ldtSelector)
+		: "ax"
+	);
 }
 
 static void InitTask(Task* pTask, pFunc enctry)
@@ -75,13 +103,15 @@ static void InitTask(Task* pTask, pFunc enctry)
 	pTask->rv.eflags = 0x3202;
 
 	pTask->ldtSelector = GDT_LdtSelector;
-} 
+}
 
 void TaskModuleInit()
 {
 	InitTSS();
 
 	InitTask(&a, TaskA);
+
+	InitTask(&b, TaskB);
 }
 
 void LaunchTask()
@@ -90,7 +120,14 @@ void LaunchTask()
 
 	gCurrentTaskAddr = &a;
 
-	PrepareData(gCurrentTaskAddr);
+	PrepareForRun(gCurrentTaskAddr);
 
 	RunTask(gCurrentTaskAddr);
+}
+
+void Schedule()
+{
+	gCurrentTaskAddr = gCurrentTaskAddr == &a ? &b : &a;
+
+	PrepareForRun(gCurrentTaskAddr);
 }
