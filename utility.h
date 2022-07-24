@@ -4,7 +4,8 @@
 #include "type.h"
 
 #ifndef AddrOffset
-#define AddrOffset(p, i) ((void*)(u32)(p) + (i) * sizeof(*p))
+#define AddrOffset(p, i) \
+		((void*)((u32)(p) + (i) * sizeof(*p)))
 #endif
 
 #ifndef offsetof
@@ -25,6 +26,14 @@
 		((void*)(u32)(ptr) + offsetof(TYPE, MEMBER));    \
 	})
 #endif	
+
+#ifndef IsEqual
+#define IsEqual(a, b) ({            \
+		unsigned ta = (unsigned)a;  \
+		unsigned tb = (unsigned)b;  \
+		!(ta - tb);                 \
+	})
+#endif
 
 void Delay(u8 n);
 #endif //!UTILITY_H

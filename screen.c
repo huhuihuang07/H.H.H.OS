@@ -1,6 +1,7 @@
 #include "screen.h"
 #include "io.h"
 #include "string.h"
+#include "utility.h"
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 
@@ -94,8 +95,8 @@ static bool ClearScreen()
 
 	SetPrintPos(0, 0);
 
-	for(u8 i = 0; i != SCREEN_WIDTH; ++i){
-		for(u8 j = 0; j != SCREEN_HEIGHT; ++j){
+	for(u8 i = 0; !IsEqual(i, SCREEN_WIDTH); ++i){
+		for(u8 j = 0; !IsEqual(j, SCREEN_HEIGHT); ++j){
 			if(putchar(SCREEN_ERASER)){
 				ret++;
 			}
@@ -151,17 +152,17 @@ bool SetPrintColor(PrintColor color)
 
 u8 putchar(char c)
 {
-	bool ret = ('\n' == c) || ('\t' == c);
+	bool ret = IsEqual(c, '\n') || IsEqual(c, '\t');
 
 	if(ret){
 
-		if('\n' == c){
+		if(IsEqual(c, '\n')){
 
 			printInfo.width = 0;
 
 			printInfo.height += 1;
 
-			if(SCREEN_HEIGHT == printInfo.height){
+			if(IsEqual(printInfo.height, SCREEN_HEIGHT)){
 				scrollUp();
 			}
 		}else{
@@ -178,13 +179,13 @@ u8 putchar(char c)
 
 			printInfo.width += printChar(edi, ax);
 
-			if(SCREEN_WIDTH == printInfo.width){
+			if(IsEqual(printInfo.width, SCREEN_WIDTH)){
 
 				printInfo.width = 0;
 
 				printInfo.height += 1;
 
-				if(SCREEN_HEIGHT == printInfo.height){
+				if(IsEqual(printInfo.height, SCREEN_HEIGHT)){
 					scrollUp();
 				}
 			}
@@ -202,7 +203,7 @@ u16 PrintString(const char* buffer)
 {
 	u16 ret = 0;
 
-	if(buffer){
+	if(!IsEqual(buffer, nullptr)){
 
 		while(buffer[ret]){
 
@@ -230,7 +231,7 @@ u16 PrintIntHex(int n)
 u16 PrintAddress(u32 n){
 	char buffer[] = {'0', 'x', '0', '0', '0', '0', '0', '0', '0', '0', EOS};
 
-	for(u8 i = 9; (1 != i) && (0 != n); --i){
+	for(u8 i = 9; (!IsEqual(i, 1)) && (!IsEqual(n, 0)); --i){
 
 		buffer[i] = "0123456789abcdef"[n % SCREEN_HEXADEC];
 
@@ -246,14 +247,19 @@ u16 printk(const char* format, va_list v_arg)
 
 	bool flag = false;
 
-	if(format){
-		for(u16 i = 0; EOS != format[i]; ++i){
+	if(!IsEqual(format, nullptr))
+	{
+		for(u16 i = 0; !IsEqual(format[i], EOS); ++i)
+		{
 
-			if((!flag) && ('%' != format[i])){
+			if((!flag) && (!IsEqual(format[i], '%')))
+			{
 				ret += putchar(format[i]);
 			}else{
-				if(flag){
-					switch (format[i]){
+				if(flag)
+				{
+					switch (format[i])
+					{
 						case 'd' : {ret += PrintIntDec(va_arg(v_arg, int)); break;}
 						case 'o' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_OCTAL); break;}
 						case 'x' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
@@ -264,7 +270,6 @@ u16 printk(const char* format, va_list v_arg)
 						case 'p' : {ret += PrintAddress(va_arg(v_arg, u32)); break;}
 						default  : {ret += putchar(format[i]);}
 					}
-
 					flag = false;
 				}else{
 					flag = true;
@@ -280,7 +285,7 @@ u16 printf(const char* format, ...)
 {
 	u16 ret = 0;
 
-	if(format){
+	if(!IsEqual(format, nullptr)){
 
 		va_list v_arg;
 

@@ -12,7 +12,7 @@ bool InterruptGateInit()
 {
 	bool ret = true;
 
-	for(u16 i = 0; (i != gIdtInfo.size) && ret; ++i)
+	for(u16 i = 0; (!IsEqual(i, gIdtInfo.size)) && ret; ++i)
 	{
 		ret = SetInterruptGate(i, (u32)(DefaultHandlerEntry));
 	}

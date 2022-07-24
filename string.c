@@ -1,4 +1,5 @@
 #include "string.h"
+#include "utility.h"
 
 char* strcpy(char* dest, const char* src)
 {
@@ -30,7 +31,7 @@ size_t strlen(const char* str)
 
 int strcmp(const char* lhs, const char* rhs)
 {
-	while((*lhs == *rhs) && (*lhs) && (*rhs)){
+	while((IsEqual(*lhs, *rhs)) && (*lhs) && (*rhs)){
 		lhs++;
 		rhs++;
 	}
@@ -42,22 +43,22 @@ char* strchr(const char* str, int ch)
 {
 	char* ptr = (char*)str;
 
-	while((ch != *ptr) && (*ptr)){
+	while((!IsEqual(*ptr, ch)) && (*ptr)){
 		++ptr;
 	}
 
-	return ch == *ptr ? ptr : nullptr;
+	return IsEqual(*ptr, ch) ? ptr : nullptr;
 }
 
 char* strrchr(const char* str, int ch)
 {
 	char* ptr = (char*)str + strlen(str);
 
-	while((ch != *ptr) && (str != ptr)){
+	while((!IsEqual(*ptr, ch)) && (!IsEqual(str, ptr))){
 		--ptr;
 	}
 
-	return ch == *ptr ? ptr : nullptr;
+	return IsEqual(*ptr, ch) ? ptr : nullptr;
 }
 
 int memcmp(const void* lhs, const void* rhs, size_t count)
@@ -108,9 +109,9 @@ void* memchr(const void* str, int ch, size_t count)
 {
 	char* ptr = (char*)str;
 
-	while((count--) && (ch != *ptr)){
+	while((count--) && (!IsEqual(*ptr, ch))){
 		++ptr;
 	}
 
-	return ch == *ptr ? ptr : nullptr;
+	return IsEqual(*ptr, ch) ? ptr : nullptr;
 }

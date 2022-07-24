@@ -1,4 +1,5 @@
 #include "kernel.h"
+#include "utility.h"
 
 GdtInfo gGdtInfo = {nullptr, 0};
 IdtInfo gIdtInfo = {nullptr, 0};
@@ -8,7 +9,7 @@ u32 gMemSize = 0;
 
 bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
 {
-	bool ret = (nullptr != pDescriptor);
+	bool ret = !IsEqual(pDescriptor, nullptr);
 
 	if(ret){
 		pDescriptor->limit1 = limit & 0xffff;
@@ -37,7 +38,7 @@ bool GetDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttrib
 
 bool SetGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute)
 {
-	bool ret = (nullptr != pGate);
+	bool ret = !IsEqual(pGate, nullptr);
 
 	if(ret){
 		pGate->offset1 = offset & 0xffff;
