@@ -202,7 +202,7 @@ u16 PrintString(const char* buffer)
 {
 	u16 ret = 0;
 
-	if(nullptr != buffer){
+	if(buffer){
 
 		while(buffer[ret]){
 
@@ -246,7 +246,7 @@ u16 printk(const char* format, va_list v_arg)
 
 	bool flag = false;
 
-	if(nullptr != format){
+	if(format){
 		for(u16 i = 0; EOS != format[i]; ++i){
 
 			if((!flag) && ('%' != format[i])){
@@ -280,7 +280,8 @@ u16 printf(const char* format, ...)
 {
 	u16 ret = 0;
 
-	if(nullptr != format){
+	if(format){
+
 		va_list v_arg;
 
 		va_start(v_arg, format);

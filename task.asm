@@ -10,8 +10,7 @@ RunTask:
 
 	mov esp, [ebp + 8]
 
-	lldt word [esp + 200]
-	ltr word [esp + 202]
+	lldt word [esp + 96]
 
 	pop gs
 	pop fs
@@ -22,6 +21,6 @@ RunTask:
 
 	add esp, 4
 
-	iret
+	iret	
 
 ; end of [section .text]

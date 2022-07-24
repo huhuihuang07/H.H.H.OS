@@ -5,9 +5,11 @@
 
 volatile Task* gCurrentTaskAddr = nullptr;
 
+static TSS gTSS = {0};
+
 static Task a = {0};
 
-void taskA()
+void TaskA()
 {
 	static u32 i = 0;
 
@@ -25,43 +27,61 @@ void taskA()
 	}
 }
 
-
-void InitTask()
+static void InitTSS()
 {
+	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (u32)(&gTSS), sizeof(TSS) - 1, DA_386TSS + DA_DPL0);
 
-	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_LDTIndex), (u32)(&a.ldt), sizeof(a.ldt) - 1, DA_LDT + DA_DPL0);
-	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (u32)(&a.tss), sizeof(a.tss) - 1, DA_386TSS + DA_DPL0);
+	gTSS.ss0 = GDT_FlatModeDataSelector;
+	gTSS.esp0 = BaseOfBoot;
+	gTSS.iomb = sizeof(TSS);
 
-	a.ldtSelector = GDT_LdtSelector;
-	a.tssSelector = GDT_TssSelector;
+	u16 ax = GDT_TssSelector;
 
-	SetDescValue(AddrOffset(a.ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
-	SetDescValue(AddrOffset(a.ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
-	SetDescValue(AddrOffset(a.ldt, LDT_Stack32Index), (u32)(&a.stack), (u32)(&a.stack) + sizeof(a.stack), DA_32 + DA_DRW + DA_DPL3);
+	asm volatile(
+		"movw %0, %%ax\n"
+		"ltr      %%ax\n"
+		:
+		: "r"(ax)
+		: "ax"
+	);
+}
 
-	a.rv.gs = GDT_Video32Selector;
+static void PrepareData(volatile Task* pTask)
+{
+	gTSS.esp0 = (u32) (u32)(StructOffset(pTask, Task, rv)) + sizeof(RegisterValue);
 
-	a.rv.fs = LDT_Data32Selector;
-	a.rv.es = LDT_Data32Selector;
-	a.rv.ds = LDT_Data32Selector;
+	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_LDTIndex), (u32)(StructOffset(pTask, Task, ldt)), sizeof(pTask->ldt) - 1, DA_LDT + DA_DPL0);
+}
 
-	a.rv.ss = LDT_Stack32Selector;
+static void InitTask(Task* pTask, pFunc enctry)
+{
+	SetDescValue(AddrOffset(pTask->ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(AddrOffset(pTask->ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(AddrOffset(pTask->ldt, LDT_Stack32Index), (u32)(StructOffset(pTask, Task, stack)), (u32)(StructOffset(pTask, Task, stack)) + sizeof(pTask->stack), DA_32 + DA_DRW + DA_DPL3);
 
-	a.rv.esp = (u32)(&a.stack) + sizeof(a.stack);
+	pTask->rv.gs = GDT_Video32Selector;
 
-	a.rv.cs = LDT_Code32Selector;
-	a.rv.eip = (u32)(taskA);
+	pTask->rv.fs = LDT_Data32Selector;
+	pTask->rv.es = LDT_Data32Selector;
+	pTask->rv.ds = LDT_Data32Selector;
 
-	a.rv.eflags = 0x3202;
+	pTask->rv.ss = LDT_Stack32Selector;
 
-	a.tss.ss0 = GDT_FlatModeDataSelector;
-	a.tss.esp0 = ((u32)&a.rv) + sizeof(a.rv);
-	a.tss.iomb = sizeof(a.tss);
+	pTask->rv.esp = (u32)(StructOffset(pTask, Task, stack)) + sizeof(pTask->stack);
+
+	pTask->rv.cs = LDT_Code32Selector;
+	pTask->rv.eip = (u32)(enctry);
+
+	pTask->rv.eflags = 0x3202;
+
+	pTask->ldtSelector = GDT_LdtSelector;
 } 
 
 void TaskModuleInit()
 {
-	InitTask();
+	InitTSS();
+
+	InitTask(&a, TaskA);
 }
 
 void LaunchTask()
@@ -69,6 +89,8 @@ void LaunchTask()
 	TimerInit();
 
 	gCurrentTaskAddr = &a;
+
+	PrepareData(gCurrentTaskAddr);
 
 	RunTask(gCurrentTaskAddr);
 }

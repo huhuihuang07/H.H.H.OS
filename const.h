@@ -1,6 +1,10 @@
 #ifndef CONST_H
 #define CONST_H
 
+#define BaseOfBoot    0x7c00
+#define BaseOfLoader  0x9000
+#define BaseOfKernel  0xa000
+
 // Segment Attribute 段属性
 #define DA_32        0x4000 // 保护模式下32位段
 #define DA_DR        0x90   // 只读数据段

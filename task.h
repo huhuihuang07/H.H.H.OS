@@ -39,17 +39,21 @@ typedef struct
 {
 	RegisterValue rv;   // sizeof(u32) * 18 = 4 * 18 = 72
 	Descriptor ldt[3];  // sizeof(Descriptor) * 3 = 8 * 3 = 24
-	TSS tss;            // sizeof(TSS) = 104
 	u16 ldtSelector;    // 2
-	u16 tssSelector;    // 2
 	u32 id;             // 4
 	char name[8];       // sizeof(char) * 8 = 8
 	u8 stack[512];      // sizeof(u8) * 512 = 512
 }Task;
 
+static TSS gTSS;
+
+typedef void (* pFunc)();
+
 volatile  Task* gCurrentTaskAddr;
 
-void InitTask();
+static void InitTask(Task* pTask, pFunc enctry);
+
+static void PrepareData(volatile Task* pTask);
 
 void TaskModuleInit();
 

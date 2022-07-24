@@ -7,5 +7,24 @@
 #define AddrOffset(p, i) ((void*)(u32)(p) + (i) * sizeof(*p))
 #endif
 
+#ifndef offsetof
+#define offsetof(TYPE, MEMBER) \
+		((size_t)&((TYPE*)nullptr)->MEMBER)
+#endif
+
+#ifndef container_of
+#define container_of(ptr, TYPE, MEMBER) ({                      \
+		const typeof (((TYPE*)nullptr)->MEMBER)* _mptr = (ptr); \
+		(TYPE *)((char*)_mptr - offsetof(TYPE, MEMBER));        \
+	})
+#endif	
+
+#ifndef StructOffset
+#define StructOffset(ptr, TYPE, MEMBER) ({               \
+		const typeof (((TYPE*)nullptr))* _mptr = (ptr);  \
+		((void*)(u32)(ptr) + offsetof(TYPE, MEMBER));    \
+	})
+#endif	
+
 void Delay(u8 n);
 #endif //!UTILITY_H
