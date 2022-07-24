@@ -103,7 +103,7 @@ static bool ClearScreen()
 		}
 	}
 
-	return ret == (SCREEN_WIDTH * SCREEN_HEIGHT);
+	return IsEqual(ret, (SCREEN_WIDTH * SCREEN_HEIGHT));
 }
 
 
