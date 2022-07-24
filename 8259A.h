@@ -1,5 +1,5 @@
-#ifndef I_8259A_H
-#define I_8259A_H
+#ifndef I8259A_H
+#define I8259A_H
 
 #include "type.h"
 
@@ -38,4 +38,4 @@ void SendEOI(u16 port);
 void SetIF();
 void ClearIF();
 
-#endif //!I_8259A_H
+#endif //!I8259A_H

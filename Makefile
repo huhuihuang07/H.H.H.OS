@@ -15,13 +15,13 @@ kernelSrc := kmain.c \
 			string.c \
 			8259A.c  \
 			interrupt.c \
-			handler.c \
-			global.c
+			ihandler.c \
+			utility.c
 
 kernelAsm := kentry.asm \
 			   task.asm \
 			 screen.asm \
-			 handler.asm \
+			 ihandler.asm \
 			 io.asm			
 
 bootSrc := boot.asm

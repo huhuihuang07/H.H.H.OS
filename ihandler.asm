@@ -20,6 +20,15 @@ extern gCurrentTaskAddr
 	push fs
 	push gs
 
+	mov ax, Video32Selector
+	mov gs, ax
+
+	mov ax, FlatModeDataSelector
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+
+	mov ss, ax
 	mov esp, BaseOfBoot
 
 %endmacro

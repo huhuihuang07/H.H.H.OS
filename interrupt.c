@@ -1,29 +1,28 @@
 #include "interrupt.h"
-#include "const.h"
-#include "handler.h"
+#include "utility.h"
+#include "kernel.h"
 #include "8259A.h"
-#include "screen.h"
 
 bool SetInterruptGate(u8 InterruptVectorNumber, u32 Handlerfunc)
 {
-	return SetGateValue(gIdtInfo.entry + InterruptVectorNumber, GDT_FlatModeCodeSelector, Handlerfunc, 0, DA_386IGate + DA_DPL3);
+	return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, Handlerfunc, 0, DA_386IGate + DA_DPL3);
 }
 
-bool InitInterruptGate()
+bool InterruptGateInit()
 {
 	bool ret = true;
 
 	for(u16 i = 0; (i != gIdtInfo.size) && ret; ++i)
 	{
-		ret = SetInterruptGate(i, DefaultHandlerEntry);
+		ret = SetInterruptGate(i, (u32)(DefaultHandlerEntry));
 	}
 
 	return ret;
 }
 
-void InitInterrupt()
+void InterruptModuleInit()
 {
-	InitInterruptGate();
+	InterruptGateInit();
 
 	Init8259A();
 }

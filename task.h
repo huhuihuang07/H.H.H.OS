@@ -1,7 +1,6 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include "type.h"
 #include "kernel.h"
 
 typedef struct
@@ -48,10 +47,16 @@ typedef struct
 	u8 stack[512];      // sizeof(u8) * 512 = 512
 }Task;
 
-Task* gCurrentTaskAddr;
+volatile  Task* gCurrentTaskAddr;
 
 void InitTask();
 
-extern void RunTask(const Task* const pTask);
+void TaskModuleInit();
+
+void LaunchTask();
+
+extern void RunTask(volatile const Task* const pTask);
+
+extern void TimerInit();
 
 #endif //!TASK_H

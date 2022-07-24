@@ -7,7 +7,7 @@ global outw
 [section .text]
 [bits 32]
 
-sleep:
+delay:
 %rep 3
 	jmp $ + 2
 %endrep	
@@ -23,7 +23,7 @@ inb:
 	mov edx, dword [ebp + 8]
 	in al, dx
 
-	call sleep
+	call delay
 
 	pop edx
 
@@ -39,7 +39,7 @@ inw:
 	mov edx, dword [ebp + 8]
 	in ax, dx
 
-	call sleep
+	call delay
 
 	pop edx
 
@@ -58,7 +58,7 @@ outb:
 
 	out dx, al
 
-	call sleep
+	call delay
 
 	pop edx
 	pop eax
@@ -78,7 +78,7 @@ outw:
 
 	out dx, ax
 
-	call sleep
+	call delay
 
 	pop edx
 	pop eax

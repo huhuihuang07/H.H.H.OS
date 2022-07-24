@@ -2,13 +2,12 @@
 #define INTERRUPT_H
 
 #include "type.h"
-#include "global.h"
 
 extern void DefaultHandlerEntry();
 
-void InitInterrupt();
+void InterruptModuleInit();
 
-bool InitInterruptGate();
+bool InterruptGateInit();
 
 bool SetInterruptGate(u8 InterruptVectorNumber, u32 Handlerfunc);
 

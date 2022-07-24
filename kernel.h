@@ -44,6 +44,11 @@ typedef struct{
 	ARDS ards[20];
 }_packed MemInfo;
 
+GdtInfo gGdtInfo;
+IdtInfo gIdtInfo;
+MemInfo gMemInfo;
+u32 gMemSize; 
+
 bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute);
 bool GetDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute);
 

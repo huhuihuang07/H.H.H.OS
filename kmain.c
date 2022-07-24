@@ -1,14 +1,15 @@
 #include "kmain.h"
 #include "kernel.h"
-#include "screen.h"
-#include "global.h"
+#include "interrupt.h"
 #include "task.h"
 
 int KMain(int argc, char* argv[])
 {
-	InitInterrupt();
+	InterruptModuleInit();
 
-	InitTask();
+	TaskModuleInit();
+
+	LaunchTask();
 
 	return 0;
 }
