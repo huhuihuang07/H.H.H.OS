@@ -1,7 +1,7 @@
-#include "task.h"
-#include "kernel.h"
-#include "screen.h"
-#include "utility.h"
+#include <task.h>
+#include <kernel.h>
+#include <screen.h>
+#include <utility.h>
 
 volatile Task* gCurrentTaskAddr = nullptr;
 

@@ -1,8 +1,8 @@
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include "type.h"
-#include "const.h"
+#include <type.h>
+#include <const.h>
 
 typedef struct{
 	u16 limit1;

@@ -8,6 +8,8 @@ DIR_OBJS := objs
 
 DIRS := $(DIR_DEPS) $(DIR_EXES) $(DIR_OBJS)	
 
+Root := $(realpath ..)
+
 kernelSrc := kmain.c \
 			  task.c \
 			screen.c \
@@ -90,7 +92,7 @@ $(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
 	sudo $(UMOUNT) $(MNTPATH)
 
 $(DIR_OBJS)/%.o : %.c
-	gcc $(CFLAGS) -c $(filter %.c, $^) -o $@
+	gcc -I. $(CFLAGS) -c $(filter %.c, $^) -o $@
 
 $(DIR_OBJS)/%.obj : %.asm $(commonSrc)	
 	nasm -f elf $< -o $@

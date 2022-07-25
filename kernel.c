@@ -1,5 +1,5 @@
-#include "kernel.h"
-#include "utility.h"
+#include <kernel.h>
+#include <utility.h>
 
 GdtInfo gGdtInfo = {nullptr, 0};
 IdtInfo gIdtInfo = {nullptr, 0};

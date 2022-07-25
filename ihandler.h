@@ -1,8 +1,8 @@
 #ifndef IHANDLER_H
 #define IHANDLER_H
 
-#include "interrupt.h"
-#include "8259A.h"
+#include <interrupt.h>
+#include <8259A.h>
 
 #define TimerInterrupt      0x20
 #define TimerMasterIMR      0xfe

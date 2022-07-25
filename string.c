@@ -1,5 +1,5 @@
-#include "string.h"
-#include "utility.h"
+#include <string.h>
+#include <utility.h>
 
 char* strcpy(char* dest, const char* src)
 {

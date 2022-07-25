@@ -1,7 +1,7 @@
 #ifndef INTERRUPT_H
 #define INTERRUPT_H
 
-#include "type.h"
+#include <type.h>
 
 extern void DefaultHandlerEntry();
 

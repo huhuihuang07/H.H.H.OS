@@ -1,7 +1,6 @@
-#include "kmain.h"
-#include "kernel.h"
-#include "interrupt.h"
-#include "task.h"
+#include <kmain.h>
+#include <interrupt.h>
+#include <task.h>
 
 int KMain(int argc, char* argv[])
 {

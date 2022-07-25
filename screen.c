@@ -1,7 +1,7 @@
-#include "screen.h"
-#include "io.h"
-#include "string.h"
-#include "utility.h"
+#include <screen.h>
+#include <io.h>
+#include <string.h>
+#include <utility.h>
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 

@@ -1,7 +1,7 @@
 #ifndef IO_H
 #define IO_H
 
-#include "type.h"
+#include <type.h>
 
 extern const u8 inb(const u16 port);
 extern const u16 inw(const u16 port);
