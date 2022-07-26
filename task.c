@@ -17,6 +17,10 @@ void TaskA()
 
 	while(true){
 
+		SetPrintPos(0, 2);
+
+		printf("This is TaskA : ");
+
 		putchar('A' + i);
 
 		i = (i + 1) % 26;
@@ -30,6 +34,10 @@ void TaskB()
 	static u32 i = 0;
 
 	while(true){
+
+		SetPrintPos(0, 3);
+
+		printf("This is TaskB : ");
 
 		putchar('0' + i);
 

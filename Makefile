@@ -55,7 +55,7 @@ UMOUNT := umount
 
 MNTPATH := /mnt/rootb
 
-CFLAGS := -m32 -fno-builtin -fno-stack-protector
+CFLAGS := -m32 -fno-builtin -fno-stack-protector -nostdlib
 
 ASM_OBJS := $(patsubst %.asm, %.obj, $(kernelAsm))
 ASM_OBJS := $(addprefix $(DIR_OBJS)/, $(ASM_OBJS))
