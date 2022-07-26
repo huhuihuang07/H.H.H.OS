@@ -34,7 +34,7 @@ void Init8259A()
 	outb(MASTER_ICW3_PORT, 0b00000100);
 	outb(MASTER_ICW4_PORT, 0b00010001);
 
-	// initialize SLAVE 8259A
+	// initialize Slave 8259A
 	outb(SLAVE_ICW1_PORT, 0b00010001);
 	outb(SLAVE_ICW2_PORT, 0x28);
 	outb(SLAVE_ICW3_PORT, 0b00000010);

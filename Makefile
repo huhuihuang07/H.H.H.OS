@@ -18,7 +18,8 @@ kernelSrc := kmain.c \
 			8259A.c  \
 			interrupt.c \
 			ihandler.c \
-			utility.c
+			utility.c \
+			list.c
 
 kernelAsm := kentry.asm \
 			   task.asm \
