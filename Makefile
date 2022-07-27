@@ -19,7 +19,8 @@ kernelSrc := kmain.c \
 			interrupt.c \
 			ihandler.c \
 			utility.c \
-			list.c
+			list.c \
+			queue.c
 
 kernelAsm := kentry.asm \
 			   task.asm \

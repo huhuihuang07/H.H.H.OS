@@ -13,7 +13,7 @@ typedef ListNode List;
 
 #ifndef List_ForEach
 #define List_ForEach(list, pos) \
-	for((pos) = (list)->next; !IsEqual((list), (pos)); (pos) = (pos)->next)
+	for((pos) = ((ListNode*)(list))->next; !IsEqual((list), (pos)); (pos) = (pos)->next)
 #endif		
 
 #ifndef List_Node
