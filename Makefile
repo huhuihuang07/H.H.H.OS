@@ -20,7 +20,8 @@ kernelSrc := kmain.c \
 			ihandler.c \
 			utility.c \
 			list.c \
-			queue.c
+			queue.c \
+			stack.c \
 
 kernelAsm := kentry.asm \
 			   task.asm \

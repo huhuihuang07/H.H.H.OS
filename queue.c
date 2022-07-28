@@ -36,13 +36,11 @@ void Queue_Add(Queue* queue, QueueNode* node)
 
 QueueNode* Queue_Front(Queue* queue)
 {
-	QueueNode* node = nullptr;
-
 	if(queue->length > 0){
-		node = queue->head.next;
+		return queue->head.next;
 	}
 
-	return node;
+	return nullptr;
 }
 
 QueueNode* Queue_Remove(Queue* queue)
