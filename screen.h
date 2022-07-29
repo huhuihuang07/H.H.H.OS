@@ -68,7 +68,7 @@ typedef struct{
 
 void InitScreen();
 
-static bool ClearScreen();
+bool ClearScreen();
 bool SetPrintPos(u8 w, u8 h);
 bool SetPrintColor(PrintColor color);
 u16 PrintString(const char* buffer);

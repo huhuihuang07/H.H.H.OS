@@ -3,6 +3,11 @@
 
 #include <type.h>
 
+#ifndef Debug
+#define Debug() \
+	asm volatile("int $0x03")
+#endif	
+
 #ifndef AddrOffset
 #define AddrOffset(p, i) \
 		((void*)((u32)(p) + (i) * sizeof(*p)))
@@ -33,6 +38,16 @@
 		unsigned tb = (unsigned)b;  \
 		!(ta - tb);                 \
 	})
+#endif
+
+#ifndef Max
+#define Max(a, b) \
+	((a) >= (b) ? (a) : (b))
+#endif
+
+#ifndef Min
+#define Min(a, b) \
+	((a) <= (b) ? (a) : (b))
 #endif
 
 void Delay(u8 n);

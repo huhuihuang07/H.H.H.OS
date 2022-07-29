@@ -1,7 +1,6 @@
 #ifndef LIST_H
 #define LIST_H
 
-#include <type.h>
 #include <utility.h>
 
 typedef struct _ListNode{

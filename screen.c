@@ -89,7 +89,7 @@ static u16 PrintIntRadix(int n, PrintRadix radix)
 	return ret;
 }
 
-static bool ClearScreen()
+bool ClearScreen()
 {
 	u16 ret = 0;
 
@@ -260,6 +260,7 @@ u16 printk(const char* format, va_list v_arg)
 				{
 					switch (format[i])
 					{
+						case 'b' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_BINARY); break;}
 						case 'd' : {ret += PrintIntDec(va_arg(v_arg, int)); break;}
 						case 'o' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_OCTAL); break;}
 						case 'x' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}

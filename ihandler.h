@@ -8,6 +8,10 @@
 #define TimerMasterIMR      0xfe
 #define TimerSlaveIMR       0xff
 
+#define DebugInterrupt      0x03
+#define DebugMasterIMR      0xff
+#define DebugSlaveIMR       0xff
+
 #ifndef DeclHandler
 #define DeclHandler(name) 	             \
 	extern void name##HandlerEntry();    \
@@ -31,5 +35,6 @@
 #endif
 
 DeclHandler(Timer);
+DeclHandler(Debug);
 
 #endif //!IHANDLER_H

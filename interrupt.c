@@ -24,5 +24,7 @@ void InterruptModuleInit()
 {
 	InterruptGateInit();
 
+	DebugInit();
+
 	Init8259A();
 }

@@ -56,7 +56,7 @@
 
 // GDT Selector GDT 选择子
 #define GDT_FlatModeCodeSelector    (GDT_FlatModeCodeIndex << 3) + SA_TIG + SA_RPL0
-#define GDT_Video32Selector         (GDT_Video32Index << 3) + SA_TIG + SA_RPL0
+#define GDT_Video32Selector         (GDT_Video32Index << 3) + SA_TIG + SA_RPL3
 #define GDT_KernelDataSelector      (GDT_KernelDataIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_FlatModeDataSelector    (GDT_FlatModeDataIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_Code32Selector          (GDT_Code32Index << 3) + SA_TIG + SA_RPL0

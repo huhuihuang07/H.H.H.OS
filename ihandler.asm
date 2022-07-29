@@ -2,8 +2,10 @@
 
 global DefaultHandlerEntry
 global TimerHandlerEntry
+global DebugHandlerEntry
 
 extern TimerHandler
+extern DebugHandler
 extern gCurrentTaskAddr
 
 [section .handler]
@@ -63,5 +65,21 @@ BeginISR
 
 EndISR
 	iret
+
+; Debug interrupt hanlder entry
+DebugHandlerEntry:
+	sub esp, 4
+
+	pushad
+
+	push ds
+	push es
+	push fs
+	push gs
+
+	call DebugHandler
+
+EndISR
+	iret	
 
 ; end of [section .handler]
