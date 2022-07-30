@@ -1,6 +1,8 @@
 #include <ihandler.h>
 #include <task.h>
 
+static volatile bool Enable_Debug = false;
+
 void TimerHandler()
 {
 	Schedule();
@@ -34,5 +36,6 @@ void DebugHandler(RegisterValue* registerInfo)
 	printf("| eip --> %p\n", registerInfo->eip);
 	printf("|==== End register value =====|\n");
 	printf("-------------------------------\n");
-	while(true); // TODO
+	Enable_Debug = true;
+	while(Enable_Debug); // TODO
 }

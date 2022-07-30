@@ -5,6 +5,8 @@
 
 extern void DefaultHandlerEntry();
 
+extern void DebugInit();
+
 void InterruptModuleInit();
 
 bool InterruptGateInit();

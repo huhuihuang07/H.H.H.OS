@@ -7,11 +7,11 @@ void BTree_Init(BTreeRoot* root)
 
 bool BTree_Insert(BTreeRoot* root, BTreeNode* node, BTreePos pos)
 {
-	bool ret = false;
-
 	BTreeNode* object = BTree_Find(root, node->parent);
 
-	if(ret = (!IsEqual(object, nullptr))){
+	bool ret = (!IsEqual(object, nullptr)) && (IsEqual(BTree_Find(root, node), nullptr));
+
+	if(ret){
 		switch(pos)
 		{
 			case BTreePos_ANY : 

@@ -26,9 +26,9 @@
 #endif	
 
 #ifndef StructOffset
-#define StructOffset(ptr, TYPE, MEMBER) ({               \
-		const typeof (((TYPE*)nullptr))* _mptr = (ptr);  \
-		((void*)(u32)(ptr) + offsetof(TYPE, MEMBER));    \
+#define StructOffset(ptr, TYPE, MEMBER) ({            \
+		const typeof ((TYPE*)nullptr)* _mptr = (ptr); \
+		((void*)(u32)(ptr) + offsetof(TYPE, MEMBER)); \
 	})
 #endif	
 
