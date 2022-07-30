@@ -48,6 +48,15 @@ void TaskB()
 	}
 }
 
+static void TaskEntry()
+{
+	if(!IsEqual(gCurrentTaskAddr, nullptr)){
+		gCurrentTaskAddr->tMain();
+	}
+
+	while(1); // TODO: to Destroy Cunrrent task and Schedule next task
+}
+
 static void InitTSS()
 {
 	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (u32)(&gTSS), sizeof(TSS) - 1, DA_386TSS + DA_DPL0);
@@ -97,7 +106,7 @@ static void AddTaskToRunningQueue()
 	}
 }
 
-static void InitTask(Task* pTask, pFunc enctry)
+static void InitTask(Task* pTask, pFunc entry)
 {
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
@@ -114,13 +123,13 @@ static void InitTask(Task* pTask, pFunc enctry)
 	pTask->rv.esp = (u32)(StructOffset(pTask, Task, stack)) + sizeof(pTask->stack);
 
 	pTask->rv.cs = LDT_Code32Selector;
-	pTask->rv.eip = (u32)(enctry);
+	pTask->rv.eip = (u32)(TaskEntry);
 
 	pTask->rv.eflags = 0x3202;
 
 	pTask->ldtSelector = GDT_LdtSelector;
 
-	gInitTaskCount++;
+	pTask->tMain = entry; 
 }
 
 void TaskModuleInit()
@@ -129,9 +138,9 @@ void TaskModuleInit()
 
 	InitQueue();
 
-	InitTask(StructOffset(AddrOffset(gRunningTask, 0), TaskNode, task), TaskA);
+	InitTask(StructOffset(AddrOffset(gRunningTask, gInitTaskCount++), TaskNode, task), TaskA);
 
-	InitTask(StructOffset(AddrOffset(gRunningTask, 1), TaskNode, task), TaskB);
+	InitTask(StructOffset(AddrOffset(gRunningTask, gInitTaskCount++), TaskNode, task), TaskB);
 
 	AddTaskToRunningQueue();
 }

@@ -42,6 +42,7 @@ typedef struct
 	Descriptor ldt[3];  // sizeof(Descriptor) * 3 = 8 * 3 = 24
 	u16 ldtSelector;    // 2
 	u32 id;             // 4
+	pFunc tMain;        // 4
 	char name[8];       // sizeof(char) * 8 = 8
 	u8 stack[512];      // sizeof(u8) * 512 = 512
 }Task;
@@ -58,11 +59,9 @@ static Queue gRunningQueue;
 
 static Queue* pRunningQueue;
 
-typedef void (* pFunc)();
-
 volatile Task* gCurrentTaskAddr;
 
-static void InitTask(Task* pTask, pFunc enctry);
+static void InitTask(Task* pTask, pFunc entry);
 
 static void PrepareForRun(volatile Task* pTask);
 

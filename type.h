@@ -27,6 +27,8 @@ typedef enum
 	true = !false,
 }bool;
 
+typedef void (* pFunc)();
+
 typedef unsigned char u8;
 
 typedef unsigned short u16;
