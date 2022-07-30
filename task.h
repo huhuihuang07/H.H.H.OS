@@ -2,6 +2,7 @@
 #define TASK_H
 
 #include <kernel.h>
+#include <queue.h>
 
 typedef struct
 {
@@ -45,7 +46,17 @@ typedef struct
 	u8 stack[512];      // sizeof(u8) * 512 = 512
 }Task;
 
+typedef struct
+{
+	QueueNode head;
+	Task task;
+}TaskNode;
+
 static TSS gTSS;
+
+static Queue gRunningQueue;
+
+static Queue* pRunningQueue;
 
 typedef void (* pFunc)();
 

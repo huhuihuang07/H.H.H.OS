@@ -1,4 +1,5 @@
 #include <ihandler.h>
+#include <screen.h>
 #include <task.h>
 
 static volatile bool Enable_Debug = false;

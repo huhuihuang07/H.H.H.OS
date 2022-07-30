@@ -1,15 +1,16 @@
 #include <task.h>
 #include <kernel.h>
 #include <screen.h>
-#include <utility.h>
+
+#define MAX_RUNNING_TASK 5
 
 volatile Task* gCurrentTaskAddr = nullptr;
 
 static TSS gTSS = {0};
 
-static Task a = {0};
+static TaskNode gRunningTask[MAX_RUNNING_TASK] = {0};
 
-static Task b = {0};
+static u32 gInitTaskCount = 0;
 
 void TaskA()
 {
@@ -81,6 +82,21 @@ static void PrepareForRun(volatile Task* pTask)
 	);
 }
 
+static void InitQueue()
+{
+	pRunningQueue = &gRunningQueue;
+
+	Queue_Init(pRunningQueue);
+}
+
+static void AddTaskToRunningQueue()
+{
+	for(u32 i = 0; i != gInitTaskCount; ++i)
+	{
+		Queue_Add(pRunningQueue, StructOffset(AddrOffset(gRunningTask, i), TaskNode, head));
+	}
+}
+
 static void InitTask(Task* pTask, pFunc enctry)
 {
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
@@ -103,22 +119,28 @@ static void InitTask(Task* pTask, pFunc enctry)
 	pTask->rv.eflags = 0x3202;
 
 	pTask->ldtSelector = GDT_LdtSelector;
+
+	gInitTaskCount++;
 }
 
 void TaskModuleInit()
 {
 	InitTSS();
 
-	InitTask(&a, TaskA);
+	InitQueue();
 
-	InitTask(&b, TaskB);
+	InitTask(StructOffset(AddrOffset(gRunningTask, 0), TaskNode, task), TaskA);
+
+	InitTask(StructOffset(AddrOffset(gRunningTask, 1), TaskNode, task), TaskB);
+
+	AddTaskToRunningQueue();
 }
 
 void LaunchTask()
 {
 	TimerInit();
 
-	gCurrentTaskAddr = &a;
+	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head), TaskNode, task);
 
 	PrepareForRun(gCurrentTaskAddr);
 
@@ -127,7 +149,9 @@ void LaunchTask()
 
 void Schedule()
 {
-	gCurrentTaskAddr = IsEqual(gCurrentTaskAddr, &a) ? &b : &a;
+	Queue_Rotate(pRunningQueue);
+
+	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head), TaskNode, task);
 
 	PrepareForRun(gCurrentTaskAddr);
 }
