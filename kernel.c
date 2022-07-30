@@ -1,11 +1,11 @@
 #include <kernel.h>
 #include <utility.h>
 
-GdtInfo gGdtInfo = {nullptr, 0};
-IdtInfo gIdtInfo = {nullptr, 0};
-MemInfo gMemInfo = {0};
+const GdtInfo gGdtInfo = {nullptr, 0};
+const IdtInfo gIdtInfo = {nullptr, 0};
+const MemInfo gMemInfo = {0};
 
-u32 gMemSize = 0;
+const u32 gMemSize = 0;
 
 bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
 {

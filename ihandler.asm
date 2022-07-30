@@ -33,9 +33,11 @@ extern gCurrentTaskAddr
 	mov ss, ax
 	mov esp, BaseOfBoot
 
+	; sti
 %endmacro
 
 %macro EndISR 0
+	; cli
 
 	mov esp, [gCurrentTaskAddr]
 
@@ -68,16 +70,12 @@ EndISR
 
 ; Debug interrupt hanlder entry
 DebugHandlerEntry:
-	sub esp, 4
-
-	pushad
-
-	push ds
-	push es
-	push fs
-	push gs
+BeginISR
+	push dword [gCurrentTaskAddr]
 
 	call DebugHandler
+
+	add esp, 0x04
 
 EndISR
 	iret	
