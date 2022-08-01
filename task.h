@@ -66,6 +66,10 @@ static Queue gRunningQueue;
 
 static Queue* pRunningQueue;
 
+static Stack gTaskPool;
+
+static Stack* pTaskPool;
+
 volatile Task* gCurrentTaskAddr;
 
 static void InitTask(Task* pTask, pFunc entry);
