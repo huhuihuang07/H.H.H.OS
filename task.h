@@ -3,6 +3,7 @@
 
 #include <kernel.h>
 #include <queue.h>
+#include <stack.h>
 
 typedef struct
 {
@@ -47,9 +48,15 @@ typedef struct
 	u8 stack[512];      // sizeof(u8) * 512 = 512
 }Task;
 
+typedef union
+{
+	StackNode sHead;
+	QueueNode qHead;
+}Head;
+
 typedef struct
 {
-	QueueNode head;
+	Head head;
 	Task task;
 }TaskNode;
 
@@ -65,11 +72,15 @@ static void InitTask(Task* pTask, pFunc entry);
 
 static void PrepareForRun(volatile Task* pTask);
 
+static void TaskEntry();
+
 void TaskModuleInit();
 
 void LaunchTask();
 
 void Schedule();
+
+void KillTask();
 
 extern void RunTask(volatile const Task* const pTask);
 

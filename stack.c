@@ -34,7 +34,7 @@ void Stack_Push(Stack* stack, StackNode* node)
 
 void Stack_Pop(Stack* stack)
 {
-	if(stack->length > 0){
+	if(IsEqual(Stack_IsEmpty(stack), false)){
 		
 		List_DelNode(stack->head.next);
 
@@ -44,7 +44,7 @@ void Stack_Pop(Stack* stack)
 
 StackNode* Stack_Top(Stack* stack)
 {
-	if(stack->length > 0){
+	if(IsEqual(Stack_IsEmpty(stack), false)){
 		return stack->head.next;
 	}
 

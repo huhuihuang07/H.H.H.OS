@@ -12,6 +12,10 @@
 #define DebugMasterIMR      0xff
 #define DebugSlaveIMR       0xff
 
+#define SysCallInterrupt    0x80
+#define SysCallMasterIMR    0xff
+#define SysCallSlaveIMR     0xff
+
 #ifndef DeclHandler
 #define DeclHandler(name) 	             \
 	extern void name##HandlerEntry();    \
@@ -36,5 +40,8 @@
 
 DeclHandler(Timer);
 DeclHandler(Debug);
+DeclHandler(SysCall);
+
+extern void SystemCall(u32 param);
 
 #endif //!IHANDLER_H

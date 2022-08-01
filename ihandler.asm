@@ -3,9 +3,11 @@
 global DefaultHandlerEntry
 global TimerHandlerEntry
 global DebugHandlerEntry
+global SysCallHandlerEntry
 
 extern TimerHandler
 extern DebugHandler
+extern SysCallHandler
 extern gCurrentTaskAddr
 
 [section .handler]
@@ -22,15 +24,15 @@ extern gCurrentTaskAddr
 	push fs
 	push gs
 
-	mov ax, Video32Selector
-	mov gs, ax
+	mov bx, Video32Selector
+	mov gs, bx
 
-	mov ax, FlatModeDataSelector
-	mov ds, ax
-	mov es, ax
-	mov fs, ax
+	mov bx, FlatModeDataSelector
+	mov ds, bx
+	mov es, bx
+	mov fs, bx
 
-	mov ss, ax
+	mov ss, bx
 	mov esp, BaseOfBoot
 
 	; sti
@@ -71,6 +73,7 @@ EndISR
 ; Debug interrupt hanlder entry
 DebugHandlerEntry:
 BeginISR
+
 	push dword [gCurrentTaskAddr]
 
 	call DebugHandler
@@ -78,6 +81,19 @@ BeginISR
 	add esp, 0x04
 
 EndISR
-	iret	
+	iret
+
+; System Call interrupt hanlder entry
+SysCallHandlerEntry:
+BeginISR
+
+	push eax
+
+	call SysCallHandler
+
+	add esp, 0x04
+
+EndISR
+	iret		
 
 ; end of [section .handler]

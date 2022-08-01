@@ -1,8 +1,9 @@
 #include <task.h>
+#include <syscall.h>
 #include <kernel.h>
 #include <screen.h>
 
-#define MAX_RUNNING_TASK 5
+#define MAX_RUNNING_TASK 10
 
 volatile Task* gCurrentTaskAddr = nullptr;
 
@@ -12,11 +13,19 @@ static TaskNode gRunningTask[MAX_RUNNING_TASK] = {0};
 
 static u32 gInitTaskCount = 0;
 
+static Queue gRunningQueue = {0};
+
+static Queue* pRunningQueue = &gRunningQueue;
+
+static Stack gTaskPool = {0};
+
+static Stack* pTaskPool = &gTaskPool;
+
 void TaskA()
 {
 	static u32 i = 0;
 
-	while(true){
+	while(i < 10){
 
 		SetPrintPos(0, 2);
 
@@ -54,7 +63,9 @@ static void TaskEntry()
 		gCurrentTaskAddr->tMain();
 	}
 
-	while(1); // TODO: to Destroy Cunrrent task and Schedule next task
+	u32 ax = 0;
+
+	SysCall(ax);
 }
 
 static void InitTSS()
@@ -91,18 +102,15 @@ static void PrepareForRun(volatile Task* pTask)
 	);
 }
 
-static void InitQueue()
+static void InitTaskDataStruct()
 {
-	pRunningQueue = &gRunningQueue;
-
 	Queue_Init(pRunningQueue);
-}
 
-static void AddTaskToRunningQueue()
-{
-	for(u32 i = 0; i != gInitTaskCount; ++i)
+	Stack_Init(pTaskPool);
+
+	for(u32 i = 0; i != MAX_RUNNING_TASK; ++i)
 	{
-		Queue_Add(pRunningQueue, StructOffset(AddrOffset(gRunningTask, i), TaskNode, head));
+		Stack_Push(pTaskPool, StructOffset(AddrOffset(gRunningTask, i), TaskNode, head.sHead));
 	}
 }
 
@@ -132,26 +140,38 @@ static void InitTask(Task* pTask, pFunc entry)
 	pTask->tMain = entry; 
 }
 
+static void CreateTask(pFunc entry)
+{
+	if(IsEqual(Stack_IsEmpty(pTaskPool), false))
+	{
+		TaskNode* taskNode = List_Node(Stack_Top(pTaskPool), TaskNode, head.sHead);
+
+		InitTask(StructOffset(taskNode, TaskNode, task), entry);
+
+		Stack_Pop(pTaskPool);
+
+		Queue_Add(pRunningQueue, StructOffset(taskNode, TaskNode, head.qHead));
+	}
+}
+
 void TaskModuleInit()
 {
 	InitTSS();
 
-	InitQueue();
+	InitTaskDataStruct();
 
-	InitTask(StructOffset(AddrOffset(gRunningTask, gInitTaskCount++), TaskNode, task), TaskA);
+	CreateTask(TaskA);	
 
-	InitTask(StructOffset(AddrOffset(gRunningTask, gInitTaskCount++), TaskNode, task), TaskB);
-
-	AddTaskToRunningQueue();
+	CreateTask(TaskB);
 }
 
 void LaunchTask()
 {
-	TimerInit();
-
-	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head), TaskNode, task);
+	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);
 
 	PrepareForRun(gCurrentTaskAddr);
+
+	TimerInit();
 
 	RunTask(gCurrentTaskAddr);
 }
@@ -160,7 +180,16 @@ void Schedule()
 {
 	Queue_Rotate(pRunningQueue);
 
-	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head), TaskNode, task);
+	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);
 
 	PrepareForRun(gCurrentTaskAddr);
+}
+
+void KillTask()
+{
+	TaskNode* taskNode = List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead);
+
+	Stack_Push(pTaskPool, StructOffset(taskNode, TaskNode, head.sHead));
+
+	Schedule();
 }

@@ -22,7 +22,8 @@ kernelSrc := kmain.c \
 			list.c \
 			queue.c \
 			stack.c \
-			btree.c 
+			btree.c \
+			syscall.c 
 
 kernelAsm := kentry.asm \
 			   task.asm \

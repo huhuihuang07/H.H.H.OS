@@ -28,6 +28,7 @@ bool Queue_IsContained(Queue* queue, QueueNode* node)
 void Queue_Add(Queue* queue, QueueNode* node)
 {
 	if(!IsEqual(node, nullptr)){
+		
 		List_AddTail(StructOffset(queue, Queue, head), node);
 
 		queue->length++;
@@ -36,7 +37,8 @@ void Queue_Add(Queue* queue, QueueNode* node)
 
 QueueNode* Queue_Front(Queue* queue)
 {
-	if(queue->length > 0){
+	if(IsEqual(Queue_IsEmpty(queue), false)){
+
 		return queue->head.next;
 	}
 
@@ -47,7 +49,7 @@ QueueNode* Queue_Remove(Queue* queue)
 {
 	QueueNode* node = nullptr;
 
-	if(queue->length > 0){
+	if(IsEqual(Queue_IsEmpty(queue), false)){
 
 		List_DelNode(node = queue->head.next);
 

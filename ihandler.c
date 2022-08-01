@@ -40,3 +40,8 @@ void DebugHandler(RegisterValue* registerInfo)
 	Enable_Debug = true;
 	while(Enable_Debug); // TODO
 }
+
+void SysCallHandler(u32 param)
+{
+	SystemCall(param);
+}
