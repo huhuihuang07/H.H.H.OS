@@ -1,5 +1,4 @@
 #include <syscall.h>
-#include <screen.h>
 
 extern void SysCallInit();
 extern void KillTask();
@@ -19,9 +18,11 @@ void SystemCall(u32 param)
 {
 	if((0 <= param) && (param < MAX_SYSCALL_NUMBER))
 	{
-		if(!IsEqual(gSysCallFunc[param], nullptr))
+		pFunc function = gSysCallFunc[param];
+
+		if(!IsEqual(function, nullptr))
 		{
-			gSysCallFunc[param]();
+			function();
 		}
 	}
 }
