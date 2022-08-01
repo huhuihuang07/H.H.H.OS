@@ -146,9 +146,9 @@ static void CreateTask(pFunc entry)
 	{
 		TaskNode* taskNode = List_Node(Stack_Top(pTaskPool), TaskNode, head.sHead);
 
-		InitTask(StructOffset(taskNode, TaskNode, task), entry);
-
 		Stack_Pop(pTaskPool);
+
+		InitTask(StructOffset(taskNode, TaskNode, task), entry);
 
 		Queue_Add(pRunningQueue, StructOffset(taskNode, TaskNode, head.qHead));
 	}

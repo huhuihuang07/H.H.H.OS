@@ -4,20 +4,17 @@
 #include <interrupt.h>
 #include <8259A.h>
 
+// define External interrupt
 #define TimerInterrupt      0x20
 #define TimerMasterIMR      0xfe
 #define TimerSlaveIMR       0xff
 
+// define Internal interrupt
 #define DebugInterrupt      0x03
-#define DebugMasterIMR      0xff
-#define DebugSlaveIMR       0xff
-
 #define SysCallInterrupt    0x80
-#define SysCallMasterIMR    0xff
-#define SysCallSlaveIMR     0xff
 
-#ifndef DeclHandler
-#define DeclHandler(name) 	             \
+#ifndef DeclExternalInterrupt
+#define DeclExternalInterrupt(name) 	 \
 	extern void name##HandlerEntry();    \
 	void name##Init()                    \
 	{                                    \
@@ -38,9 +35,20 @@
 	void name##Handler()
 #endif
 
-DeclHandler(Timer);
-DeclHandler(Debug);
-DeclHandler(SysCall);
+#ifndef DeclInternalInterrupt
+#define DeclInternalInterrupt(name)      \
+	extern void name##HandlerEntry();    \
+	void name##Init()                    \
+	{                                    \
+		SetInterruptGate(name##Interrupt, (u32)name##HandlerEntry); \
+	}                                                               \
+	void name##Handler()
+#endif	
+
+DeclExternalInterrupt(Timer);
+
+DeclInternalInterrupt(Debug);
+DeclInternalInterrupt(SysCall);
 
 extern void SystemCall(u32 param);
 
