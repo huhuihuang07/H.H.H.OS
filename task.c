@@ -187,9 +187,7 @@ void Schedule()
 
 void KillTask()
 {
-	TaskNode* taskNode = List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead);
-
-	Stack_Push(pTaskPool, StructOffset(taskNode, TaskNode, head.sHead));
+	Stack_Push(pTaskPool, StructOffset(List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead), TaskNode, head.sHead));
 
 	Schedule();
 }

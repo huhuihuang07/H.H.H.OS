@@ -2,6 +2,7 @@
 #include <interrupt.h>
 #include <syscall.h>
 #include <task.h>
+#include <assert.h>
 
 int KMain(int argc, char* argv[])
 {

@@ -19,7 +19,7 @@ typedef struct
 	u32 edx;
 	u32 ecx;
 	u32 eax;
-	u32 raddr;
+	u32 error_code;
 	u32 eip;      
 	u32 cs;
 	u32 eflags;

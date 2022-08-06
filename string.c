@@ -1,8 +1,11 @@
 #include <string.h>
+#include <assert.h>
 #include <utility.h>
 
 char* strcpy(char* dest, const char* src)
 {
+	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
+
 	char* lptr = dest;
 	char* rptr = (char*)src;
 
@@ -11,8 +14,32 @@ char* strcpy(char* dest, const char* src)
 	return dest;
 }
 
+char* strncpy(char* dest, const char* src, size_t strlen)
+{
+	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
+
+	char* lptr = dest;
+	char* rptr = (char*)src;
+
+	while((*lptr++ = *rptr++) && strlen)
+	{
+		strlen--;
+	}
+
+	if (strlen)
+	{
+		while(--strlen){
+			*lptr++ = EOS;
+		}
+	}
+
+	return dest;
+}
+
 char* strcat(char* dest, const char* src)
 {
+	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
+
 	char* ptr = dest + strlen(dest);
 
 	strcpy(ptr, src);
@@ -22,6 +49,8 @@ char* strcat(char* dest, const char* src)
 
 size_t strlen(const char* str)
 {
+	assert((!IsEqual(str, nullptr)));
+
 	char* ptr = (char*)str;
 
 	while(*ptr++);
@@ -31,6 +60,8 @@ size_t strlen(const char* str)
 
 int strcmp(const char* lhs, const char* rhs)
 {
+	assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
+
 	while((IsEqual(*lhs, *rhs)) && (*lhs) && (*rhs)){
 		lhs++;
 		rhs++;
@@ -41,6 +72,8 @@ int strcmp(const char* lhs, const char* rhs)
 
 char* strchr(const char* str, int ch)
 {
+	assert((!IsEqual(str, nullptr)));
+
 	char* ptr = (char*)str;
 
 	while((!IsEqual(*ptr, ch)) && (*ptr)){
@@ -52,6 +85,8 @@ char* strchr(const char* str, int ch)
 
 char* strrchr(const char* str, int ch)
 {
+	assert((!IsEqual(str, nullptr)));
+
 	char* ptr = (char*)str + strlen(str);
 
 	while((!IsEqual(*ptr, ch)) && (!IsEqual(str, ptr))){
@@ -63,6 +98,8 @@ char* strrchr(const char* str, int ch)
 
 int memcmp(const void* lhs, const void* rhs, size_t count)
 {
+	assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
+
 	char* lptr = (char*)lhs;
 	char* rptr = (char*)rhs;
 
@@ -73,6 +110,8 @@ int memcmp(const void* lhs, const void* rhs, size_t count)
 
 void* memset(void* dest, int ch, size_t count)
 {
+	assert((!IsEqual(dest, nullptr)));
+
 	int* ptr = (int*)dest;
 
 	while(count--){
@@ -84,6 +123,8 @@ void* memset(void* dest, int ch, size_t count)
 
 void* memcpy(void* dest, const void* src, size_t count)
 {
+	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
+
 	char* lptr = (char*)dest;
 	char* rptr = (char*)src;
 
@@ -107,6 +148,8 @@ void* memcpy(void* dest, const void* src, size_t count)
 
 void* memchr(const void* str, int ch, size_t count)
 {
+	assert((!IsEqual(str, nullptr)));
+	
 	char* ptr = (char*)str;
 
 	while((count--) && (!IsEqual(*ptr, ch))){

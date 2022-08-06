@@ -23,6 +23,7 @@ kernelSrc := kmain.c \
 			queue.c \
 			stack.c \
 			btree.c \
+			assert.c \
 			syscall.c 
 
 kernelAsm := kentry.asm \

@@ -13,7 +13,32 @@ extern gCurrentTaskAddr
 [section .handler]
 [bits 32]
 
+; fault service routine
+%macro BeginFSR 0
+	cli 
+
+	pushad
+
+	push ds
+	push es
+	push fs
+	push gs
+
+	mov bx, Video32Selector
+	mov gs, bx
+
+	mov bx, FlatModeDataSelector
+	mov ds, bx
+	mov es, bx
+	mov fs, bx
+
+	mov ss, bx
+	mov esp, BaseOfBoot
+%endmacro
+
+; interrupt service routine
 %macro BeginISR 0
+	cli
 
 	sub esp, 4
 
@@ -34,12 +59,9 @@ extern gCurrentTaskAddr
 
 	mov ss, bx
 	mov esp, BaseOfBoot
-
-	; sti
 %endmacro
 
 %macro EndISR 0
-	; cli
 
 	mov esp, [gCurrentTaskAddr]
 
