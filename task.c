@@ -9,9 +9,7 @@ volatile Task* gCurrentTaskAddr = nullptr;
 
 static TSS gTSS = {0};
 
-static TaskNode gRunningTask[MAX_RUNNING_TASK] = {0};
-
-static u32 gInitTaskCount = 0;
+static TaskNode gTaskNodeBuffer[MAX_RUNNING_TASK] = {0};
 
 static Queue gRunningQueue = {0};
 
@@ -21,17 +19,29 @@ static Stack gTaskPool = {0};
 
 static Stack* pTaskPool = &gTaskPool;
 
+static TaskNode gIdleTaskNode = {0};
+
+static TaskNode* pIdleTaskNode = &gIdleTaskNode;
+
+static void IdleTask()
+{
+	while(true)
+	{
+		Delay(1);
+	}
+}
+
 void TaskA()
 {
 	static u32 i = 0;
 
-	while(i < 10){
+	while(true){
 
 		SetPrintPos(0, 2);
 
 		printf("This is TaskA : ");
 
-		putchar('A' + i);
+		putchar('a' + i);
 
 		i = (i + 1) % 26;
 
@@ -110,7 +120,7 @@ static void InitTaskDataStruct()
 
 	for(u32 i = 0; i != MAX_RUNNING_TASK; ++i)
 	{
-		Stack_Push(pTaskPool, StructOffset(AddrOffset(gRunningTask, i), TaskNode, head.sHead));
+		Stack_Push(pTaskPool, StructOffset(AddrOffset(gTaskNodeBuffer, i), TaskNode, head.sHead));
 	}
 }
 
@@ -160,15 +170,22 @@ void TaskModuleInit()
 
 	InitTaskDataStruct();
 
-	CreateTask(TaskA);	
+	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
 
-	CreateTask(TaskB);
+	// CreateTask(TaskA);	
+
+	// CreateTask(TaskB);
 }
 
 void LaunchTask()
 {
-	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);
-
+	if(Queue_Length(pRunningQueue) > 0)
+	{
+		gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);
+	}else{
+		gCurrentTaskAddr = StructOffset(pIdleTaskNode, TaskNode, task);
+	}
+	
 	PrepareForRun(gCurrentTaskAddr);
 
 	TimerInit();
@@ -178,11 +195,20 @@ void LaunchTask()
 
 void Schedule()
 {
-	Queue_Rotate(pRunningQueue);
+	Task* pNextTask = nullptr;
 
-	gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);
+	if(Queue_Length(pRunningQueue) > 0)
+	{
+		Queue_Rotate(pRunningQueue);
 
-	PrepareForRun(gCurrentTaskAddr);
+		pNextTask = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);	
+	}else{
+		pNextTask = StructOffset(pIdleTaskNode, TaskNode, task);
+	}
+	
+	if(!IsEqual(pNextTask, gCurrentTaskAddr)){
+		PrepareForRun(gCurrentTaskAddr);
+	}
 }
 
 void KillTask()

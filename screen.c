@@ -2,6 +2,7 @@
 #include <io.h>
 #include <string.h>
 #include <utility.h>
+#include <assert.h>
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 
@@ -201,17 +202,17 @@ u8 putchar(char c)
 
 u16 PrintString(const char* buffer)
 {
+	assert(!IsEqual(buffer, nullptr));
+
 	u16 ret = 0;
 
-	if(!IsEqual(buffer, nullptr)){
-
-		while(buffer[ret]){
-
-			if(putchar(buffer[ret])){
-				ret++;
-			}else{
-				break;
-			}
+	while(buffer[ret])
+	{
+		if(putchar(buffer[ret]))
+		{
+			ret++;
+		}else{
+			break;
 		}
 	}
 
@@ -228,7 +229,8 @@ u16 PrintIntHex(int n)
 	return (PrintString("0x") + PrintIntRadix(n, SCREEN_HEXADEC));
 }
 
-u16 PrintAddress(u32 n){
+u16 PrintAddress(u32 n)
+{
 	char buffer[] = {'0', 'x', '0', '0', '0', '0', '0', '0', '0', '0', EOS};
 
 	for(u8 i = 9; (!IsEqual(i, 1)) && (!IsEqual(n, 0)); --i){
@@ -243,38 +245,36 @@ u16 PrintAddress(u32 n){
 
 u16 printk(const char* format, va_list v_arg)
 {
+	assert(!IsEqual(format, nullptr));
+
 	u16 ret = 0;
 
 	bool flag = false;
 
-	if(!IsEqual(format, nullptr))
+	for(u16 i = 0; !IsEqual(format[i], EOS); ++i)
 	{
-		for(u16 i = 0; !IsEqual(format[i], EOS); ++i)
+		if((IsEqual(flag, false)) && (!IsEqual(format[i], '%')))
 		{
-
-			if((!flag) && (!IsEqual(format[i], '%')))
+			ret += putchar(format[i]);
+		}else{
+			if(flag)
 			{
-				ret += putchar(format[i]);
-			}else{
-				if(flag)
+				switch (format[i])
 				{
-					switch (format[i])
-					{
-						case 'b' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_BINARY); break;}
-						case 'd' : {ret += PrintIntDec(va_arg(v_arg, int)); break;}
-						case 'o' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_OCTAL); break;}
-						case 'x' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
-						case 'X' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
-						case 'u' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_DECIMAL); break;}
-						case 'c' : {ret += putchar(va_arg(v_arg, int)); break;}
-						case 's' : {ret += PrintString(va_arg(v_arg, const char*)); break;}
-						case 'p' : {ret += PrintAddress(va_arg(v_arg, u32)); break;}
-						default  : {ret += putchar(format[i]);}
-					}
-					flag = false;
-				}else{
-					flag = true;
+					case 'b' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_BINARY); break;}
+					case 'd' : {ret += PrintIntDec(va_arg(v_arg, int)); break;}
+					case 'o' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_OCTAL); break;}
+					case 'x' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
+					case 'X' : {ret += PrintIntHex(va_arg(v_arg, int)); break;}
+					case 'u' : {ret += PrintIntRadix(va_arg(v_arg, int), SCREEN_DECIMAL); break;}
+					case 'c' : {ret += putchar(va_arg(v_arg, char)); break;}
+					case 's' : {ret += PrintString(va_arg(v_arg, const char*)); break;}
+					case 'p' : {ret += PrintAddress(va_arg(v_arg, u32)); break;}
+					default  : {ret += putchar(format[i]);}
 				}
+				flag = false;
+			}else{
+				flag = true;
 			}
 		}
 	}
@@ -284,18 +284,17 @@ u16 printk(const char* format, va_list v_arg)
 
 u16 printf(const char* format, ...)
 {
+	assert(!IsEqual(format, nullptr));
+
 	u16 ret = 0;
 
-	if(!IsEqual(format, nullptr)){
+	va_list v_arg;
 
-		va_list v_arg;
+	va_start(v_arg, format);
 
-		va_start(v_arg, format);
+	ret = printk(format, v_arg);
 
-		ret = printk(format, v_arg);
-
-		va_end(v_arg);
-	}
+	va_end(v_arg);
 
 	return ret;
 }
