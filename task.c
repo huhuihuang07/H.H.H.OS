@@ -172,19 +172,14 @@ void TaskModuleInit()
 
 	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
 
-	// CreateTask(TaskA);	
+	CreateTask(TaskA);	
 
-	// CreateTask(TaskB);
+	CreateTask(TaskB);
 }
 
 void LaunchTask()
 {
-	if(Queue_Length(pRunningQueue) > 0)
-	{
-		gCurrentTaskAddr = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);
-	}else{
-		gCurrentTaskAddr = StructOffset(pIdleTaskNode, TaskNode, task);
-	}
+	gCurrentTaskAddr = Queue_Length(pRunningQueue) > 0 ? StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task) : StructOffset(pIdleTaskNode, TaskNode, task);
 	
 	PrepareForRun(gCurrentTaskAddr);
 
@@ -195,18 +190,12 @@ void LaunchTask()
 
 void Schedule()
 {
-	Task* pNextTask = nullptr;
+	Task* pNextTask = Queue_Length(pRunningQueue) > 0 ? Queue_Rotate(pRunningQueue), StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task) : StructOffset(pIdleTaskNode, TaskNode, task);
 
-	if(Queue_Length(pRunningQueue) > 0)
+	if(!IsEqual(pNextTask, gCurrentTaskAddr))
 	{
-		Queue_Rotate(pRunningQueue);
+		gCurrentTaskAddr = pNextTask;
 
-		pNextTask = StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task);	
-	}else{
-		pNextTask = StructOffset(pIdleTaskNode, TaskNode, task);
-	}
-	
-	if(!IsEqual(pNextTask, gCurrentTaskAddr)){
 		PrepareForRun(gCurrentTaskAddr);
 	}
 }
