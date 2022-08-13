@@ -40,8 +40,8 @@ typedef struct{
 }ARDS;
 
 typedef struct{
-	u8 ARDSNumber;
-	ARDS ards[20];
+	const u8 ARDSNumber;
+	const ARDS ards[20];
 }_packed MemInfo;
 
 const GdtInfo gGdtInfo;

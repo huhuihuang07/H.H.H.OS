@@ -13,6 +13,11 @@
 		((void*)((u32)(p) + (i) * sizeof(*p)))
 #endif
 
+#ifndef AddrIndex
+#define AddrIndex(b, a) \
+		(((u32)(a) - (u32)(b)) / sizeof(*b))
+#endif		
+
 #ifndef offsetof
 #define offsetof(TYPE, MEMBER) \
 		((size_t)&((TYPE*)nullptr)->MEMBER)
@@ -20,19 +25,19 @@
 
 #ifndef container_of
 #define container_of(ptr, TYPE, MEMBER) \
-		(TYPE *)((char*)ptr - offsetof(TYPE, MEMBER))
+		(TYPE *)((char*)(ptr) - offsetof(TYPE, MEMBER))
 #endif	
 
 #ifndef StructOffset
 #define StructOffset(ptr, TYPE, MEMBER) \
-		((void*)(u32)(ptr) + offsetof(TYPE, MEMBER)) 
+		((void*)((u32)(ptr) + offsetof(TYPE, MEMBER))) 
 #endif	
 
 #ifndef IsEqual
-#define IsEqual(a, b) ({            \
-		unsigned ta = (unsigned)a;  \
-		unsigned tb = (unsigned)b;  \
-		!(ta - tb);                 \
+#define IsEqual(a, b) ({              \
+		unsigned ta = (unsigned)(a);  \
+		unsigned tb = (unsigned)(b);  \
+		!(ta - tb);                   \
 	})
 #endif
 

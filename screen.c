@@ -107,17 +107,13 @@ bool ClearScreen()
 	return IsEqual(ret, (SCREEN_WIDTH * SCREEN_HEIGHT));
 }
 
-
 void InitScreen()
 {
-	if(ClearScreen())
-	{
-		SCREEN_POS = 0;
+	assert(ClearScreen());
 
-		SetScreenPos(0, SCREEN_POS);
+	SetScreenPos(0, SCREEN_POS = 0);
 
-		SetPrintPos(0, 0);
-	}
+	SetPrintPos(0, 0);
 }
 
 bool SetPrintPos(u8 w, u8 h)

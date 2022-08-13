@@ -24,7 +24,8 @@ kernelSrc := kmain.c \
 			stack.c \
 			btree.c \
 			assert.c \
-			syscall.c 
+			syscall.c \
+			memory.c
 
 kernelAsm := kentry.asm \
 			   task.asm \

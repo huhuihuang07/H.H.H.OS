@@ -1,7 +1,4 @@
 #include <kmain.h>
-#include <interrupt.h>
-#include <syscall.h>
-#include <task.h>
 
 int KMain(int argc, char* argv[])
 {
@@ -12,6 +9,8 @@ int KMain(int argc, char* argv[])
 	InterruptModuleInit();
 
 	SystemCallModuleInit();
+
+	MemoryModuleInit();
 
 	TaskModuleInit();
 

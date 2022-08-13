@@ -21,13 +21,23 @@
 #define EOS '\0' // End of string
 #endif
 
+#ifndef __cplusplus
 typedef enum
 {
 	false = 0,
 	true = !false,
 }bool;
+#endif
 
 typedef void (* pFunc)();
+
+typedef signed char int8;
+
+typedef signed short int16;
+
+typedef signed int int32;
+
+typedef signed long long int64;
 
 typedef unsigned char u8;
 
