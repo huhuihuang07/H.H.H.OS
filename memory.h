@@ -55,12 +55,15 @@ static VMemList* pVMemList;
 
 void MemoryModuleInit();
 
+void* malloc(size_t size);
+void free(const void* ptr);
+
 static void FMemInit(void* mem, u32 size);
 static void* FMemAlloc();
-static bool FMemFree(void* ptr);
+static bool FMemFree(const void* ptr);
 
 static void VMemInit(void* mem, u32 size);
 static void* VMemAlloc(size_t size);
-static bool VMemFree(void* ptr);
+static bool VMemFree(const void* ptr);
 
 #endif //!MEMORY_H

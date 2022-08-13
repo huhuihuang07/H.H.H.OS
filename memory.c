@@ -2,7 +2,6 @@
 #include <kernel.h>
 #include <utility.h>
 #include <assert.h>
-#include <screen.h>
 
 static FMemList gFMemList = {0};
 static VMemList gVMemList = {0};
@@ -44,115 +43,6 @@ void MemoryModuleInit()
 	VMemInit(VMemBase, VMemSize);
 }
 
-void FMem_Test()
-{
-	u32 i = 0;
-
-	FMemNode* pos = gFMemList.node;
-
-	while(pos){
-		i++;
-		pos = (FMemNode*)(pos->next);
-	}
-
-	printf("max = %d, i = %d\n", gFMemList.max, i);
-
-	static void* array[2000] = {nullptr};
-
-	for(u32 i = 0; i != 1000000; ++i){
-		int ii = i % 2000;
-
-		void* p = FMemAlloc();
-
-		if(!IsEqual(array[ii], nullptr))
-		{
-			FMemFree(array[ii]);
-
-			array[ii] = nullptr;
-		}
-
-		array[ii] = p;
-
-		if(IsEqual(i % 3, 0))
-		{
-			int index = (u32)(p) % 2000;
-
-			FMemFree(array[index]);
-
-			array[index] = nullptr;
-		}
-	}
-
-	for(u32 i = 0; i != 2000; ++i){
-		FMemFree(array[i]);
-
-		array[i] = nullptr;
-	}
-
-	i = 0;
-
-	pos = gFMemList.node;
-
-	while(pos){
-		i++;
-		pos = (FMemNode*)(pos->next);
-	}
-
-	printf("max = %d, i = %d\n", gFMemList.max, i);
-}
-
-void VMem_Test()
-{
-	ListNode* pos = nullptr;
-
-	List_ForEach(pVMemList, pos){
-		VMemHead* node = List_Node(pos, VMemHead, head);
-
-		printf("node->ptr : %p, node->used : %d, node->free : %d\n", node->ptr, node->used, node->free);
-	}
-
-	static void* array[2000] = {nullptr};
-
-	static void* p = (void*)(1024);
-
-	for(u32 i = 0; i != 100000; ++i){
-
-		int ii = i % 2000;
-
-		p = VMemAlloc((u32)(p) % 0x100000);
-
-		if(!IsEqual(array[ii], nullptr))
-		{
-			VMemFree(array[ii]);
-
-			array[ii] = nullptr;
-		}
-
-		array[ii] = p;
-
-		if(IsEqual(i % 3, 0))
-		{
-			int index = (u32)(p) % 2000;
-
-			VMemFree(array[index]);
-
-			array[index] = nullptr;
-		}
-	}
-
-	for(u32 i = 0; i != 2000; ++i){
-		VMemFree(array[i]);
-
-		array[i] = nullptr;
-	}
-
-	List_ForEach(pVMemList, pos){
-		VMemHead* node = List_Node(pos, VMemHead, head);
-
-		printf("node->ptr : %p, node->used : %d, node->free : %d\n", node->ptr, node->used, node->free);
-	}
-}
-
 static void FMemInit(void* mem, u32 size)
 {
 	u32 max = size / (FM_NODE_SIZE + FM_ALLOC_SIZE);
@@ -175,8 +65,6 @@ static void FMemInit(void* mem, u32 size)
 	}
 
 	p->next = nullptr;
-
-	FMem_Test();
 }
 
 static void* FMemAlloc()
@@ -197,7 +85,7 @@ static void* FMemAlloc()
 	return ptr;
 }
 
-static bool FMemFree(void* ptr)
+static bool FMemFree(const void* ptr)
 {
 	if(IsEqual(ptr, nullptr)){
 		return false;
@@ -239,8 +127,6 @@ static void VMemInit(void* mem, u32 size)
 	head->free = free;
 
 	List_Add(pVMemList, StructOffset(head, VMemHead, head));
-
-	VMem_Test();
 }
 
 static void* VMemAlloc(size_t size)
@@ -278,7 +164,7 @@ static void* VMemAlloc(size_t size)
 	return IsEqual(alloc, nullptr) ? nullptr : alloc->ptr;
 }
 
-static bool VMemFree(void* ptr)
+static bool VMemFree(const void* ptr)
 {
 	if(IsEqual(ptr, nullptr)){
 		return false;
@@ -305,4 +191,38 @@ static bool VMemFree(void* ptr)
 	}
 
 	return ret;
+}
+
+void* malloc(size_t size)
+{
+	if(IsEqual(size, 0)){
+		return nullptr;
+	}
+
+	void* ret = nullptr;
+
+	if(size <= FM_ALLOC_SIZE){
+		ret = FMemAlloc();
+	}
+
+	if(IsEqual(ret, nullptr)){
+		ret = VMemAlloc(size);
+	}
+
+	assert(!IsEqual(ret, nullptr));
+
+	return ret;
+}
+
+void free(const void* ptr)
+{
+	if(IsEqual(ptr, nullptr)){
+		return;
+	}
+
+	bool result = FMemFree(ptr);
+
+	if(IsEqual(result, false)){
+		VMemFree(ptr);
+	}
 }
