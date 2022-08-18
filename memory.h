@@ -15,6 +15,36 @@
 #define PAGE_SIZE 0x1000  // 一页的大小 4K
 #endif 
 
+#ifndef PAGE_BASE
+#define PAGE_BASE 0x10000 // 64K, 页表起始位置
+#endif 
+
+#define PM_ALLOC_SIZE PAGE_SIZE
+#define PM_NODE_SIZE  sizeof(PMemNode)
+
+typedef int8 (PMemUnit)[PM_ALLOC_SIZE];
+
+typedef struct _PMemNode PMemNode;
+
+typedef union {
+	PMemNode* next;
+	PMemUnit* ptr;
+}PMemUnion;
+
+struct _PMemNode{
+	PMemUnion node;
+	u32 refCount;
+};
+
+typedef struct{
+	PMemNode* head;
+	PMemNode* nBase;
+	PMemUnit* uBase;
+	u32 max;
+}PMemList;
+
+static PMemList gPMemList;
+
 #ifndef MEMORY_BASE
 #define MEMORY_BASE 0x100000 // 1M，可用内存开始的位置
 #endif
@@ -65,5 +95,9 @@ static bool FMemFree(const void* ptr);
 static void VMemInit(void* mem, u32 size);
 static void* VMemAlloc(size_t size);
 static bool VMemFree(const void* ptr);
+
+static void PMemInit(void* mem, u32 size);
+static void* PMemAlloc(const void* ptr);
+static void PMemFree(const void* ptr);
 
 #endif //!MEMORY_H

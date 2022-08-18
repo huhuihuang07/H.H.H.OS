@@ -3,18 +3,33 @@
 #include <utility.h>
 #include <assert.h>
 
-static FMemList gFMemList = {0};
-static VMemList gVMemList = {0};
+static PMemList gPMemList = {0}; // 定长分配 4K 内存页, 使用引用计数 
+static FMemList gFMemList = {0}; // 定长分配 32bite 内存，不使用引用计数 
+static VMemList gVMemList = {0}; // 变长分配 不使用引用计数
 
 static VMemList* pVMemList = &gVMemList;
 
-static u32 memoryBase = 0; // 可用内存基地址， 应该等于1M
-static u32 memorySize = 0; // 可用内存大小
+static u32 memoryBase = 0; // 堆空间基地址， 应该等于1M
+static u32 memorySize = 0; // 堆空间大小
+
+static u32 pageBase = - 1;
+static u32 pageSize = - 1;
+
+extern u16 printf(const char* format, ...);
 
 void MemoryModuleInit()
 {
 	for(u16 i = 0; !IsEqual(gMemInfo.ARDSNumber, i); ++i)
 	{
+		printf("BaseAddrLow : %p, LengthLow : %p, Type : %d\n", gMemInfo.ards[i].BaseAddrLow, gMemInfo.ards[i].LengthLow, gMemInfo.ards[i].Type);
+
+		if(IsEqual(ZONE_VAILD, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow < pageSize))
+		{
+			pageBase = gMemInfo.ards[i].BaseAddrLow;
+
+			pageSize = gMemInfo.ards[i].LengthLow;
+		}
+
 		if(IsEqual(ZONE_VAILD, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow > memorySize))
 		{
 			memoryBase = gMemInfo.ards[i].BaseAddrLow;
@@ -24,9 +39,13 @@ void MemoryModuleInit()
 
 	}
 
-	assert(IsEqual(memoryBase, MEMORY_BASE));
+	assert((pageBase <= PAGE_BASE < (pageBase + pageSize)) && IsEqual(pageSize & 0xfff, 0));
 
-	assert(IsEqual(memorySize & 0xfff, 0));
+	u32 PMemSize = pageSize - PAGE_BASE;
+
+	PMemInit((void*)(PAGE_BASE), PMemSize);
+
+	assert((IsEqual(memoryBase, MEMORY_BASE) && IsEqual(memorySize & 0xfff, 0)));
 
 	u32 FMemSize = (FM_NODE_SIZE + FM_ALLOC_SIZE) * FM_SIZE;
 
@@ -224,5 +243,159 @@ void free(const void* ptr)
 
 	if(IsEqual(result, false)){
 		VMemFree(ptr);
+	}
+}
+
+void PMem_Test()
+{
+	u32 i = 0;
+
+	PMemNode* p = gPMemList.head;
+
+	while(!IsEqual(p, nullptr))
+	{
+		i++;
+
+		p = p->node.next;
+	}
+
+	printf("i = %d\n", i);
+
+	static void* array[150] = {nullptr};
+
+	for(u32 i = 0; !IsEqual(i, 1000000); ++i){
+		int ii = i % (sizeof(array) / sizeof(*array));
+
+		void* p = PMemAlloc(nullptr);
+
+		if(!IsEqual(array[ii], nullptr))
+		{
+			PMemFree(array[ii]);
+
+			array[ii] = nullptr;
+		}
+
+		array[ii] = p;
+
+		if(IsEqual(i % 3, 0))
+		{
+			int index = (u32)(p) % (sizeof(array) / sizeof(*array));
+
+			PMemFree(array[index]);
+
+			array[index] = nullptr;
+		}
+	}
+
+	static void* array1[150] = {nullptr};
+
+	for(u32 i = 0; !IsEqual(i, (sizeof(array1) / sizeof(*array1))); ++i)
+	{
+		if(!IsEqual(array[i], nullptr))
+		{
+			array1[i] = PMemAlloc(array[i]);
+		}
+	}
+
+	for(u32 i = 0; !IsEqual(i, (sizeof(array) / sizeof(*array))); ++i){
+		PMemFree(array[i]);
+		PMemFree(array1[i]);
+
+		array[i] = nullptr;
+		array1[i] = nullptr;
+	}
+
+	i = 0;
+
+	p = gPMemList.head;
+
+	while(!IsEqual(p, nullptr))
+	{
+		i++;
+
+		p = p->node.next;
+	}
+
+	printf("i = %d\n", i);
+}
+
+static void PMemInit(void* mem, u32 size)
+{
+	u32 max = (size - PAGE_SIZE) / PAGE_SIZE;
+
+	assert((max > 0) && (max <= (PAGE_SIZE / PM_NODE_SIZE)));
+
+	gPMemList.max = max;
+
+	gPMemList.nBase = AddrOffset(mem, 0);
+
+	gPMemList.uBase = AddrOffset(gPMemList.nBase, PAGE_SIZE / PM_NODE_SIZE);
+
+	gPMemList.head = gPMemList.nBase;
+
+	PMemNode* p = gPMemList.head;
+
+	for(u32 i = 1; !IsEqual(i, gPMemList.max); ++i){
+
+		p->node.next = (p->refCount = 0, AddrOffset(p, 1));
+
+		p = p->node.next;
+	}
+
+	p->node.next = (p->refCount = 0, nullptr);
+
+	PMem_Test();
+}
+
+static void* PMemAlloc(const void* ptr)
+{
+	void* ret = nullptr;
+
+	if(IsEqual(ptr, ret)){
+
+		if(!IsEqual(gPMemList.head, nullptr)){
+			PMemNode* node = gPMemList.head;
+
+			gPMemList.head = node->node.next;
+
+			ret = node->node.ptr = AddrOffset(gPMemList.uBase, AddrIndex(gPMemList.nBase, node));
+
+			node->refCount = 1;
+		}
+		
+	}else{
+		PMemNode* node = AddrOffset(gPMemList.nBase, AddrIndex(gPMemList.uBase, ptr));
+
+		if(IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+		{
+			ret = node->node.ptr;
+
+			++node->refCount;
+		}
+	}
+
+	assert(!IsEqual(ret, nullptr) && IsEqual((u32)(ret) & 0xfff, 0));
+
+	return ret;
+}
+
+static void PMemFree(const void* ptr)
+{
+	if(IsEqual(ptr, nullptr)){
+		return;
+	}	
+
+	PMemNode* node = AddrOffset(gPMemList.nBase, AddrIndex(gPMemList.uBase, ptr));
+
+	if(IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+	{
+		--node->refCount;
+
+		if(IsEqual(node->refCount, 0))
+		{
+			node->node.next = gPMemList.head;
+
+			gPMemList.head = node;
+		}
 	}
 }

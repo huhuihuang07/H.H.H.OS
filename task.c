@@ -169,9 +169,9 @@ void TaskModuleInit()
 
 	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
 
-	CreateTask(TaskA);	
+	// CreateTask(TaskA);	
 
-	CreateTask(TaskB);
+	// CreateTask(TaskB);
 }
 
 void LaunchTask()
