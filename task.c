@@ -25,8 +25,7 @@ static TaskNode* pIdleTaskNode = &gIdleTaskNode;
 
 static void IdleTask()
 {
-	while(true)
-	{
+	while(true){
 		Delay(1);
 	}
 }
@@ -53,7 +52,7 @@ void TaskB()
 {
 	static u32 i = 0;
 
-	while(true){
+	while(i < 8){
 
 		SetPrintPos(0, 3);
 
@@ -73,9 +72,7 @@ static void TaskEntry()
 		gCurrentTaskAddr->tMain();
 	}
 
-	u32 ax = 0;
-
-	SysCall(ax);
+	Exit();
 }
 
 static void InitTSS()
@@ -172,9 +169,9 @@ void TaskModuleInit()
 
 	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
 
-	// CreateTask(TaskA);	
+	CreateTask(TaskA);	
 
-	// CreateTask(TaskB);
+	CreateTask(TaskB);
 }
 
 void LaunchTask()

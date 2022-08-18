@@ -4,17 +4,18 @@
 #include <utility.h>
 
 #ifndef SysCall
-#define SysCall(param)     \
-	asm volatile(          \
-		"movl %0, %%eax\n" \
-		"int      $0x80\n" \
-		:                  \
-		: "r"(param)       \
-		: "ax"             \
+#define SysCall(type, cmd, param1, param2)  \
+	asm volatile(                           \
+		"movl $" #type ", %%eax\n"          \
+		"movl $" #cmd  ", %%ebx\n"          \
+		"int              $0x80\n"          \
+		:                                   \
+		: "ecx"(param1), "edx"(param2)      \
+		: "eax", "ebx", "ecx", "edx"        \
 	)
 #endif	
 
-void SystemCall(u32 param);
 void SystemCallModuleInit();
+void Exit();
 
 #endif //!SYSCALL_H

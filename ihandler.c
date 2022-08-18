@@ -41,7 +41,33 @@ void DebugHandler(RegisterValue* registerInfo)
 	while(Enable_Debug); // TODO
 }
 
-void SysCallHandler(u32 param)
+void SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
 {
-	SystemCall(param);
+	switch(type){
+		case 0 : {
+			KillTask(); 
+			break;
+		}
+		case 1 : {
+			switch(cmd){
+				case 0 : {
+					break;
+				}
+				case 1 : {
+					break;
+				}
+				case 2 : {
+					break;
+				}
+				case 3 : {
+					break;
+				}
+				default: 
+					break;
+			}
+			break;
+		}
+	}
+	default:
+		break;
 }

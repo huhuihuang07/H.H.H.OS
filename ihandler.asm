@@ -24,15 +24,15 @@ extern gCurrentTaskAddr
 	push fs
 	push gs
 
-	mov bx, Video32Selector
-	mov gs, bx
+	mov si, Video32Selector
+	mov gs, si
 
-	mov bx, FlatModeDataSelector
-	mov ds, bx
-	mov es, bx
-	mov fs, bx
+	mov si, FlatModeDataSelector
+	mov ds, si
+	mov es, si
+	mov fs, si
 
-	mov ss, bx
+	mov ss, si
 	mov esp, BaseOfBoot
 %endmacro
 
@@ -49,15 +49,15 @@ extern gCurrentTaskAddr
 	push fs
 	push gs
 
-	mov bx, Video32Selector
-	mov gs, bx
+	mov si, Video32Selector
+	mov gs, si
 
-	mov bx, FlatModeDataSelector
-	mov ds, bx
-	mov es, bx
-	mov fs, bx
+	mov si, FlatModeDataSelector
+	mov ds, si
+	mov es, si
+	mov fs, si
 
-	mov ss, bx
+	mov ss, si
 	mov esp, BaseOfBoot
 %endmacro
 
@@ -109,11 +109,14 @@ EndISR
 SysCallHandlerEntry:
 BeginISR
 
+	push edx
+	push ecx
+	push ebx
 	push eax
 
 	call SysCallHandler
 
-	add esp, 0x04
+	add esp, 0x10
 
 EndISR
 	iret		
