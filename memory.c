@@ -15,14 +15,10 @@ static u32 memorySize = 0; // 堆空间大小
 static u32 pageBase = - 1;
 static u32 pageSize = - 1;
 
-extern u16 printf(const char* format, ...);
-
 void MemoryModuleInit()
 {
 	for(u16 i = 0; !IsEqual(gMemInfo.ARDSNumber, i); ++i)
 	{
-		printf("BaseAddrLow : %p, LengthLow : %p, Type : %d\n", gMemInfo.ards[i].BaseAddrLow, gMemInfo.ards[i].LengthLow, gMemInfo.ards[i].Type);
-
 		if(IsEqual(ZONE_VAILD, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow < pageSize))
 		{
 			pageBase = gMemInfo.ards[i].BaseAddrLow;
@@ -246,79 +242,6 @@ void free(const void* ptr)
 	}
 }
 
-void PMem_Test()
-{
-	u32 i = 0;
-
-	PMemNode* p = gPMemList.head;
-
-	while(!IsEqual(p, nullptr))
-	{
-		i++;
-
-		p = p->node.next;
-	}
-
-	printf("i = %d\n", i);
-
-	static void* array[150] = {nullptr};
-
-	for(u32 i = 0; !IsEqual(i, 1000000); ++i){
-		int ii = i % (sizeof(array) / sizeof(*array));
-
-		void* p = PMemAlloc(nullptr);
-
-		if(!IsEqual(array[ii], nullptr))
-		{
-			PMemFree(array[ii]);
-
-			array[ii] = nullptr;
-		}
-
-		array[ii] = p;
-
-		if(IsEqual(i % 3, 0))
-		{
-			int index = (u32)(p) % (sizeof(array) / sizeof(*array));
-
-			PMemFree(array[index]);
-
-			array[index] = nullptr;
-		}
-	}
-
-	static void* array1[150] = {nullptr};
-
-	for(u32 i = 0; !IsEqual(i, (sizeof(array1) / sizeof(*array1))); ++i)
-	{
-		if(!IsEqual(array[i], nullptr))
-		{
-			array1[i] = PMemAlloc(array[i]);
-		}
-	}
-
-	for(u32 i = 0; !IsEqual(i, (sizeof(array) / sizeof(*array))); ++i){
-		PMemFree(array[i]);
-		PMemFree(array1[i]);
-
-		array[i] = nullptr;
-		array1[i] = nullptr;
-	}
-
-	i = 0;
-
-	p = gPMemList.head;
-
-	while(!IsEqual(p, nullptr))
-	{
-		i++;
-
-		p = p->node.next;
-	}
-
-	printf("i = %d\n", i);
-}
-
 static void PMemInit(void* mem, u32 size)
 {
 	u32 max = (size - PAGE_SIZE) / PAGE_SIZE;
@@ -343,11 +266,9 @@ static void PMemInit(void* mem, u32 size)
 	}
 
 	p->node.next = (p->refCount = 0, nullptr);
-
-	PMem_Test();
 }
 
-static void* PMemAlloc(const void* ptr)
+void* PMemAlloc(const void* ptr)
 {
 	void* ret = nullptr;
 
@@ -379,7 +300,7 @@ static void* PMemAlloc(const void* ptr)
 	return ret;
 }
 
-static void PMemFree(const void* ptr)
+void PMemFree(const void* ptr)
 {
 	if(IsEqual(ptr, nullptr)){
 		return;

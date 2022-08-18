@@ -45,7 +45,7 @@ typedef struct
 	u32 id;             // 4
 	pFunc tMain;        // 4
 	char name[8];       // sizeof(char) * 8 = 8
-	u8 stack[512];      // sizeof(u8) * 512 = 512
+	int8* stack;        // sizeof(int8) = 4
 }Task;
 
 typedef union

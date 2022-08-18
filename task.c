@@ -1,4 +1,5 @@
 #include <task.h>
+#include <memory.h>
 #include <syscall.h>
 #include <kernel.h>
 #include <screen.h>
@@ -123,9 +124,11 @@ static void InitTaskDataStruct()
 
 static void InitTask(Task* pTask, pFunc entry)
 {
+	pTask->stack = PMemAlloc(nullptr);
+
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
-	SetDescValue(AddrOffset(pTask->ldt, LDT_Stack32Index), (u32)(StructOffset(pTask, Task, stack)), (u32)(StructOffset(pTask, Task, stack)) + sizeof(pTask->stack), DA_32 + DA_DRW + DA_DPL3);
+	SetDescValue(AddrOffset(pTask->ldt, LDT_Stack32Index), (u32)(pTask->stack), ((u32)(pTask->stack) + PAGE_SIZE) >> 12, DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
 
 	pTask->rv.gs = GDT_Video32Selector;
 
@@ -135,7 +138,7 @@ static void InitTask(Task* pTask, pFunc entry)
 
 	pTask->rv.ss = LDT_Stack32Selector;
 
-	pTask->rv.esp = (u32)(StructOffset(pTask, Task, stack)) + sizeof(pTask->stack);
+	pTask->rv.esp = (u32)(pTask->stack) + PAGE_SIZE;
 
 	pTask->rv.cs = LDT_Code32Selector;
 	pTask->rv.eip = (u32)(TaskEntry);
@@ -169,9 +172,9 @@ void TaskModuleInit()
 
 	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
 
-	// CreateTask(TaskA);	
+	CreateTask(TaskA);	
 
-	// CreateTask(TaskB);
+	CreateTask(TaskB);
 }
 
 void LaunchTask()
@@ -199,7 +202,11 @@ void Schedule()
 
 void KillTask()
 {
-	Stack_Push(pTaskPool, StructOffset(List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead), TaskNode, head.sHead));
+	TaskNode* pCurrentTask = List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead);
+
+	PMemFree(pCurrentTask->task.stack);
+
+	Stack_Push(pTaskPool, StructOffset(pCurrentTask, TaskNode, head.sHead));
 
 	Schedule();
 }

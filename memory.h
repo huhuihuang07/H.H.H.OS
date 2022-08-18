@@ -97,7 +97,7 @@ static void* VMemAlloc(size_t size);
 static bool VMemFree(const void* ptr);
 
 static void PMemInit(void* mem, u32 size);
-static void* PMemAlloc(const void* ptr);
-static void PMemFree(const void* ptr);
+void* PMemAlloc(const void* ptr);
+void PMemFree(const void* ptr);
 
 #endif //!MEMORY_H
