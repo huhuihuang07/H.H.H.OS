@@ -41,11 +41,11 @@ typedef struct
 {
 	RegisterValue rv;   // sizeof(u32) * 18 = 4 * 18 = 72
 	Descriptor ldt[3];  // sizeof(Descriptor) * 3 = 8 * 3 = 24
-	u16 ldtSelector;    // 2
 	u32 id;             // 4
-	pFunc tMain;        // 4
+	pFunc tMain;        // sizeof(pFunc) = 4
+	int8* stack;        // sizeof(int8*) = 4
+	u16 ldtSelector;    // 2
 	char name[8];       // sizeof(char) * 8 = 8
-	int8* stack;        // sizeof(int8) = 4
 }Task;
 
 typedef union
