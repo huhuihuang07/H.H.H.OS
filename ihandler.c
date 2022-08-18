@@ -67,7 +67,7 @@ void SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
 			}
 			break;
 		}
+		default:
+			break;
 	}
-	default:
-		break;
 }
