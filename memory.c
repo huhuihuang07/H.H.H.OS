@@ -35,13 +35,13 @@ void MemoryModuleInit()
 
 	}
 
-	assert((pageBase <= PAGE_BASE < (pageBase + pageSize)) && IsEqual(pageSize & 0xfff, 0));
+	assert((pageBase <= PAGE_BASE < (pageBase + pageSize)) && PAGE_IsValid(pageSize));
 
 	u32 PMemSize = pageSize - PAGE_BASE;
 
 	PMemInit((void*)(PAGE_BASE), PMemSize);
 
-	assert((IsEqual(memoryBase, MEMORY_BASE) && IsEqual(memorySize & 0xfff, 0)));
+	assert(IsEqual(memoryBase, MEMORY_BASE) && PAGE_IsValid(memorySize));
 
 	u32 FMemSize = (FM_NODE_SIZE + FM_ALLOC_SIZE) * FM_SIZE;
 
@@ -246,9 +246,9 @@ static void PMemInit(void* mem, u32 size)
 {
 	u32 max = (size - PAGE_SIZE) / PAGE_SIZE;
 
-	assert((max > 0) && (max <= (PAGE_SIZE / PM_NODE_SIZE)));
+	assert(max > 0);
 
-	gPMemList.max = max;
+	gPMemList.max = Min(max, (PAGE_SIZE / PM_NODE_SIZE));
 
 	gPMemList.nBase = AddrOffset(mem, 0);
 
@@ -295,7 +295,7 @@ void* PMemAlloc(const void* ptr)
 		}
 	}
 
-	assert(!IsEqual(ret, nullptr) && IsEqual((u32)(ret) & 0xfff, 0));
+	assert(!IsEqual(ret, nullptr) && PAGE_IsValid(ret));
 
 	return ret;
 }

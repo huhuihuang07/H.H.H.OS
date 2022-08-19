@@ -128,7 +128,7 @@ static void InitTask(Task* pTask, pFunc entry)
 
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
 	SetDescValue(AddrOffset(pTask->ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
-	SetDescValue(AddrOffset(pTask->ldt, LDT_Stack32Index), (u32)(pTask->stack), ((u32)(pTask->stack) + PAGE_SIZE) >> 12, DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(AddrOffset(pTask->ldt, LDT_Stack32Index), (u32)(pTask->stack), PAGE_INDEX((u32)(pTask->stack) + PAGE_SIZE), DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
 
 	pTask->rv.gs = GDT_Video32Selector;
 

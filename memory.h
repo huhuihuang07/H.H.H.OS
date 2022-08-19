@@ -19,6 +19,16 @@
 #define PAGE_BASE 0x10000 // 64K, 页表起始位置
 #endif 
 
+#ifndef PAGE_INDEX
+#define PAGE_INDEX(addr) \
+		(((u32)(addr)) >> 12)
+#endif
+
+#ifndef PAGE_IsValid
+#define PAGE_IsValid(addr) \
+		(IsEqual((u32)(addr) & 0xfff, 0))
+#endif
+
 #define PM_ALLOC_SIZE PAGE_SIZE
 #define PM_NODE_SIZE  sizeof(PMemNode)
 
