@@ -66,7 +66,7 @@ static PMemList gPMemList;
 typedef int8 (FMemUnit)[FM_ALLOC_SIZE];
 
 typedef union _FMemNode{
-	union _FemNode* next;
+	union _FMemNode* next;
 	FMemUnit* ptr;
 }FMemNode;
 

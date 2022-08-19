@@ -66,17 +66,15 @@ static void FMemInit(void* mem, u32 size)
 
 	gFMemList.max = max;
 
-	gFMemList.nBase = AddrOffset(mem, 0);
+	FMemNode* p = gFMemList.node = gFMemList.nBase = AddrOffset(mem, 0);
 
 	gFMemList.uBase = AddrOffset(gFMemList.nBase, gFMemList.max);
-
-	FMemNode* p = gFMemList.node = gFMemList.nBase;
 
 	for(u32 i = 1; !IsEqual(gFMemList.max, i); ++i)
 	{
 		p->next = AddrOffset(p, 1);
 
-		p = (FMemNode*)(p->next);
+		p = p->next;
 	}
 
 	p->next = nullptr;
@@ -90,7 +88,7 @@ static void* FMemAlloc()
 	{
 		FMemNode* alloc = gFMemList.node;
 
-		gFMemList.node = (FMemNode*)(alloc->next);
+		gFMemList.node = alloc->next;
 
 		ptr = AddrOffset(gFMemList.uBase, AddrIndex(gFMemList.nBase, alloc));
 
@@ -118,7 +116,7 @@ static bool FMemFree(const void* ptr)
 		return false;
 	}
 
-	current->next = (union _FemNode*)(gFMemList.node);
+	current->next = gFMemList.node;
 
 	gFMemList.node = current;
 
@@ -250,13 +248,9 @@ static void PMemInit(void* mem, u32 size)
 
 	gPMemList.max = Min(max, (PAGE_SIZE / PM_NODE_SIZE));
 
-	gPMemList.nBase = AddrOffset(mem, 0);
+	PMemNode* p = gPMemList.head = gPMemList.nBase = AddrOffset(mem, 0);
 
 	gPMemList.uBase = AddrOffset(gPMemList.nBase, PAGE_SIZE / PM_NODE_SIZE);
-
-	gPMemList.head = gPMemList.nBase;
-
-	PMemNode* p = gPMemList.head;
 
 	for(u32 i = 1; !IsEqual(i, gPMemList.max); ++i){
 
@@ -272,26 +266,37 @@ void* PMemAlloc(const void* ptr)
 {
 	void* ret = nullptr;
 
-	if(IsEqual(ptr, ret)){
-
-		if(!IsEqual(gPMemList.head, nullptr)){
+	if(IsEqual(ptr, ret))
+	{
+		if(!IsEqual(gPMemList.head, nullptr))
+		{
 			PMemNode* node = gPMemList.head;
 
-			gPMemList.head = node->node.next;
+			u32 index = AddrIndex(gPMemList.nBase, node);
 
-			ret = node->node.ptr = AddrOffset(gPMemList.uBase, AddrIndex(gPMemList.nBase, node));
+			if(index < gPMemList.max)
+			{
+				gPMemList.head = node->node.next;
 
-			node->refCount = 1;
-		}
-		
+				ret = node->node.ptr = AddrOffset(gPMemList.uBase, index);
+
+				node->refCount = 1;
+			}
+		}	
 	}else{
-		PMemNode* node = AddrOffset(gPMemList.nBase, AddrIndex(gPMemList.uBase, ptr));
 
-		if(IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+		u32 index = AddrIndex(gPMemList.uBase, ptr);
+
+		if(index < gPMemList.max)
 		{
-			ret = node->node.ptr;
+			PMemNode* node = AddrOffset(gPMemList.nBase, index);
 
-			++node->refCount;
+			if(IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+			{
+				ret = node->node.ptr;
+
+				++node->refCount;
+			}
 		}
 	}
 
@@ -306,17 +311,22 @@ void PMemFree(const void* ptr)
 		return;
 	}	
 
-	PMemNode* node = AddrOffset(gPMemList.nBase, AddrIndex(gPMemList.uBase, ptr));
+	u32 index = AddrIndex(gPMemList.uBase, ptr);
 
-	if(IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+	if(index < gPMemList.max)
 	{
-		--node->refCount;
+		PMemNode* node = AddrOffset(gPMemList.nBase, index);
 
-		if(IsEqual(node->refCount, 0))
+		if(IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
 		{
-			node->node.next = gPMemList.head;
+			--node->refCount;
 
-			gPMemList.head = node;
+			if(IsEqual(node->refCount, 0))
+			{
+				node->node.next = gPMemList.head;
+
+				gPMemList.head = node;
+			}
 		}
 	}
 }
