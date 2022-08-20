@@ -8,9 +8,11 @@
 	asm volatile(                           \
 		"movl $" #type ", %%eax\n"          \
 		"movl $" #cmd  ", %%ebx\n"          \
+		"movl %0,         %%ecx\n"          \
+		"movl %1,         %%edx\n"          \
 		"int              $0x80\n"          \
 		:                                   \
-		: "ecx"(param1), "edx"(param2)      \
+		: "r"(param1), "r"(param2)          \
 		: "eax", "ebx", "ecx", "edx"        \
 	)
 #endif	
@@ -19,5 +21,6 @@ void SystemCallModuleInit();
 
 void Exit();
 void Debug();
+void RegisterApp(const char* name, pFunc tMain, u8 priority);
 
 #endif //!SYSCALL_H

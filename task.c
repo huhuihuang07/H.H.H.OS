@@ -1,14 +1,22 @@
 #include <task.h>
+#include <string.h>
 #include <memory.h>
 #include <syscall.h>
 #include <kernel.h>
 #include <screen.h>
 
+#define MAX_RUNNING_TASK 2
+#define MAX_RUNNING_TICK 260
+
 volatile Task* gCurrentTaskAddr = nullptr;
 
 static TSS* pTSS = nullptr;
 
+static Queue* pReadyQueue = nullptr;
+
 static Queue* pRunningQueue = nullptr;
+
+static Queue* pWaitingQueue = nullptr;
 
 static List* pTaskPool = nullptr;
 
@@ -17,42 +25,6 @@ static TaskNode* pIdleTaskNode = nullptr;
 static void IdleTask()
 {
 	while(true){
-		Delay(1);
-	}
-}
-
-void TaskA()
-{
-	static u32 i = 0;
-
-	while(true){
-
-		SetPrintPos(0, 2);
-
-		printf("This is TaskA : ");
-
-		putchar('a' + i);
-
-		i = (i + 1) % 26;
-
-		Delay(1);
-	}
-}
-
-void TaskB()
-{
-	static u32 i = 0;
-
-	while(i < 8){
-
-		SetPrintPos(0, 3);
-
-		printf("This is TaskB : ");
-
-		putchar('0' + i);
-
-		i = (i + 1) % 10;
-
 		Delay(1);
 	}
 }
@@ -102,81 +74,135 @@ static void PrepareForRun(volatile Task* pTask)
 	);
 }
 
-static void InitTaskDataStruct()
+static void AppInfoToTaskDataStruct()
 {
+	pReadyQueue = malloc(sizeof(Queue));
+
+	Queue_Init(pReadyQueue);
+
 	pRunningQueue = malloc(sizeof(Queue));
 
 	Queue_Init(pRunningQueue);
+
+	pWaitingQueue = malloc(sizeof(Queue));
+
+	Queue_Init(pWaitingQueue);
 
 	pTaskPool = malloc(sizeof(List));
 
 	List_Init(pTaskPool);
 }
 
-static void InitTask(Task* pTask, pFunc entry)
+static TaskNode* AppInfoToTaskNode(AppInfo* appInfo)
 {
-	pTask->stack = PMemAlloc(nullptr);
+	TaskNode* ret = malloc(sizeof(TaskNode));
 
-	SetDescValue(AddrOffset(pTask->ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
-	SetDescValue(AddrOffset(pTask->ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
-	SetDescValue(AddrOffset(pTask->ldt, LDT_Stack32Index), (u32)(pTask->stack), PAGE_INDEX((u32)(pTask->stack) + PAGE_SIZE), DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
+	ret->task.stack = PMemAlloc(nullptr);
 
-	pTask->rv.gs = GDT_Video32Selector;
+	SetDescValue(AddrOffset(ret->task.ldt, LDT_Code32Index), 0, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(AddrOffset(ret->task.ldt, LDT_Data32Index), 0, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
+	SetDescValue(AddrOffset(ret->task.ldt, LDT_Stack32Index), (u32)(ret->task.stack), PAGE_INDEX((u32)(ret->task.stack) + PAGE_SIZE), DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
 
-	pTask->rv.fs = LDT_Data32Selector;
-	pTask->rv.es = LDT_Data32Selector;
-	pTask->rv.ds = LDT_Data32Selector;
+	ret->task.rv.gs = GDT_Video32Selector;
 
-	pTask->rv.ss = LDT_Stack32Selector;
+	ret->task.rv.fs = LDT_Data32Selector;
+	ret->task.rv.es = LDT_Data32Selector;
+	ret->task.rv.ds = LDT_Data32Selector;
 
-	pTask->rv.esp = (u32)(pTask->stack) + PAGE_SIZE;
+	ret->task.rv.ss = LDT_Stack32Selector;
 
-	pTask->rv.cs = LDT_Code32Selector;
-	pTask->rv.eip = (u32)(TaskEntry);
+	ret->task.rv.esp = (u32)(ret->task.stack) + PAGE_SIZE;
 
-	pTask->rv.eflags = 0x3202;
+	ret->task.rv.cs = LDT_Code32Selector;
+	ret->task.rv.eip = (u32)(TaskEntry);
 
-	pTask->ldtSelector = GDT_LdtSelector;
+	ret->task.rv.eflags = 0x3202;
 
-	pTask->tMain = entry; 
+	ret->task.ldtSelector = GDT_LdtSelector;
+
+	ret->task.tMain = appInfo->tMain; 
+
+	ret->task.total = MAX_RUNNING_TICK - appInfo->priority;
+
+	ret->task.name = IsEqual(appInfo->name, nullptr) ? nullptr : strdup(appInfo->name);
+
+	return ret;
 }
 
-static void CreateTask(pFunc entry)
+static void CreateTaskToReady(AppInfo* appInfo)
 {
-	if(!IsEqual(entry, nullptr))
+	if((!IsEqual(appInfo, nullptr)) && (!IsEqual(appInfo->tMain, nullptr)))
 	{
-		TaskNode* taskNode = malloc(sizeof(TaskNode));
-
-		InitTask(StructOffset(taskNode, TaskNode, task), entry);
+		TaskNode* taskNode = AppInfoToTaskNode(appInfo);
 
 		List_Add(pTaskPool, StructOffset(taskNode, TaskNode, head.lHead));
 
-		Queue_Add(pRunningQueue, StructOffset(taskNode, TaskNode, head.qHead));
+		Queue_Add(pReadyQueue, StructOffset(taskNode, TaskNode, head.qHead));
 	}
 }
 
 static void InitIdleTask()
 {
-	pIdleTaskNode = malloc(sizeof(TaskNode));
+	AppInfo appInfo = {"IdleTask", IdleTask, 255};
 
-	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
+	pIdleTaskNode = AppInfoToTaskNode(&appInfo);
+}
+
+static void InitInitTask()
+{
+	AppInfo appInfo = {"InitInitTask", AMain, 255};
+
+	CreateTaskToReady(&appInfo);
 }
 
 void TaskModuleInit()
 {
 	InitTSS();
 
-	InitTaskDataStruct();
+	AppInfoToTaskDataStruct();
 
 	InitIdleTask();
 
-	CreateTask(TaskA);	
+	InitInitTask();
+}
 
-	CreateTask(TaskB);
+static void ReadyToRunning()
+{
+	while((Queue_Length(pRunningQueue) <= MAX_RUNNING_TASK) && !IsEqual(Queue_Length(pReadyQueue), 0))
+	{
+		TaskNode* taskNode = List_Node(Queue_Remove(pReadyQueue), TaskNode, head.qHead);
+
+		taskNode->task.current = 0;
+
+		Queue_Add(pRunningQueue, StructOffset(taskNode, TaskNode, head.qHead));
+	}
+}
+
+static void RunningToReady()
+{
+	if(!IsEqual(gCurrentTaskAddr, StructOffset(pIdleTaskNode, TaskNode, task)))
+	{
+		TaskNode* taskNode = List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead);
+
+		if(IsEqual(gCurrentTaskAddr, StructOffset(taskNode, TaskNode, task)))
+		{
+			++taskNode->task.current;
+
+			if(IsEqual(taskNode->task.current, taskNode->task.total))
+			{
+				Queue_Add(pReadyQueue, Queue_Remove(pRunningQueue));
+			}
+		}
+	}
 }
 
 void LaunchTask()
 {
+	if((Queue_Length(pRunningQueue) <= MAX_RUNNING_TASK) && (!IsEqual(Queue_Length(pReadyQueue), 0)))
+	{
+		ReadyToRunning();	
+	}
+
 	gCurrentTaskAddr = Queue_Length(pRunningQueue) > 0 ? StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task) : StructOffset(pIdleTaskNode, TaskNode, task);
 	
 	PrepareForRun(gCurrentTaskAddr);
@@ -188,6 +214,11 @@ void LaunchTask()
 
 static void Schedule()
 {
+	if((Queue_Length(pRunningQueue) <= MAX_RUNNING_TASK) && (!IsEqual(Queue_Length(pReadyQueue), 0)))
+	{
+		ReadyToRunning();	
+	}
+
 	Task* pNextTask = Queue_Length(pRunningQueue) > 0 ? Queue_Rotate(pRunningQueue), StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task) : StructOffset(pIdleTaskNode, TaskNode, task);
 
 	if(!IsEqual(pNextTask, gCurrentTaskAddr))
@@ -205,6 +236,8 @@ static void KillTask()
 	List_DelNode(StructOffset(pCurrentTask, TaskNode, head.lHead));
 
 	PMemFree(pCurrentTask->task.stack);
+
+	free(pCurrentTask->task.name);
 
 	free(pCurrentTask);
 
@@ -249,11 +282,16 @@ void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 			break;
 		}
 		case 1 : {
+			RunningToReady();
 			Schedule();
 			break;
 		}
 		case 2 : {
 			PrintTaskInfo(param1);
+			break;
+		}
+		case 3 : {
+			CreateTaskToReady((void*)(param1));
 			break;
 		}
 		default: 

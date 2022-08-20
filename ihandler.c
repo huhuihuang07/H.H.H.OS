@@ -17,7 +17,7 @@ void SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
 {
 	switch(type){
 		case 0 : {
-			TaskCallHandler(cmd, param1, param1); 
+			TaskCallHandler(cmd, param1, param2); 
 			break;
 		}
 		default:

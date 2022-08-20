@@ -11,6 +11,9 @@ int strcmp(const char* lhs, const char* rhs);
 char* strchr(const char* str, int ch);
 char* strrchr(const char* str, int ch);
 
+char* strdup(const char* src);
+char* strndup(const char* src, size_t strlen);
+
 int memcmp(const void* lhs, const void* rhs, size_t count);
 void* memset(void* dest, int ch, size_t count);
 void* memcpy(void* dest, const void* src, size_t count);

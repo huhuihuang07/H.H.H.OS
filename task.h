@@ -4,6 +4,8 @@
 #include <kernel.h>
 #include <queue.h>
 
+#define TASK_LDT_LEN  3
+
 typedef struct
 {
 	u32 gs;
@@ -38,13 +40,15 @@ typedef struct
 
 typedef struct
 {
-	RegisterValue rv;   // sizeof(u32) * 18 = 4 * 18 = 72
-	Descriptor ldt[3];  // sizeof(Descriptor) * 3 = 8 * 3 = 24
-	u32 id;             // 4
-	pFunc tMain;        // sizeof(pFunc) = 4
-	int8* stack;        // sizeof(int8*) = 4
-	u16 ldtSelector;    // 2
-	char name[8];       // sizeof(char) * 8 = 8
+	RegisterValue rv;             // sizeof(u32) * 18 = 4 * 18 = 72
+	Descriptor ldt[TASK_LDT_LEN]; // sizeof(Descriptor) * TASK_LDT_LEN = 8 * 3 = 24
+	u32 uid;                      // sizeof(u32) = 4
+	pFunc tMain;                  // sizeof(pFunc) = 4
+	int8* stack;                  // sizeof(int8*) = 4
+	char* name;                   // sizeof(char*) = 4
+	u16 ldtSelector;              // sizeof(u16) = 2
+	u16 total;					  // sizeof(u16) = 2
+	u16 current;                  // sizeof(u16) = 2
 }Task;
 
 typedef struct
@@ -59,9 +63,19 @@ typedef struct
 	Task task;
 }TaskNode;
 
-static void InitTask(Task* pTask, pFunc entry);
+typedef struct{
+	const char* name;
+	pFunc tMain;
+	u8 priority;
+}AppInfo;
+
+static TaskNode* AppInfoToTaskNode(AppInfo* appInfo);
+
+static void CreateTaskToReady(AppInfo* appInfo);
 
 static void InitIdleTask();
+
+static void InitInitTask();
 
 static void PrepareForRun(volatile Task* pTask);
 
@@ -73,6 +87,10 @@ static void KillTask();
 
 static void PrintTaskInfo(u32 addr);
 
+static void ReadyToRunning();
+
+static void RunningToReady();
+
 void TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 
 void TaskModuleInit();
@@ -82,5 +100,7 @@ void LaunchTask();
 extern void RunTask(volatile const Task* const pTask);
 
 extern void TimerInit();
+
+extern void AMain();
 
 #endif //!TASK_H

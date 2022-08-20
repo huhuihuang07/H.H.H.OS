@@ -1,4 +1,5 @@
 #include <string.h>
+#include <memory.h>
 #include <assert.h>
 #include <utility.h>
 
@@ -157,4 +158,22 @@ void* memchr(const void* str, int ch, size_t count)
 	}
 
 	return IsEqual(*ptr, ch) ? ptr : nullptr;
+}
+
+char* strdup(const char* src)
+{
+	assert(!IsEqual(src, nullptr));
+
+	char* ret = malloc(strlen(src) + 1);
+
+	return strcpy(ret, src);
+}
+
+char* strndup(const char* src, size_t strlen)
+{
+	assert(!IsEqual(src, nullptr));
+
+	char* ret = malloc(strlen + 1);
+
+	return strncpy(ret, src, strlen + 1);
 }
