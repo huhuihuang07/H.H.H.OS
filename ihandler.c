@@ -1,70 +1,23 @@
 #include <ihandler.h>
 #include <screen.h>
-#include <task.h>
-
-static volatile bool Enable_Debug = false;
 
 void TimerHandler()
 {
-	Schedule();
+	TaskCallHandler(1, 0, 0);
 
 	SendEOI(MASTER_EOI_PORT);
 }
 
-void DebugHandler(RegisterValue* registerInfo)
+void DebugHandler(u32 addr)
 {
-	ClearScreen();
-	SetPrintPos(0, 0);
-	printf("-------------------------------\n");
-	printf("|=== Commom register value ===|\n");
-	printf("| eax --> %p\n", registerInfo->eax);
-	printf("| ebx --> %p\n", registerInfo->ebx);
-	printf("| ecx --> %p\n", registerInfo->ecx);
-	printf("| edx --> %p\n", registerInfo->edx);
-	printf("| ebp --> %p\n", registerInfo->ebp);
-	printf("| esi --> %p\n", registerInfo->esi);
-	printf("| edi --> %p\n", registerInfo->edi);
-	printf("|=== Segment register value ==|\n");
-	printf("| ds --> 0b%b\n", registerInfo->ds);
-	printf("| es --> 0b%b\n", registerInfo->es);
-	printf("| fs --> 0b%b\n", registerInfo->fs);
-	printf("| gs --> 0b%b\n", registerInfo->gs);
-	printf("|==== Combin register value ==|\n");
-	printf("| ss --> 0b%b\n", registerInfo->ss);
-	printf("| esp --> %p\n", registerInfo->esp);
-	printf("| eflags --> %p\n", registerInfo->eflags);
-	printf("| cs --> 0b%b\n", registerInfo->cs);
-	printf("| eip --> %p\n", registerInfo->eip);
-	printf("|==== End register value =====|\n");
-	printf("-------------------------------\n");
-	Enable_Debug = true;
-	while(Enable_Debug); // TODO
+	TaskCallHandler(2, addr, 0);
 }
 
 void SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
 {
 	switch(type){
 		case 0 : {
-			KillTask(); 
-			break;
-		}
-		case 1 : {
-			switch(cmd){
-				case 0 : {
-					break;
-				}
-				case 1 : {
-					break;
-				}
-				case 2 : {
-					break;
-				}
-				case 3 : {
-					break;
-				}
-				default: 
-					break;
-			}
+			TaskCallHandler(cmd, param1, param1); 
 			break;
 		}
 		default:

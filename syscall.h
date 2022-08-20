@@ -16,6 +16,8 @@
 #endif	
 
 void SystemCallModuleInit();
+
 void Exit();
+void Debug();
 
 #endif //!SYSCALL_H

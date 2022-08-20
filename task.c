@@ -4,25 +4,15 @@
 #include <kernel.h>
 #include <screen.h>
 
-#define MAX_RUNNING_TASK 10
-
 volatile Task* gCurrentTaskAddr = nullptr;
 
-static TSS gTSS = {0};
+static TSS* pTSS = nullptr;
 
-static TaskNode gTaskNodeBuffer[MAX_RUNNING_TASK] = {0};
+static Queue* pRunningQueue = nullptr;
 
-static Queue gRunningQueue = {0};
+static List* pTaskPool = nullptr;
 
-static Queue* pRunningQueue = &gRunningQueue;
-
-static Stack gTaskPool = {0};
-
-static Stack* pTaskPool = &gTaskPool;
-
-static TaskNode gIdleTaskNode = {0};
-
-static TaskNode* pIdleTaskNode = &gIdleTaskNode;
+static TaskNode* pIdleTaskNode = nullptr;
 
 static void IdleTask()
 {
@@ -78,11 +68,13 @@ static void TaskEntry()
 
 static void InitTSS()
 {
-	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (u32)(&gTSS), sizeof(TSS) - 1, DA_386TSS + DA_DPL0);
+	pTSS = malloc(sizeof(TSS));
 
-	gTSS.ss0 = GDT_FlatModeDataSelector;
-	gTSS.esp0 = BaseOfBoot;
-	gTSS.iomb = sizeof(TSS);
+	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (u32)(pTSS), sizeof(TSS) - 1, DA_386TSS + DA_DPL0);
+
+	pTSS->ss0 = GDT_FlatModeDataSelector;
+	pTSS->esp0 = BaseOfBoot;
+	pTSS->iomb = sizeof(TSS);
 
 	u16 ax = GDT_TssSelector;
 
@@ -97,7 +89,7 @@ static void InitTSS()
 
 static void PrepareForRun(volatile Task* pTask)
 {
-	gTSS.esp0 = (u32)(StructOffset(pTask, Task, rv)) + sizeof(RegisterValue);
+	pTSS->esp0 = (u32)(StructOffset(pTask, Task, rv)) + sizeof(RegisterValue);
 
 	SetDescValue(AddrOffset(gGdtInfo.entry, GDT_LDTIndex), (u32)(StructOffset(pTask, Task, ldt)), sizeof(pTask->ldt) - 1, DA_LDT + DA_DPL0);
 
@@ -112,14 +104,13 @@ static void PrepareForRun(volatile Task* pTask)
 
 static void InitTaskDataStruct()
 {
+	pRunningQueue = malloc(sizeof(Queue));
+
 	Queue_Init(pRunningQueue);
 
-	Stack_Init(pTaskPool);
+	pTaskPool = malloc(sizeof(List));
 
-	for(u32 i = 0; i != MAX_RUNNING_TASK; ++i)
-	{
-		Stack_Push(pTaskPool, StructOffset(AddrOffset(gTaskNodeBuffer, i), TaskNode, head.sHead));
-	}
+	List_Init(pTaskPool);
 }
 
 static void InitTask(Task* pTask, pFunc entry)
@@ -152,16 +143,23 @@ static void InitTask(Task* pTask, pFunc entry)
 
 static void CreateTask(pFunc entry)
 {
-	if(IsEqual(Stack_IsEmpty(pTaskPool), false))
+	if(!IsEqual(entry, nullptr))
 	{
-		TaskNode* taskNode = List_Node(Stack_Top(pTaskPool), TaskNode, head.sHead);
-
-		Stack_Pop(pTaskPool);
+		TaskNode* taskNode = malloc(sizeof(TaskNode));
 
 		InitTask(StructOffset(taskNode, TaskNode, task), entry);
 
+		List_Add(pTaskPool, StructOffset(taskNode, TaskNode, head.lHead));
+
 		Queue_Add(pRunningQueue, StructOffset(taskNode, TaskNode, head.qHead));
 	}
+}
+
+static void InitIdleTask()
+{
+	pIdleTaskNode = malloc(sizeof(TaskNode));
+
+	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
 }
 
 void TaskModuleInit()
@@ -170,7 +168,7 @@ void TaskModuleInit()
 
 	InitTaskDataStruct();
 
-	InitTask(StructOffset(pIdleTaskNode, TaskNode, task), IdleTask);
+	InitIdleTask();
 
 	CreateTask(TaskA);	
 
@@ -188,7 +186,7 @@ void LaunchTask()
 	RunTask(gCurrentTaskAddr);
 }
 
-void Schedule()
+static void Schedule()
 {
 	Task* pNextTask = Queue_Length(pRunningQueue) > 0 ? Queue_Rotate(pRunningQueue), StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead), TaskNode, task) : StructOffset(pIdleTaskNode, TaskNode, task);
 
@@ -200,13 +198,65 @@ void Schedule()
 	}
 }
 
-void KillTask()
+static void KillTask()
 {
 	TaskNode* pCurrentTask = List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead);
 
+	List_DelNode(StructOffset(pCurrentTask, TaskNode, head.lHead));
+
 	PMemFree(pCurrentTask->task.stack);
 
-	Stack_Push(pTaskPool, StructOffset(pCurrentTask, TaskNode, head.sHead));
+	free(pCurrentTask);
 
 	Schedule();
+}
+
+static void PrintTaskInfo(u32 addr)
+{
+	RegisterValue* registerInfo = StructOffset(addr, Task, rv);
+	ClearScreen();
+	SetPrintPos(0, 0);
+	printf("-------------------------------\n");
+	printf("|=== Commom register value ===|\n");
+	printf("| eax --> %p\n", registerInfo->eax);
+	printf("| ebx --> %p\n", registerInfo->ebx);
+	printf("| ecx --> %p\n", registerInfo->ecx);
+	printf("| edx --> %p\n", registerInfo->edx);
+	printf("| ebp --> %p\n", registerInfo->ebp);
+	printf("| esi --> %p\n", registerInfo->esi);
+	printf("| edi --> %p\n", registerInfo->edi);
+	printf("|=== Segment register value ==|\n");
+	printf("| ds --> 0b%b\n", registerInfo->ds);
+	printf("| es --> 0b%b\n", registerInfo->es);
+	printf("| fs --> 0b%b\n", registerInfo->fs);
+	printf("| gs --> 0b%b\n", registerInfo->gs);
+	printf("|==== Combin register value ==|\n");
+	printf("| ss --> 0b%b\n", registerInfo->ss);
+	printf("| esp --> %p\n", registerInfo->esp);
+	printf("| eflags --> %p\n", registerInfo->eflags);
+	printf("| cs --> 0b%b\n", registerInfo->cs);
+	printf("| eip --> %p\n", registerInfo->eip);
+	printf("|==== End register value =====|\n");
+	printf("-------------------------------\n");
+	while(true); // TODO
+}
+
+void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
+{
+	switch(cmd){
+		case 0 : {
+			KillTask();
+			break;
+		}
+		case 1 : {
+			Schedule();
+			break;
+		}
+		case 2 : {
+			PrintTaskInfo(param1);
+			break;
+		}
+		default: 
+			break;
+	}
 }

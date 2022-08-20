@@ -3,7 +3,6 @@
 
 #include <kernel.h>
 #include <queue.h>
-#include <stack.h>
 
 typedef struct
 {
@@ -48,9 +47,9 @@ typedef struct
 	char name[8];       // sizeof(char) * 8 = 8
 }Task;
 
-typedef union
+typedef struct
 {
-	StackNode sHead;
+	ListNode  lHead;
 	QueueNode qHead;
 }Head;
 
@@ -60,31 +59,25 @@ typedef struct
 	Task task;
 }TaskNode;
 
-static TSS gTSS;
-
-static Queue gRunningQueue;
-
-static Queue* pRunningQueue;
-
-static Stack gTaskPool;
-
-static Stack* pTaskPool;
-
-volatile Task* gCurrentTaskAddr;
-
 static void InitTask(Task* pTask, pFunc entry);
+
+static void InitIdleTask();
 
 static void PrepareForRun(volatile Task* pTask);
 
 static void TaskEntry();
 
+static void Schedule();
+
+static void KillTask();
+
+static void PrintTaskInfo(u32 addr);
+
+void TaskCallHandler(u32 cmd, u32 param1, u32 param2);
+
 void TaskModuleInit();
 
 void LaunchTask();
-
-void Schedule();
-
-void KillTask();
 
 extern void RunTask(volatile const Task* const pTask);
 

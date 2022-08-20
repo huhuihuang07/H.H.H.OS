@@ -3,11 +3,6 @@
 
 #include <type.h>
 
-#ifndef Debug
-#define Debug() \
-	asm volatile("int $0x03")
-#endif	
-
 #ifndef AddrOffset
 #define AddrOffset(p, i) \
 		((void*)((u32)(p) + (i) * sizeof(*p)))

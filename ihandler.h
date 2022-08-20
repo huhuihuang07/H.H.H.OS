@@ -51,5 +51,6 @@ DeclInternalInterrupt(Debug);
 DeclInternalInterrupt(SysCall);
 
 extern void SystemCall(u32 param);
+extern void TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 
 #endif //!IHANDLER_H
