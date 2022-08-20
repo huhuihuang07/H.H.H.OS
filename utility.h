@@ -20,7 +20,7 @@
 
 #ifndef container_of
 #define container_of(ptr, TYPE, MEMBER) \
-		(TYPE *)((char*)(ptr) - offsetof(TYPE, MEMBER))
+		((TYPE *)((char*)(ptr) - offsetof(TYPE, MEMBER)))
 #endif	
 
 #ifndef StructOffset

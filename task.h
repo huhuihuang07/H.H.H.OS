@@ -44,6 +44,7 @@ typedef struct
 	Descriptor ldt[TASK_LDT_LEN]; // sizeof(Descriptor) * TASK_LDT_LEN = 8 * 3 = 24
 	u32 uid;                      // sizeof(u32) = 4
 	pFunc tMain;                  // sizeof(pFunc) = 4
+	Queue* wait;                  // sizeof(Queue*) = 4
 	int8* stack;                  // sizeof(int8*) = 4
 	char* name;                   // sizeof(char*) = 4
 	u16 ldtSelector;              // sizeof(u16) = 2
@@ -90,6 +91,16 @@ static void PrintTaskInfo(u32 addr);
 static void ReadyToRunning();
 
 static void RunningToReady();
+
+static void WaitToReady(Queue* pWaitQueue);
+
+static void RunningToWait(Queue* pWaitQueue);
+
+static bool FindTarget(ListNode* lhs, ListNode* rhs);
+
+static TaskNode* FindTaskByName(const char* name);
+
+static void WaitTask(const char* name);
 
 void TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 

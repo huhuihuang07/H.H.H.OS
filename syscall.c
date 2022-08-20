@@ -33,3 +33,8 @@ void RegisterApp(const char* name, pFunc tMain, u8 priority)
 
 	free(appInfo);
 }
+
+void Wait(const char* name)
+{
+	SysCall(0, 4, name, nullptr);
+}

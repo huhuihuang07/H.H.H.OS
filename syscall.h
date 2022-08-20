@@ -21,6 +21,7 @@ void SystemCallModuleInit();
 
 void Exit();
 void Debug();
+void Wait(const char* name);
 void RegisterApp(const char* name, pFunc tMain, u8 priority);
 
 #endif //!SYSCALL_H

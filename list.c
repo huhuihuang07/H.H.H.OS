@@ -67,3 +67,18 @@ bool List_IsEmpty(List* list)
 {
 	return (IsEqual(list->prev, list)) && (IsEqual(list->next, list));
 }
+
+ListNode* List_FindNode(List* list, ListNode* node, pFindFunc func)
+{
+	ListNode* pos = nullptr;
+
+	List_ForEach(list, pos)
+	{
+		if(IsEqual(func(node, pos), true))
+		{
+			break;
+		}
+	}
+
+	return IsEqual(list, pos) ? nullptr : pos;
+}

@@ -120,6 +120,10 @@ static TaskNode* AppInfoToTaskNode(AppInfo* appInfo)
 
 	ret->task.ldtSelector = GDT_LdtSelector;
 
+	ret->task.wait = malloc(sizeof(Queue));
+
+	Queue_Init(ret->task.wait);
+
 	ret->task.tMain = appInfo->tMain; 
 
 	ret->task.total = MAX_RUNNING_TICK - appInfo->priority;
@@ -168,7 +172,7 @@ void TaskModuleInit()
 
 static void ReadyToRunning()
 {
-	while((Queue_Length(pRunningQueue) <= MAX_RUNNING_TASK) && !IsEqual(Queue_Length(pReadyQueue), 0))
+	while((Queue_Length(pRunningQueue) <= MAX_RUNNING_TASK) && (!IsEqual(Queue_Length(pReadyQueue), 0)))
 	{
 		TaskNode* taskNode = List_Node(Queue_Remove(pReadyQueue), TaskNode, head.qHead);
 
@@ -233,9 +237,13 @@ static void KillTask()
 {
 	TaskNode* pCurrentTask = List_Node(Queue_Remove(pRunningQueue), TaskNode, head.qHead);
 
+	WaitToReady(pCurrentTask->task.wait);
+
 	List_DelNode(StructOffset(pCurrentTask, TaskNode, head.lHead));
 
 	PMemFree(pCurrentTask->task.stack);
+
+	free(pCurrentTask->task.wait);
 
 	free(pCurrentTask->task.name);
 
@@ -274,6 +282,59 @@ static void PrintTaskInfo(u32 addr)
 	while(true); // TODO
 }
 
+static void WaitToReady(Queue* pWaitQueue)
+{
+	while(!IsEqual(Queue_Length(pWaitQueue), 0))
+	{
+		Queue_Add(pReadyQueue, Queue_Remove(pWaitQueue));
+	}
+}
+
+static void RunningToWait(Queue* pWaitQueue)
+{
+	TaskNode* pCurrentTask = List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead);
+
+	if(IsEqual(gCurrentTaskAddr, StructOffset(pCurrentTask, TaskNode, task)))
+	{
+		Queue_Add(pWaitQueue, Queue_Remove(pRunningQueue));
+	}
+}
+
+static bool FindTarget(ListNode* lhs, ListNode* rhs)
+{
+	return IsEqual(strcmp(List_Node(lhs, TaskNode, head.lHead)->task.name, List_Node(rhs, TaskNode, head.lHead)->task.name), 0);
+}
+
+static TaskNode* FindTaskByName(const char* name)
+{
+	TaskNode* ret = nullptr;
+
+	if(!IsEqual(strcmp(name, pIdleTaskNode->task.name), 0))
+	{
+		TaskNode target;
+
+		target.task.name = strdup(name);
+
+		ret = List_Node(List_FindNode(pTaskPool, StructOffset(&target, TaskNode, head.lHead), FindTarget), TaskNode, head.lHead);
+
+		free(target.task.name);
+	}
+
+	return ret;
+}
+
+static void WaitTask(const char* name)
+{
+	TaskNode* taskNode = FindTaskByName(name);
+
+	if(!IsEqual(taskNode, nullptr))
+	{
+		RunningToWait(taskNode->task.wait);
+
+		Schedule();
+	}
+}
+
 void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 {
 	switch(cmd){
@@ -292,6 +353,10 @@ void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 		}
 		case 3 : {
 			CreateTaskToReady((void*)(param1));
+			break;
+		}
+		case 4 : {
+			WaitTask((void*)(param1));
 			break;
 		}
 		default: 

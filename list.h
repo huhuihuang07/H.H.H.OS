@@ -10,6 +10,8 @@ typedef struct _ListNode{
 
 typedef ListNode List;
 
+typedef bool (*pFindFunc)(ListNode*, ListNode*);
+
 #ifndef List_ForEach
 #define List_ForEach(list, pos) \
 	for((pos) = ((List*)(list))->next; !IsEqual((list), (pos)); (pos) = (pos)->next)
@@ -32,5 +34,6 @@ void List_DelNode(ListNode* node);
 void List_Replace(ListNode* old, ListNode* new);
 bool List_IsLast(List* list, ListNode* node);		
 bool List_IsEmpty(List* list);
+ListNode* List_FindNode(List* list, ListNode* node, pFindFunc func);
 
 #endif //!LIST_H
