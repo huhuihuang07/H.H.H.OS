@@ -11,9 +11,7 @@ void SystemCallModuleInit()
 
 void Exit(int status)
 {
-	u32 ret = 0;
-
-	SysCall(0, 0, status, nullptr, ret);
+	SysCall(SysCall_Task, SysCall_Task_Kill, status, (u32)(nullptr));
 }
 
 void Debug()
@@ -23,7 +21,7 @@ void Debug()
 
 bool RegisterApp(const char* name, pFunc tMain, u8 priority)
 {
-	u32 ret = -1;
+	bool ret = false;
 
 	AppInfo* appInfo = malloc(sizeof(AppInfo));
 
@@ -33,16 +31,14 @@ bool RegisterApp(const char* name, pFunc tMain, u8 priority)
 
 	appInfo->priority = priority;
 
-	SysCall(0, 3, appInfo, nullptr, ret);
+	ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (u32)(appInfo), (u32)(nullptr)), 0) ? false : true;
 
 	free(appInfo);
 
-	return IsEqual(ret, 0) ? false : true;
+	return ret;
 }
 
 void Wait(const char* name)
 {
-	u32 ret = -1;
-
-	SysCall(0, 4, name, nullptr, ret);
+	SysCall(SysCall_Task, SysCall_Task_Wait, (u32)(name), (u32)(nullptr));
 }

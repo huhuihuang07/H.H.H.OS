@@ -1,5 +1,5 @@
 #include <ihandler.h>
-#include <screen.h>
+#include <syscall.h>
 
 void TimerHandler()
 {
@@ -20,7 +20,7 @@ u32 SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
 	u32 ret = 0;
 
 	switch(type){
-		case 0 : {
+		case SysCall_Task : {
 			ret = TaskCallHandler(cmd, param1, param2); 
 			break;
 		}

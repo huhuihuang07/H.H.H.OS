@@ -6,7 +6,7 @@
 #include <screen.h>
 
 #define MAX_RUNNING_TASK 2
-#define MAX_RUNNING_TICK 260
+#define MAX_RUNNING_TICK ((int8)(-1) + 5)
 
 volatile Task* gCurrentTaskAddr = nullptr;
 
@@ -348,24 +348,24 @@ u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 	u32 ret = -1;
 
 	switch(cmd){
-		case 0 : {
+		case SysCall_Task_Kill : {
 			KillTask();
 			break;
 		}
-		case 1 : {
+		case SysCall_Task_Schedule : {
 			RunningToReady();
 			Schedule();
 			break;
 		}
-		case 2 : {
+		case SysCall_Task_PrintInfo : {
 			PrintTaskInfo(param1);
 			break;
 		}
-		case 3 : {
+		case SysCall_Task_Register : {
 			ret = IsEqual(CreateTaskToReady((void*)(param1)), false) ? 0 : 1;
 			break;
 		}
-		case 4 : {
+		case SysCall_Task_Wait : {
 			WaitTask((void*)(param1));
 			break;
 		}

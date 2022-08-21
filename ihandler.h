@@ -5,9 +5,7 @@
 #include <8259A.h>
 
 // define External interrupt
-#define TimerInterrupt      0x20
-#define TimerMasterIMR      0xfe
-#define TimerSlaveIMR       0xff
+#define TimerInterrupt      IRQ_CLOCK
 
 // define Internal interrupt
 #define DebugInterrupt      0x03
@@ -18,20 +16,10 @@
 	extern void name##HandlerEntry();    \
 	void name##Init()                    \
 	{                                    \
-		SetInterruptGate(name##Interrupt, (u32)name##HandlerEntry); \
-                                                                    \
-		u8 al = ReadIMR(MASTER_IMR_PORT);                           \
-                                                                    \
-		al &= name##MasterIMR;                                      \
-                                                                    \
-		WriteIMR(MASTER_IMR_PORT, al);                              \
-                                                                    \
-		al = ReadIMR(SLAVE_IMR_PORT);                               \
-                                                                    \
-		al &= name##SlaveIMR;                                       \
-                                                                    \
-		WriteIMR(SLAVE_IMR_PORT, al);                               \
-	}                                                               \
+		SetInterruptHandler(name##Interrupt, (u32)name##HandlerEntry); \
+                                                                       \
+        SetInterruptMask(name##Interrupt, Enable);                     \
+	}                                                                  \
 	void name##Handler()
 #endif
 
@@ -45,8 +33,10 @@
 	u32 name##Handler()
 #endif	
 
+// Declare External interrupt handler
 DeclExternalInterrupt(Timer);
 
+// Declare Internal interrupt handler
 DeclInternalInterrupt(Debug);
 DeclInternalInterrupt(SysCall);
 

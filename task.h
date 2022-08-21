@@ -42,14 +42,15 @@ typedef struct
 {
 	RegisterValue rv;             // sizeof(u32) * 18 = 4 * 18 = 72
 	Descriptor ldt[TASK_LDT_LEN]; // sizeof(Descriptor) * TASK_LDT_LEN = 8 * 3 = 24
-	u32 uid;                      // sizeof(u32) = 4
-	pFunc tMain;                  // sizeof(pFunc) = 4
-	Queue* wait;                  // sizeof(Queue*) = 4
-	int8* stack;                  // sizeof(int8*) = 4
-	char* name;                   // sizeof(char*) = 4
-	u16 ldtSelector;              // sizeof(u16) = 2
-	u16 total;					  // sizeof(u16) = 2
-	u16 current;                  // sizeof(u16) = 2
+	pid_t pid;              
+	pid_t ppid;      
+	pFunc tMain;                  
+	Queue* wait;                  
+	int8* stack;                  
+	char* name;                   
+	u16 ldtSelector;              
+	u16 total;					  
+	u16 current;               
 }Task;
 
 typedef struct
@@ -69,6 +70,14 @@ typedef struct{
 	pFunc tMain;
 	u8 priority;
 }AppInfo;
+
+typedef enum{
+	SysCall_Task_Kill = 0,
+	SysCall_Task_Schedule = 1,
+	SysCall_Task_PrintInfo = 2,
+	SysCall_Task_Register = 3,
+	SysCall_Task_Wait = 4,
+}SysCall_TASK_CMD;
 
 static TaskNode* AppInfoToTaskNode(AppInfo* appInfo);
 

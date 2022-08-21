@@ -36,6 +36,21 @@
 	})
 #endif
 
+#ifndef SetBit
+#define SetBit(value, pos) \
+		(value | (1 << pos))
+#endif
+
+#ifndef ClearBit
+#define ClearBit(value, pos) \
+		(value & (~(1 << pos)))
+#endif		
+
+#ifndef TestBit
+#define TestBit(value, pos) \
+		(IsEqual((value & (1 << pos)), pos))
+#endif
+
 #ifndef Max
 #define Max(a, b) \
 	((a) >= (b) ? (a) : (b))

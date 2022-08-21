@@ -29,6 +29,11 @@ typedef enum
 }bool;
 #endif
 
+typedef enum{
+	Disable = 0,
+	Enable = !Disable,
+}State;
+
 typedef void (* pFunc)();
 
 typedef signed char int8;
@@ -48,6 +53,8 @@ typedef unsigned int u32;
 typedef unsigned long long u64;
 
 typedef unsigned int size_t;
+
+typedef int32 pid_t;
 
 typedef char* va_list;
 

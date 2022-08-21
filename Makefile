@@ -32,6 +32,7 @@ kernelAsm := kentry.asm \
 			   task.asm \
 			 screen.asm \
 			 ihandler.asm \
+			 syscall.asm \
 			 io.asm			
 
 bootSrc := boot.asm

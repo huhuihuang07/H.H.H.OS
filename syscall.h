@@ -3,20 +3,9 @@
 
 #include <utility.h>
 
-#ifndef SysCall
-#define SysCall(type, cmd, param1, param2, ret)  \
-	asm volatile(                                \
-		"movl $" #type ", %%eax\n"               \
-		"movl $" #cmd  ", %%ebx\n"               \
-		"movl %1,         %%ecx\n"               \
-		"movl %2,         %%edx\n"               \
-		"int              $0x80\n"               \
-		"movl %%eax,         %0\n"               \
-		: "=r"(ret)                              \
-		: "r"(param1), "r"(param2)               \
-		: "eax", "ebx", "ecx", "edx"             \
-	)
-#endif	
+typedef enum {
+	SysCall_Task = 0,
+}SysCall_TYPE;
 
 void SystemCallModuleInit();
 
@@ -24,5 +13,7 @@ void Exit(int status);
 void Debug();
 void Wait(const char* name);
 bool RegisterApp(const char* name, pFunc tMain, u8 priority);
+
+extern u32 SysCall(u32 type, u32 cmd, u32 param1, u32 param2);  
 
 #endif //!SYSCALL_H
