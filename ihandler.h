@@ -42,7 +42,7 @@
 	{                                    \
 		SetInterruptGate(name##Interrupt, (u32)name##HandlerEntry); \
 	}                                                               \
-	void name##Handler()
+	u32 name##Handler()
 #endif	
 
 DeclExternalInterrupt(Timer);
@@ -51,6 +51,6 @@ DeclInternalInterrupt(Debug);
 DeclInternalInterrupt(SysCall);
 
 extern void SystemCall(u32 param);
-extern void TaskCallHandler(u32 cmd, u32 param1, u32 param2);
+extern u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 
 #endif //!IHANDLER_H

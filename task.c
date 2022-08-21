@@ -35,7 +35,7 @@ static void TaskEntry()
 		gCurrentTaskAddr->tMain();
 	}
 
-	Exit();
+	Exit(0);
 }
 
 static void InitTSS()
@@ -133,9 +133,11 @@ static TaskNode* AppInfoToTaskNode(AppInfo* appInfo)
 	return ret;
 }
 
-static void CreateTaskToReady(AppInfo* appInfo)
+static bool CreateTaskToReady(AppInfo* appInfo)
 {
-	if((!IsEqual(appInfo, nullptr)) && (!IsEqual(appInfo->tMain, nullptr)))
+	bool ret = (!IsEqual(appInfo, nullptr)) && (!IsEqual(appInfo->tMain, nullptr));
+
+	if(ret)
 	{
 		TaskNode* taskNode = AppInfoToTaskNode(appInfo);
 
@@ -143,6 +145,8 @@ static void CreateTaskToReady(AppInfo* appInfo)
 
 		Queue_Add(pReadyQueue, StructOffset(taskNode, TaskNode, head.qHead));
 	}
+
+	return ret;
 }
 
 static void InitIdleTask()
@@ -323,20 +327,26 @@ static TaskNode* FindTaskByName(const char* name)
 	return ret;
 }
 
-static void WaitTask(const char* name)
+static bool WaitTask(const char* name)
 {
 	TaskNode* taskNode = FindTaskByName(name);
 
-	if(!IsEqual(taskNode, nullptr))
+	bool ret = (!IsEqual(taskNode, nullptr));
+
+	if(ret)
 	{
 		RunningToWait(taskNode->task.wait);
 
 		Schedule();
 	}
+
+	return ret;
 }
 
-void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
+u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 {
+	u32 ret = -1;
+
 	switch(cmd){
 		case 0 : {
 			KillTask();
@@ -352,7 +362,7 @@ void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 			break;
 		}
 		case 3 : {
-			CreateTaskToReady((void*)(param1));
+			ret = IsEqual(CreateTaskToReady((void*)(param1)), false) ? 0 : 1;
 			break;
 		}
 		case 4 : {
@@ -362,4 +372,6 @@ void TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 		default: 
 			break;
 	}
+
+	return ret;
 }

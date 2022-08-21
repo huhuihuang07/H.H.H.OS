@@ -78,14 +78,12 @@ void TaskD()
 
 void AMain()
 {
-	RegisterApp("TaskA", TaskA, 250);
-	RegisterApp("TaskB", TaskB, 240);
-	RegisterApp("TaskC", TaskC, 255);
-	RegisterApp("TaskD", TaskD, 255);
+	if(IsEqual(RegisterApp("TaskA", TaskA, 250), true))
+	{
+		RegisterApp("TaskB", TaskB, 240);
+		RegisterApp("TaskC", TaskC, 255);
+		RegisterApp("TaskD", TaskD, 255);
+	}
 
 	Wait("TaskB");
-
-	SetPrintPos(0, 12);
-
-	printf("Kill AMain\n");
 }

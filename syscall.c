@@ -9,9 +9,11 @@ void SystemCallModuleInit()
 	SysCallInit();
 }
 
-void Exit()
+void Exit(int status)
 {
-	SysCall(0, 0, nullptr, nullptr);
+	u32 ret = 0;
+
+	SysCall(0, 0, status, nullptr, ret);
 }
 
 void Debug()
@@ -19,8 +21,10 @@ void Debug()
 	asm volatile("int $0x03");
 }	
 
-void RegisterApp(const char* name, pFunc tMain, u8 priority)
+bool RegisterApp(const char* name, pFunc tMain, u8 priority)
 {
+	u32 ret = -1;
+
 	AppInfo* appInfo = malloc(sizeof(AppInfo));
 
 	appInfo->name = name;
@@ -29,12 +33,16 @@ void RegisterApp(const char* name, pFunc tMain, u8 priority)
 
 	appInfo->priority = priority;
 
-	SysCall(0, 3, appInfo, nullptr);
+	SysCall(0, 3, appInfo, nullptr, ret);
 
 	free(appInfo);
+
+	return IsEqual(ret, 0) ? false : true;
 }
 
 void Wait(const char* name)
 {
-	SysCall(0, 4, name, nullptr);
+	u32 ret = -1;
+
+	SysCall(0, 4, name, nullptr, ret);
 }

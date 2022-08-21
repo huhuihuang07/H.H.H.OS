@@ -72,7 +72,7 @@ typedef struct{
 
 static TaskNode* AppInfoToTaskNode(AppInfo* appInfo);
 
-static void CreateTaskToReady(AppInfo* appInfo);
+static bool CreateTaskToReady(AppInfo* appInfo);
 
 static void InitIdleTask();
 
@@ -100,9 +100,9 @@ static bool FindTarget(ListNode* lhs, ListNode* rhs);
 
 static TaskNode* FindTaskByName(const char* name);
 
-static void WaitTask(const char* name);
+static bool WaitTask(const char* name);
 
-void TaskCallHandler(u32 cmd, u32 param1, u32 param2);
+u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 
 void TaskModuleInit();
 

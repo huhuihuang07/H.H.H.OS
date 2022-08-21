@@ -118,6 +118,11 @@ BeginISR
 
 	add esp, 0x10
 
+	; save system call return value
+	mov ebx, dword [gCurrentTaskAddr]
+	
+	mov dword [ebx + 0x2c], eax
+
 EndISR
 	iret		
 
