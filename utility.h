@@ -38,17 +38,17 @@
 
 #ifndef SetBit
 #define SetBit(value, pos) \
-		(value | (1 << pos))
+		((value) | (1 << (pos)))
 #endif
 
 #ifndef ClearBit
 #define ClearBit(value, pos) \
-		(value & (~(1 << pos)))
+		((value) & (~(1 << (pos))))
 #endif		
 
 #ifndef TestBit
 #define TestBit(value, pos) \
-		(IsEqual((value & (1 << pos)), pos))
+		(IsEqual(((value) >> (pos)) & 1, 1))
 #endif
 
 #ifndef Max
