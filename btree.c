@@ -16,34 +16,34 @@ bool BTree_Insert(BTreeRoot* root, BTreeNode* node, BTreePos pos)
 		{
 			case BTreePos_ANY : 
 			{
-				if(IsEqual(object->lChild, nullptr)){
+				if(ret = IsEqual(object->lChild, nullptr))
+				{
 					object->lChild = node;
-				}else if(IsEqual(object->rChild, nullptr)){
+				}else if(ret = IsEqual(object->rChild, nullptr)){
 					object->rChild = node;
-				}else{
-					ret = false;
 				}
 				break;
 			}
 			case BTreePos_LEFT :
 			{
-				if(IsEqual(object->lChild, nullptr)){
+				if(ret = IsEqual(object->lChild, nullptr))
+				{
 					object->lChild = node;
-				}else{
-					ret = false;
 				}
 				break;
 			}
 			case BTreePos_RIGHT :
 			{
-				if(IsEqual(object->rChild, nullptr)){
+				if(ret = IsEqual(object->rChild, nullptr))
+				{
 					object->rChild = node;
-				}else{
-					ret = false;
 				}
 				break;
 			}
-			default : ret = false;
+			default : {
+				ret = false;
+				break;
+			}
 		}
 	}
 
@@ -52,6 +52,10 @@ bool BTree_Insert(BTreeRoot* root, BTreeNode* node, BTreePos pos)
 
 BTreeNode* BTree_Remove(BTreeRoot* root, BTreeNode* node)
 {
+	if(IsEqual(root, nullptr)){
+		return nullptr;
+	}
+
 	BTreeNode* object = BTree_Find(root, node);
 
 	if(!IsEqual(object, nullptr)){
@@ -77,6 +81,10 @@ BTreeNode* BTree_Find(BTreeRoot* root, BTreeNode* node)
 		object = node;
 	}
 
+	if(IsEqual(root, nullptr)){
+		return nullptr;
+	}
+
 	if(IsEqual(object, nullptr) && (!IsEqual(root->lChild, nullptr))){
 		object = BTree_Find(root->lChild, node);
 	}
@@ -90,6 +98,10 @@ BTreeNode* BTree_Find(BTreeRoot* root, BTreeNode* node)
 
 u32 BTree_Degree(BTreeRoot* root)
 {
+	if(IsEqual(root, nullptr)){
+		return 0;
+	}
+
 	u32 ret = (!!root->lChild) + (!!root->rChild);
 
 	if(IsEqual(ret, 2)){
@@ -123,6 +135,10 @@ u32 BTree_Degree(BTreeRoot* root)
 
 u32 BTree_Count(BTreeRoot* root)
 {
+	if(IsEqual(root, nullptr)){
+		return 0;
+	}
+
 	u32 lCount = IsEqual(root->lChild, nullptr) ? 0 : BTree_Count(root->lChild);
 
 	u32 rCount = IsEqual(root->rChild, nullptr) ? 0 : BTree_Count(root->rChild);
@@ -142,7 +158,29 @@ u32 BTree_Hight(BTreeRoot* root)
 	return Max(lHight, rHight) + 1;
 }
 
-void BTree_Clear(BTreeRoot* root)
+void BTree_Clear(BTreeRoot* root, pDestroyFunc func)
 {
-	// TODO
+	if(IsEqual(root, nullptr)){
+		return;
+	}
+
+	if(!IsEqual(root->lChild, nullptr))
+	{
+		BTreeNode* child = root->lChild;
+
+		root->lChild = nullptr;
+
+		BTree_Clear(child, func);
+	}
+
+	if(!IsEqual(root->rChild, nullptr))
+	{
+		BTreeNode* child = root->rChild;
+
+		root->rChild = nullptr;
+
+		BTree_Clear(child, func);
+	}
+
+	func(root);
 }

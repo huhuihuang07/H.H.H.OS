@@ -55,3 +55,8 @@ u32 Stack_Length(Stack* stack)
 {
 	return stack->length;
 }
+
+void Stack_Destroy(Stack* stack, pDestroyFunc func)
+{
+	List_Destroy(StructOffset(stack, Stack, head), func);
+}

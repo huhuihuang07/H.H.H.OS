@@ -68,3 +68,8 @@ void Queue_Rotate(Queue* queue)
 {
 	Queue_Add(queue, Queue_Remove(queue));
 }
+
+void Queue_Destroy(Queue* queue, pDestroyFunc func)
+{
+	List_Destroy(StructOffset(queue, Queue, head), func);
+}

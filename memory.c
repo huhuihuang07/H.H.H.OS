@@ -9,8 +9,8 @@ static VMemList gVMemList = {0}; // 变长分配 不使用引用计数
 
 static VMemList* pVMemList = &gVMemList;
 
-static u32 memoryBase = 0; // 堆空间基地址， 应该等于1M
-static u32 memorySize = 0; // 堆空间大小
+u32 memoryBase = 0; // 堆空间基地址， 应该等于1M
+u32 memorySize = 0; // 堆空间大小
 
 static u32 pageBase = - 1;
 static u32 pageSize = - 1;

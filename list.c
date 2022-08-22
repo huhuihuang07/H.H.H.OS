@@ -82,3 +82,15 @@ ListNode* List_FindNode(List* list, ListNode* node, pFindFunc func)
 
 	return IsEqual(list, pos) ? nullptr : pos;
 }
+
+void List_Destroy(List* list, pDestroyFunc func)
+{
+	while(!List_IsEmpty(list))
+	{
+		ListNode* node = list->next;
+
+		List_DelNode(node);
+
+		func(node);
+	}
+}

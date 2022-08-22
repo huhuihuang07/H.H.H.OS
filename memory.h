@@ -93,6 +93,9 @@ typedef List VMemList;
 static VMemList gVMemList;
 static VMemList* pVMemList;
 
+u32 memoryBase;
+u32 memorySize;
+
 void MemoryModuleInit();
 
 void* malloc(size_t size);
