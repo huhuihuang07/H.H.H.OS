@@ -1,6 +1,6 @@
-#include <syscall.h>
-#include <memory.h>
-#include <task.h>
+#include "syscall.h"
+#include "memory.h"
+#include "task.h"
 
 extern void SysCallInit();
 

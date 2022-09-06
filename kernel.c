@@ -1,5 +1,5 @@
-#include <kernel.h>
-#include <utility.h>
+#include "kernel.h"
+#include "utility.h"
 
 const GdtInfo gGdtInfo = {nullptr, 0};
 const IdtInfo gIdtInfo = {nullptr, 0};

@@ -1,12 +1,12 @@
-#include <task.h>
-#include <string.h>
-#include <memory.h>
-#include <syscall.h>
-#include <kernel.h>
-#include <screen.h>
+#include "task.h"
+#include "string.h"
+#include "memory.h"
+#include "syscall.h"
+#include "kernel.h"
+#include "screen.h"
 
 #define MAX_RUNNING_TASK 2
-#define MAX_RUNNING_TICK ((int8)(-1) + 5)
+#define MAX_RUNNING_TICK (255 + 5)
 
 volatile Task* gCurrentTaskAddr = nullptr;
 

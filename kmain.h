@@ -1,7 +1,7 @@
 #ifndef KMAIN_H
 #define KMAIN_H
 
-#include <type.h>
+#include "type.h"
 
 int Kmain(int argc, char* argv[]);
 

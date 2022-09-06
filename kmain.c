@@ -1,5 +1,5 @@
-#include <kmain.h>
-#include <utility.h>
+#include "kmain.h"
+#include "utility.h"
 
 int KMain(int argc, char* argv[])
 {

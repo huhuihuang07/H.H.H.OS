@@ -1,7 +1,7 @@
-#include <assert.h>
-#include <screen.h>
+#include "assert.h"
+#include "screen.h"
 
-void assertionFailure(const char *exp, const char *file, int line)
+void assertionFailure(const char *exp, const char *file, u32 line)
 {
 	ClearScreen();
 

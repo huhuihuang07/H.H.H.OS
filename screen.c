@@ -1,8 +1,8 @@
-#include <screen.h>
-#include <io.h>
-#include <string.h>
-#include <utility.h>
-#include <assert.h>
+#include "screen.h"
+#include "io.h"
+#include "string.h"
+#include "utility.h"
+#include "assert.h"
 
 static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
 

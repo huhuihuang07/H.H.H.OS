@@ -1,8 +1,8 @@
 #ifndef IHANDLER_H
 #define IHANDLER_H
 
-#include <interrupt.h>
-#include <8259A.h>
+#include "interrupt.h"
+#include "8259A.h"
 
 // define External interrupt
 #define TimerInterrupt      IRQ_CLOCK

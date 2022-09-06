@@ -1,7 +1,7 @@
 #ifndef STRING_H
 #define STRING_H
 
-#include <type.h>
+#include "type.h"
 
 char* strcpy(char* dest, const char* src);
 char* strncpy(char* dest, const char* src, size_t strlen);

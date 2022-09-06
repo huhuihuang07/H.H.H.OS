@@ -1,7 +1,7 @@
 #ifndef SCREEN_H
 #define SCREEN_H
 
-#include <type.h>
+#include "type.h"
 
 #ifndef SCREEN_WIDTH
 #define SCREEN_WIDTH  80

@@ -1,7 +1,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-#include <list.h>
+#include "list.h"
 
 typedef ListNode QueueNode;
 

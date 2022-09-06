@@ -1,7 +1,7 @@
 #ifndef I8259A_H
 #define I8259A_H
 
-#include <type.h>
+#include "type.h"
 
 // PIC-8259A Ports
 #define MASTER_ICW1_PORT  0x20

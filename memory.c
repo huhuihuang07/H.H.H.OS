@@ -1,7 +1,7 @@
-#include <memory.h>
-#include <kernel.h>
-#include <utility.h>
-#include <assert.h>
+#include "memory.h"
+#include "kernel.h"
+#include "utility.h"
+#include "assert.h"
 
 static PMemList gPMemList = {0}; // 定长分配 4K 内存页, 使用引用计数 
 static FMemList gFMemList = {0}; // 定长分配 32bite 内存，不使用引用计数 

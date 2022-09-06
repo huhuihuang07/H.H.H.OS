@@ -1,7 +1,7 @@
 #ifndef MEMORY_H
 #define MEMORY_H
 
-#include <list.h>
+#include "list.h"
 
 #ifndef ZONE_VAILD
 #define ZONE_VAILD 1 // ARDS 可用内存区域

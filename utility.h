@@ -1,7 +1,7 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <type.h>
+#include "type.h"
 
 #ifndef AddrOffset
 #define AddrOffset(p, i) \

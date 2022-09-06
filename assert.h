@@ -1,7 +1,9 @@
 #ifndef ASSERT_H
 #define ASSERT_H
 
-void assertionFailure(const char *exp, const char *file, int line);
+#include "type.h"
+
+void assertionFailure(const char *exp, const char *file, u32 line);
 
 #ifndef assert
 #define assert(exp) \

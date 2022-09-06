@@ -61,7 +61,7 @@ RM := rm -rf
 MOUNT  := mount -o loop
 UMOUNT := umount
 
-MNTPATH := /mnt/rootb
+MNTPATH := /mnt
 
 CFLAGS := -m32 -fno-builtin -fno-stack-protector -nostdlib
 

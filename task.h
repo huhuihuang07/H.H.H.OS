@@ -1,8 +1,8 @@
 #ifndef TASK_H
 #define TASK_H
 
-#include <kernel.h>
-#include <queue.h>
+#include "kernel.h"
+#include "queue.h"
 
 #define TASK_LDT_LEN  3
 

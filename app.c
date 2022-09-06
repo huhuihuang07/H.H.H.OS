@@ -1,6 +1,6 @@
-#include <app.h>
-#include <syscall.h>
-#include <screen.h>
+#include "app.h"
+#include "syscall.h"
+#include "screen.h"
 
 void TaskA()
 {

@@ -1,7 +1,7 @@
 #ifndef STACK_H
 #define STACK_H
 
-#include <list.h>
+#include "list.h"
 
 typedef ListNode StackNode;
 
