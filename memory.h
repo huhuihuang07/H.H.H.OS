@@ -16,7 +16,7 @@
 #endif 
 
 #ifndef PAGE_BASE
-#define PAGE_BASE 0x10000 // 64K, 页表起始位置
+#define PAGE_BASE 0x20000 // 128K, 页表起始位置
 #endif 
 
 #ifndef PAGE_INDEX

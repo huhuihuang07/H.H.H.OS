@@ -80,8 +80,23 @@ BLMain:
 	call loadTarget
 
 	cmp dx, 0
-	jz Error
+	jnz Enter
 
+	mov bp, FindErrorStr
+	mov cx, FindErrorLen
+	jmp print
+
+Enter:
+	mov eax, LoadAddress
+	add eax, dword [BaseOfStack + DIR_FileSize]
+	cmp eax, BaseOfAPP
+	jna Next
+
+	mov bp, LenErrorStr
+	mov cx, LenErrorLen
+	jmp print
+
+Next:
 	call getMemorySize
 
 	; initialize GDT for 32 bits code segment
@@ -221,8 +236,11 @@ getError:
 [bits 16]
 Error_Segment:
 
-	ErrorStr db "Not find kernel ..."
-	ErrorLen equ $ - ErrorStr
+	FindErrorStr db "Not find kernel ..."
+	FindErrorLen equ $ - FindErrorStr
+
+	LenErrorStr db "Kernel size out of range ..."
+	LenErrorLen equ $ - LenErrorStr
 
 ; end of [section .errorStr]	
 

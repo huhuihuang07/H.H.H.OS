@@ -177,3 +177,62 @@ char* strndup(const char* src, size_t strlen)
 
 	return strncpy(ret, src, strlen + 1);
 }
+
+static int* make_pmt(const char* str)
+{
+	int len = strlen(str);
+
+	int* ret = (int*)malloc(sizeof(int) * len);
+
+	int ll = 0;
+
+	ret[0] = ll;
+
+	for(int i = 1; !IsEqual(i, len); ++i)
+	{
+		while((!IsEqual(ll, 0)) && (!IsEqual(str[i], str[ll])))
+		{
+			ll = ret[ll - 1];
+		}
+
+		if(IsEqual(str[i], str[ll]))
+		{
+			ll++;
+		}
+
+		ret[i] = ll;
+	}
+
+	return ret;
+}
+
+int strfind(const char* src, const char* findStr)
+{
+	assert((!IsEqual(src, nullptr)) && (!IsEqual(findStr, nullptr)));
+
+	int sLen = strlen(src), fLen = strlen(findStr), i = 0, j = 0;
+
+	if((fLen <= 0) || (fLen > sLen))
+	{
+		return -1;
+	}
+
+	int* pmt = make_pmt(findStr);
+
+	for(i = 0, j = 0; (!IsEqual(i, fLen)) && (!IsEqual(j, sLen)); ++j)
+	{
+		while((!IsEqual(i, 0) && (!IsEqual(src[j], findStr[i]))))
+		{
+			i = pmt[i - 1];
+		}
+
+		if(IsEqual(src[j], findStr[i]))
+		{
+			++i;
+		}
+	}
+
+	free(pmt);
+
+	return IsEqual(i, fLen) ? j - fLen : -1;
+}

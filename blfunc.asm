@@ -213,7 +213,6 @@ fatVecEnd:
 
 	ret
 
-
 ; in root entry find target
 ; es:bx --> root entry offset address
 ; ds:si --> target string
@@ -314,21 +313,6 @@ equal:
 	pop si
 	ret
 
-; reset Floppy disk
-; no parameter
-resetFloppy:
-	push ax
-	push dx
-
-	xor ah, ah
-	mov dl, byte [BS_DrvNum]
-	int 0x13
-
-	pop dx
-	pop ax
-
-	ret
-
 ; read Sector to memory
 ; ax    --> logic sector number
 ; cx    --> number of sector
@@ -342,8 +326,6 @@ readSector:
 	push bp
 
 	mov bp, sp
-
-	call resetFloppy
 
 	xor dx, dx
 	mov bx, word [BPB_SecPerTrk]
@@ -376,24 +358,10 @@ read:
 
 	ret	
 
-; print error info
-Error:
-	mov bp, ErrorStr
-	mov cx, ErrorLen
-
-	call printString
-
-last:
-	hlt
-	jmp last
-
 ; print string
 ; es:bp --> string address
 ; cx    --> string length
-printString:
-	push ax
-	push bx
-	push dx
+print:
 
 	xor dx, dx
 	mov ax, 0x1301
@@ -401,10 +369,8 @@ printString:
 
 	int 0x10
 
-	pop dx
-	pop bx
-	pop ax
-
-	ret	
+last:
+	hlt
+	jmp last
 
 ; end of blfunc.asm	

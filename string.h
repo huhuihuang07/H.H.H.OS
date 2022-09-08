@@ -10,6 +10,7 @@ size_t strlen(const char* str);
 int strcmp(const char* lhs, const char* rhs);
 char* strchr(const char* str, int ch);
 char* strrchr(const char* str, int ch);
+int strfind(const char* src, const char* findStr);
 
 char* strdup(const char* src);
 char* strndup(const char* src, size_t strlen);

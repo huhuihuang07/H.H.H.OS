@@ -21,13 +21,31 @@ BLMain:
 	call loadTarget
 
 	cmp dx, 0
-	jz Error
+	jnz Enter
 
-	jmp 0:LoadAddress
+	mov bp, FindErrorStr
+	mov cx, FindErrorLen
+	jmp print
+
+Enter:
+	mov eax, LoadAddress
+	add eax, dword [BaseOfStack + DIR_FileSize]
+	cmp eax, BaseOfKernel
+	jna Next
+
+	mov bp, LenErrorStr
+	mov cx, LenErrorLen
+	jmp print
 	
+Next:
+	jmp 0:LoadAddress
+
 DefineStr:
-	ErrorStr db "Not find loader ..."
-	ErrorLen equ $ - ErrorStr
+	FindErrorStr db "find error"
+	FindErrorLen equ $ - FindErrorStr
+
+	LenErrorStr db "len error"
+	LenErrorLen equ $ - LenErrorStr
 
 Buffer:
 	times 510 - ($ -$$) db 0x00
