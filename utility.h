@@ -61,5 +61,9 @@
 	((a) <= (b) ? (a) : (b))
 #endif
 
-void Delay(u8 n);
+#ifndef Clamp
+#define Clamp(v, a, b) \
+	Max(a, Min(v, b))
+#endif	
+
 #endif //!UTILITY_H

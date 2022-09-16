@@ -22,12 +22,12 @@ char* strncpy(char* dest, const char* src, size_t strlen)
 	char* lptr = dest;
 	char* rptr = (char*)src;
 
-	while((*lptr++ = *rptr++) && strlen)
+	while((*lptr++ = *rptr++) && !IsEqual(strlen, 0))
 	{
 		strlen--;
 	}
 
-	if (strlen)
+	if(!IsEqual(strlen, 0))
 	{
 		while(--strlen){
 			*lptr++ = EOS;
@@ -197,7 +197,7 @@ static int* make_pmt(const char* str)
 
 		if(IsEqual(str[i], str[ll]))
 		{
-			ll++;
+			++ll;
 		}
 
 		ret[i] = ll;

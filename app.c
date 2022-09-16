@@ -14,11 +14,9 @@ void TaskA()
 
 		putchar('a' + i);
 
-		Wait("TaskB");
-
 		i = (i + 1) % 26;
 
-		Delay(1);
+		Sleep(10000);
 	}
 }
 
@@ -26,7 +24,7 @@ void TaskB()
 {
 	static u32 i = 0;
 
-	while(i < 10){
+	while(true){
 
 		SetPrintPos(0, 3);
 
@@ -36,7 +34,7 @@ void TaskB()
 
 		i = (i + 1) % 26;
 
-		Delay(1);
+		Sleep(100);
 	}
 }
 
@@ -54,7 +52,7 @@ void TaskC()
 
 		i = (i + 1) % 26;
 
-		Delay(1);
+		Sleep(1000);
 	}
 }
 
@@ -72,18 +70,16 @@ void TaskD()
 
 		i = (i + 1) % 26;
 
-		Delay(1);
+		Sleep(100000);
 	}
 }
 
 void AMain()
 {
-	if(IsEqual(RegisterApp("TaskA", TaskA, 250), true))
+	if(IsEqual(RegisterApp("TaskA", TaskA, 255), true))
 	{
-		RegisterApp("TaskB", TaskB, 240);
+		RegisterApp("TaskB", TaskB, 255);
 		RegisterApp("TaskC", TaskC, 255);
 		RegisterApp("TaskD", TaskD, 255);
 	}
-
-	Wait("TaskB");
 }

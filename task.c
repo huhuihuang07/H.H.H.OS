@@ -18,15 +18,15 @@ static Queue* pRunningQueue = nullptr;
 
 static Queue* pWaitingQueue = nullptr;
 
+static List* pSleepList = nullptr;
+
 static List* pTaskPool = nullptr;
 
 static TaskNode* pIdleTaskNode = nullptr;
 
 static void IdleTask()
 {
-	while(true){
-		Delay(1);
-	}
+	while(true);
 }
 
 static void TaskEntry()
@@ -87,6 +87,10 @@ static void AppInfoToTaskDataStruct()
 	pWaitingQueue = malloc(sizeof(Queue));
 
 	Queue_Init(pWaitingQueue);
+
+	pSleepList = malloc(sizeof(List));
+
+	List_Init(pSleepList);
 
 	pTaskPool = malloc(sizeof(List));
 
@@ -190,15 +194,36 @@ static void RunningToReady()
 {
 	if(!IsEqual(gCurrentTaskAddr, StructOffset(pIdleTaskNode, TaskNode, task)))
 	{
-		TaskNode* taskNode = List_Node(Queue_Front(pRunningQueue), TaskNode, head.qHead);
-
-		if(IsEqual(gCurrentTaskAddr, StructOffset(taskNode, TaskNode, task)))
+		if(IsEqual(++gCurrentTaskAddr->current, gCurrentTaskAddr->total))
 		{
-			++taskNode->task.current;
+			Queue_Add(pReadyQueue, Queue_Remove(pRunningQueue));
+		}
+	}
+}
 
-			if(IsEqual(taskNode->task.current, taskNode->task.total))
+static void SleepToReady()
+{
+	if(!List_IsEmpty(pSleepList))
+	{
+		ListNode* curListNode = pSleepList->next, *preListNode = nullptr;
+
+		TaskNode* taskNode = nullptr;
+
+		while(!IsEqual(curListNode, pSleepList))
+		{
+			taskNode = List_Node(curListNode, TaskNode, head.qHead);
+
+			if(IsEqual(--taskNode->task.ticks, 0))
 			{
-				Queue_Add(pReadyQueue, Queue_Remove(pRunningQueue));
+				preListNode = curListNode->next;
+
+				List_DelNode(curListNode);
+
+				Queue_Add(pReadyQueue, StructOffset(taskNode, TaskNode, head.qHead));
+
+				curListNode = preListNode;
+			}else{
+				curListNode = curListNode->next;
 			}
 		}
 	}
@@ -215,7 +240,7 @@ void LaunchTask()
 	
 	PrepareForRun(gCurrentTaskAddr);
 
-	TimerInit();
+	ClockInit();
 
 	RunTask(gCurrentTaskAddr);
 }
@@ -304,6 +329,15 @@ static void RunningToWait(Queue* pWaitQueue)
 	}
 }
 
+static void RunningToSleep(u32 ms)
+{
+	u32 ticks = ms / jiffy;
+
+	gCurrentTaskAddr->ticks = ticks > 0 ? ticks : 1;
+
+	List_Add(pSleepList, Queue_Remove(pRunningQueue));
+}
+
 static bool FindTarget(ListNode* lhs, ListNode* rhs)
 {
 	return IsEqual(strcmp(List_Node(lhs, TaskNode, head.lHead)->task.name, List_Node(rhs, TaskNode, head.lHead)->task.name), 0);
@@ -343,6 +377,20 @@ static bool WaitTask(const char* name)
 	return ret;
 }
 
+static bool SleepTask(u32 ms)
+{
+	bool ret = !IsEqual(gCurrentTaskAddr, StructOffset(pIdleTaskNode, TaskNode, task));
+
+	if(ret)
+	{
+		RunningToSleep(ms);
+
+		Schedule();
+	}
+
+	return ret;
+}
+
 u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 {
 	u32 ret = -1;
@@ -353,6 +401,7 @@ u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 			break;
 		}
 		case SysCall_Task_Schedule : {
+			SleepToReady();
 			RunningToReady();
 			Schedule();
 			break;
@@ -367,6 +416,10 @@ u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 		}
 		case SysCall_Task_Wait : {
 			WaitTask((void*)(param1));
+			break;
+		}
+		case SysCall_Task_Sleep : {
+			SleepTask(param1);
 			break;
 		}
 		default: 

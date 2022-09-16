@@ -42,3 +42,8 @@ void Wait(const char* name)
 {
 	SysCall(SysCall_Task, SysCall_Task_Wait, (u32)(name), (u32)(nullptr));
 }
+
+void Sleep(u32 ms)
+{
+	SysCall(SysCall_Task, SysCall_Task_Sleep, ms, (u32)(nullptr));
+}

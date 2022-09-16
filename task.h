@@ -47,7 +47,8 @@ typedef struct
 	pFunc tMain;                  
 	Queue* wait;                  
 	int8* stack;                  
-	char* name;                   
+	char* name;        
+	u32 ticks;           
 	u16 ldtSelector;              
 	u16 total;					  
 	u16 current;               
@@ -77,6 +78,7 @@ typedef enum{
 	SysCall_Task_PrintInfo = 2,
 	SysCall_Task_Register = 3,
 	SysCall_Task_Wait = 4,
+	SysCall_Task_Sleep = 5,
 }SysCall_TASK_CMD;
 
 static TaskNode* AppInfoToTaskNode(AppInfo* appInfo);
@@ -101,15 +103,21 @@ static void ReadyToRunning();
 
 static void RunningToReady();
 
+static void SleepToReady();
+
 static void WaitToReady(Queue* pWaitQueue);
 
 static void RunningToWait(Queue* pWaitQueue);
+
+static void RunningToSleep(u32 ms);
 
 static bool FindTarget(ListNode* lhs, ListNode* rhs);
 
 static TaskNode* FindTaskByName(const char* name);
 
 static bool WaitTask(const char* name);
+
+static bool SleepTask(u32 ms);
 
 u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 
@@ -119,8 +127,10 @@ void LaunchTask();
 
 extern void RunTask(volatile const Task* const pTask);
 
-extern void TimerInit();
+extern void ClockInit();
 
 extern void AMain();
+
+extern u32 jiffy;
 
 #endif //!TASK_H

@@ -12,6 +12,7 @@ void SystemCallModuleInit();
 void Exit(int status);
 void Debug();
 void Wait(const char* name);
+void Sleep(u32 ms);
 bool RegisterApp(const char* name, pFunc tMain, u8 priority);
 
 extern u32 SysCall(u32 type, u32 cmd, u32 param1, u32 param2);  
