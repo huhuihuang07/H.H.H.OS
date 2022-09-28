@@ -113,7 +113,7 @@ void* memset(void* dest, int ch, size_t count)
 {
 	assert((!IsEqual(dest, nullptr)));
 
-	int* ptr = (int*)dest;
+	char* ptr = (char*)dest;
 
 	while(count--){
 		*ptr++ = ch;

@@ -16,7 +16,7 @@ void TaskA()
 
 		i = (i + 1) % 26;
 
-		Sleep(10000);
+		Sleep(1000);
 	}
 }
 

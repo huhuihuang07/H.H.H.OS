@@ -9,6 +9,8 @@ extern gMemSize
 
 extern KMain
 extern InitScreen
+extern MemoryModuleInit
+extern InterruptModuleInit
 
 [section .text]
 [bits 32]
@@ -17,6 +19,10 @@ _start:
 	call InitScreen
 
 	call InitGlobal
+
+	call InterruptModuleInit
+
+	call MemoryModuleInit
 
 	mov eax, HellStr
 	push eax

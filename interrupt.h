@@ -3,7 +3,13 @@
 
 #include "type.h"
 
-extern void DefaultHandlerEntry();
+#ifndef FaultSize
+#define FaultSize 0x16
+#endif
+
+extern void DefaultInterruptHandlerEntry();
+
+extern void DefaultFaultHandlerEntry();
 
 extern void DebugInit();
 

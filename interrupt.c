@@ -22,7 +22,12 @@ bool InterruptGateInit()
 
 	for(u16 i = 0; (!IsEqual(i, gIdtInfo.size)) && ret; ++i)
 	{
-		ret = SetInterruptGate(i, (u32)(DefaultHandlerEntry));
+		if(i < FaultSize){
+			ret = SetInterruptGate(i, (u32)(DefaultFaultHandlerEntry));
+		}else{
+			ret = SetInterruptGate(i, (u32)(DefaultInterruptHandlerEntry));
+		}
+		
 	}
 
 	return ret;

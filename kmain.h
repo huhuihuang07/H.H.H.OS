@@ -11,8 +11,6 @@ extern void InterruptModuleInit();
 
 extern void SystemCallModuleInit();
 
-extern void MemoryModuleInit();
-
 extern void TaskModuleInit();
 
 extern void LaunchTask();

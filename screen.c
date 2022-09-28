@@ -1,4 +1,5 @@
 #include "screen.h"
+#include "const.h"
 #include "io.h"
 #include "string.h"
 #include "utility.h"
@@ -61,11 +62,21 @@ static void scrollUp()
 
 	if(address < SCREEN_MEM_SIZE)
 	{
-		memset((void*)(SCREEN_MEM_BASE + address), SCREEN_ERASER, SCREEN_WIDTH);
+		u16* base = (u16*)(SCREEN_MEM_BASE + address);
+
+		for(int i = 0; !IsEqual(i, SCREEN_WIDTH); ++i)
+		{
+			base[i] = SCREEN_ERASER;
+		}
 	}else{
 		memcpy((void*)(SCREEN_MEM_BASE), (void*)(SCREEN_MEM_BASE + (SCREEN_POS * SCREEN_WIDTH << 1)), (SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1);
 
-		memset((void*)(SCREEN_MEM_BASE + ((SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1)), SCREEN_ERASER, SCREEN_WIDTH);
+		u16* base = (u16*)(SCREEN_MEM_BASE + ((SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1));
+
+		for(int i = 0; !IsEqual(i, SCREEN_WIDTH); ++i)
+		{
+			base[i] = SCREEN_ERASER;
+		}
 
 		SCREEN_POS = 0;
 	}

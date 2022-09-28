@@ -256,7 +256,7 @@ CODE32_SEGMENT:
 	mov fs, ax
 
 	mov ss, ax
-	mov esp, BaseOfBoot
+	mov esp, BaseOfLoader
 
 	jmp dword FlatModeCodeSelector : BaseOfKernel
 Code32SegmentLen     equ       $ - CODE32_SEGMENT
