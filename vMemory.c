@@ -9,9 +9,7 @@ void vMemoryModuleInit()
 
 	memset(pde, 0, PAGE_SIZE);
 
-	u32 size = Min(gMemSize / PDE_SIZE, PAGE_MAX - 1);
-
-	for(u32 i = 0; !IsEqual(i, size); ++i)
+	for(u32 i = 0; !IsEqual(i, 1); ++i)
 	{
 		page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
 
