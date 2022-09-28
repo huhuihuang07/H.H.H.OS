@@ -125,13 +125,15 @@ void PageFault(u32 error)
 {
 	page_error_code_t* pError = (page_error_code_t*)(&error);
 
-	printf("%s error : %p vAddr : %p\n", __FUNCTION__, error, GetCr2());
+	printf("%s error : %p ", __FUNCTION__, error);
 
 	if(IsEqual(pError->present, 0))
 	{
 		u32 vAddr = GetCr2();
 
-		u32 pAddr = vAddr;
+		u32 pAddr = vAddr > (memoryBase + memorySize) ? (u32)(PMemAlloc(nullptr)) : vAddr;
+
+		printf("vAddr : %p ==> pAddr : %p\n", vAddr, pAddr);
 
 		LinkPage(vAddr, pAddr);
 	}
