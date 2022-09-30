@@ -67,6 +67,7 @@ void PageFault(u32 error);
 
 void LinkPage(u32 vAddr, u32 pAddr);
 void UnLinkPage(u32 vAddr);
+void* CreatePDE();
 
 static page_entry_t* GetPDE();
 static page_entry_t* GetPTE(u32 vAddr, bool create);

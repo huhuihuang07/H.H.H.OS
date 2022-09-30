@@ -76,15 +76,10 @@ void TaskD()
 
 void AMain()
 {
-
-	int* p = (int*)(0x12345678);
-
-	*p = 65530;
-
-	// if(IsEqual(RegisterApp("TaskA", TaskA, 255), true))
-	// {
-	// 	RegisterApp("TaskB", TaskB, 255);
-	// 	RegisterApp("TaskC", TaskC, 255);
-	// 	RegisterApp("TaskD", TaskD, 255);
-	// }
+	if(IsEqual(RegisterApp("TaskA", TaskA, 255), true))
+	{
+		RegisterApp("TaskB", TaskB, 255);
+		RegisterApp("TaskC", TaskC, 255);
+		RegisterApp("TaskD", TaskD, 255);
+	}
 }

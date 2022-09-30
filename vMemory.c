@@ -5,6 +5,15 @@
 
 void vMemoryModuleInit()
 {
+	PageFaultInit();
+
+	SetCr3((u32)(CreatePDE()));
+
+	EnablePage();
+}
+
+void* CreatePDE()
+{
 	page_entry_t* pde = (page_entry_t*)PMemAlloc(nullptr);
 
 	memset(pde, 0, PAGE_SIZE);
@@ -25,11 +34,7 @@ void vMemoryModuleInit()
 
 	SetPageEntry(AddrOffset(pde, PAGE_MAX - 1), PGEIndex(pde));
 
-	PageFaultInit();
-
-	SetCr3((u32)(pde));
-
-	EnablePage();
+	return (void*)(pde);
 }
 
 static void SetPageEntry(page_entry_t* entry, u32 index)
@@ -121,9 +126,7 @@ static u32 GetCr2()
 
 void PageFault(u32 error)
 {
-	page_error_code_t* pError = (page_error_code_t*)(&error);
-
-	printf("%s error : %p ", __FUNCTION__, error);
+	page_error_code_t* pError = (page_error_code_t*)(&error);	
 
 	if(IsEqual(pError->present, 0))
 	{
@@ -131,9 +134,9 @@ void PageFault(u32 error)
 
 		u32 pAddr = vAddr > (memoryBase + memorySize) ? (u32)(PMemAlloc(nullptr)) : vAddr;
 
-		printf("vAddr : %p ==> pAddr : %p\n", vAddr, pAddr);
-
 		LinkPage(vAddr, pAddr);
+	}else{
+		printf("%s error : %p ", __FUNCTION__, error);
 	}
 }
 
@@ -195,5 +198,5 @@ static page_entry_t* GetPTE(u32 vAddr, bool create)
 		SetPageEntry(ret, PGEIndex(pte));
 	}
 
-	return (page_entry_t*)(ret->index << 12);
+	return (page_entry_t*)(0x3ff << 22 | (PDEIndex(vAddr) << 12) | 0);
 }
