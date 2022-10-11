@@ -1,6 +1,5 @@
 #include "app.h"
 #include "syscall.h"
-#include "screen.h"
 
 void TaskA()
 {
@@ -8,11 +7,11 @@ void TaskA()
 
 	while(true){
 
-		SetPrintPos(0, 2);
+		// SetPrintPos(0, 2);
 
-		printf("This is TaskA : ");
+		printf("a");
 
-		putchar('a' + i);
+		// putchar('a' + i);
 
 		i = (i + 1) % 26;
 
@@ -26,11 +25,11 @@ void TaskB()
 
 	while(true){
 
-		SetPrintPos(0, 3);
+		// SetPrintPos(0, 3);
 
-		printf("This is TaskB : ");
+		printf("b");
 
-		putchar('a' + i);
+		// putchar('a' + i);
 
 		i = (i + 1) % 26;
 
@@ -44,11 +43,11 @@ void TaskC()
 
 	while(true){
 
-		SetPrintPos(0, 4);
+		// SetPrintPos(0, 4);
 
-		printf("This is TaskC : ");
+		printf("c");
 
-		putchar('a' + i);
+		// putchar('a' + i);
 
 		i = (i + 1) % 26;
 
@@ -62,11 +61,11 @@ void TaskD()
 
 	while(true){
 
-		SetPrintPos(0, 5);
+		// SetPrintPos(0, 5);
 
-		printf("This is TaskD : ");
+		printf("d");
 
-		putchar('a' + i);
+		// putchar('a' + i);
 
 		i = (i + 1) % 26;
 

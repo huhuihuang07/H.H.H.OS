@@ -15,7 +15,7 @@ interface:
 ;                                           段基址         段界限               段属性
 GDT_ENTRY           :      Descriptor         0,            0,                  0
 FLAT_MODE_CODE_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_C + DA_LIMIT_4K + DA_DPL0
-VIDEO32_DESC        :      Descriptor     0xB8000,       0x07FFF,          DA_32 + DA_DRWA + DA_DPL3
+VIDEO32_DESC        :      Descriptor     0xB8000,       0x07FFF,          DA_32 + DA_DRWA + DA_DPL0
 KERNELDATA_DESC     :      Descriptor         0,     KernelDataLen - 1,    DA_32 + DA_DRWA + DA_DPL0
 FLAT_MODE_DATA_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL0
 CODE32_DESC         :      Descriptor         0,   Code32SegmentLen - 1,   DA_32 + DA_C + DA_DPL0

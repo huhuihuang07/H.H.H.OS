@@ -46,6 +46,7 @@
 #define SA_TIG  0 // GDT 全局段描述符表
 #define SA_TIL  4 // LDT 局部段描述符表
 
+#define GDT_UndefinedIndex    0x0000
 #define GDT_FlatModeCodeIndex 0x0001
 #define GDT_Video32Index      0x0002
 #define GDT_KernelDataIndex   0x0003
@@ -55,8 +56,9 @@
 #define GDT_TSSIndex          0x0007
 
 // GDT Selector GDT 选择子
+#define GDT_UndefinedSelector       (GDT_UndefinedIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_FlatModeCodeSelector    (GDT_FlatModeCodeIndex << 3) + SA_TIG + SA_RPL0
-#define GDT_Video32Selector         (GDT_Video32Index << 3) + SA_TIG + SA_RPL3
+#define GDT_Video32Selector         (GDT_Video32Index << 3) + SA_TIG + SA_RPL0
 #define GDT_KernelDataSelector      (GDT_KernelDataIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_FlatModeDataSelector    (GDT_FlatModeDataIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_Code32Selector          (GDT_Code32Index << 3) + SA_TIG + SA_RPL0

@@ -5,7 +5,7 @@
 
 int Kmain(int argc, char* argv[]);
 
-extern u16 printf(const char* format, ...);
+extern u16 print(const char* format, ...);
 
 extern void InterruptModuleInit();
 

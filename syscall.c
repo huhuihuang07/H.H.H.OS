@@ -1,5 +1,7 @@
 #include "syscall.h"
 #include "memory.h"
+#include "screen.h"
+#include "assert.h"
 #include "task.h"
 
 extern void SysCallInit();
@@ -46,4 +48,21 @@ void Wait(const char* name)
 void Sleep(u32 ms)
 {
 	SysCall(SysCall_Task, SysCall_Task_Sleep, ms, (u32)(nullptr));
+}
+
+u16 printf(const char* format, ...)
+{
+	assert(!IsEqual(format, nullptr));
+
+	u16 ret = 0;
+
+	va_list v_arg;
+
+	va_start(v_arg, format);
+
+	ret = SysCall(SysCall_Screen, SysCall_Screen_Printf, (u32)(format), (u32)(v_arg));
+
+	va_end(v_arg);
+
+	return ret;
 }

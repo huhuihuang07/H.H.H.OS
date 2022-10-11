@@ -42,8 +42,9 @@ SA_TIG equ 0 ; GDT 全局段描述符表
 SA_TIL equ 4 ; LDT 局部段描述符表
 
 ; GDT Selector
+UndefinedSelector      equ (0x0000 << 3) + SA_TIG + SA_RPL0
 FlatModeCodeSelector   equ (0x0001 << 3) + SA_TIG + SA_RPL0
-Video32Selector        equ (0x0002 << 3) + SA_TIG + SA_RPL3
+Video32Selector        equ (0x0002 << 3) + SA_TIG + SA_RPL0
 KernelDataSelector     equ (0x0003 << 3) + SA_TIG + SA_RPL0
 FlatModeDataSelector   equ (0x0004 << 3) + SA_TIG + SA_RPL0
 Code32Selector         equ (0x0005 << 3) + SA_TIG + SA_RPL0

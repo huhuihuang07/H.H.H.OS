@@ -136,7 +136,7 @@ void PageFault(u32 error)
 
 		LinkPage(vAddr, pAddr);
 	}else{
-		printf("%s error : %p ", __FUNCTION__, error);
+		print("%s error : %p ", __FUNCTION__, error);
 	}
 }
 

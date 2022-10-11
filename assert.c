@@ -7,7 +7,7 @@ void assertionFailure(const char *exp, const char *file, u32 line)
 
 	SetPrintPos(0, 0);
 
-	printf(
+	print(
 		"--> assert(%s) failed!!!\n"
 		"--> file : %s\n"
 		"--> line : %d\n",

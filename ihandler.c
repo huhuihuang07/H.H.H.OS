@@ -23,12 +23,12 @@ void PageFaultHandler(u32 error)
 
 void DefaultInterruptHandler()
 {
-	printf("%s\n", __FUNCTION__);
+	print("%s\n", __FUNCTION__);
 }
 
 void DefaultFaultHandler(u32 error)
 {
-	printf("%s ==> error : %p\n", __FUNCTION__, error);
+	print("%s ==> error : %p\n", __FUNCTION__, error);
 }
 
 u32 SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
@@ -38,6 +38,10 @@ u32 SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
 	switch(type){
 		case SysCall_Task : {
 			ret = TaskCallHandler(cmd, param1, param2); 
+			break;
+		}
+		case SysCall_Screen : {
+			ret = ScreenCallHandler(cmd, param1, param2); 
 			break;
 		}
 		default:

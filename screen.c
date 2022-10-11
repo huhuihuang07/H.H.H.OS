@@ -289,7 +289,7 @@ u16 printk(const char* format, va_list v_arg)
 	return ret;
 }
 
-u16 printf(const char* format, ...)
+u16 print(const char* format, ...)
 {
 	assert(!IsEqual(format, nullptr));
 
@@ -302,6 +302,22 @@ u16 printf(const char* format, ...)
 	ret = printk(format, v_arg);
 
 	va_end(v_arg);
+
+	return ret;
+}
+
+u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2)
+{
+	u32 ret = 0;
+
+	switch(cmd){
+		case SysCall_Screen_Printf : {
+			ret = printk((const char*)(param1), (va_list)(param2));
+			break;
+		}
+		default : 
+			break;
+	}
 
 	return ret;
 }

@@ -60,6 +60,7 @@ void DefaultFaultHandler(u32 error);
 
 extern void SystemCall(u32 param);
 extern u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
+extern u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2);
 extern void PageFault(u32 error);
 
 #endif //!IHANDLER_H

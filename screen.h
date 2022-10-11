@@ -66,6 +66,10 @@ typedef struct{
 	PrintColor color;
 }PrintInfo;
 
+typedef enum{
+	SysCall_Screen_Printf = 0,
+}SysCall_SCREEN_CMD;
+
 void InitScreen();
 
 bool ClearScreen();
@@ -78,7 +82,9 @@ u16 PrintAddress(u32 n);
 
 u8 putchar(char c);
 u16 printk(const char* format, va_list v_arg);
-u16 printf(const char* format, ...);
+u16 print(const char* format, ...);
+
+u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2);
 
 extern int printChar(const u32 position, const u16 value);
 

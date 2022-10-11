@@ -22,9 +22,8 @@ extern SendEOI
 
 %macro CheckRPL 0
 	push ax
-	mov ax, ds
-	and ax, 0x0003
-	cmp ax, 0x0003
+	mov ax, gs
+	cmp ax, 0
 	pop ax
 %endmacro
 
