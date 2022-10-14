@@ -2,7 +2,7 @@
 #define IHANDLER_H
 
 #include "interrupt.h"
-#include "8259A.h"
+#include "pic.h"
 
 // define External interrupt
 #define TimerInterrupt      IRQ_CLOCK

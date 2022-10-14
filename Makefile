@@ -15,7 +15,7 @@ kernelSrc := kmain.c \
 			screen.c \
 			kernel.c \
 			string.c \
-			8259A.c  \
+			pic.c  \
 			interrupt.c \
 			ihandler.c \
 			utility.c \

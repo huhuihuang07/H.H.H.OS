@@ -1,5 +1,5 @@
-#ifndef I8259A_H
-#define I8259A_H
+#ifndef PIC_H
+#define PIC_H
 
 #include "type.h"
 
@@ -51,7 +51,7 @@
 #define PIC_EOI 0x20      // 通知中断控制器中断结束
 #define PIC_CLOSE 0xff    // 关闭所有中断
 
-void Init8259A();
+void InitPIC();
 u8 ReadIMR(u16 port);
 void WriteIMR(u16 port, u8 value);
 void SendEOI(u16 port);
@@ -59,4 +59,4 @@ void SendEOI(u16 port);
 void SetInterruptMask(u32 irq, State state);
 void SetIFState(State state);
 
-#endif //!I8259A_H
+#endif //!PIC_H

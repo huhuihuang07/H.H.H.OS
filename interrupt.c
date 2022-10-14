@@ -2,7 +2,7 @@
 #include "utility.h"
 #include "assert.h"
 #include "kernel.h"
-#include "8259A.h"
+#include "pic.h"
 
 bool SetInterruptGate(u8 InterruptVectorNumber, u32 Handlerfunc)
 {
@@ -39,5 +39,5 @@ void InterruptModuleInit()
 
 	DebugInit();
 
-	Init8259A();
+	InitPIC();
 }

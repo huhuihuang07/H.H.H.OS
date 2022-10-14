@@ -1,4 +1,4 @@
-#include "8259A.h"
+#include "pic.h"
 #include "utility.h"
 #include "assert.h"
 #include "io.h"
@@ -61,14 +61,13 @@ void SetInterruptMask(u32 irq, State state)
 	}
 }
 
-void Init8259A()
+void InitPIC()
 {
 	// initialize Master 8259A
 	outb(MASTER_ICW1_PORT, 0b00010001);    // ICW1: 边沿触发, 级联 8259, 需要ICW4.
 	outb(MASTER_ICW2_PORT, IRQ_MASTER_NR); // ICW2: 起始中断向量号 0x20
 	outb(MASTER_ICW3_PORT, 0b00000100);    // ICW3: IR2接从片.
 	outb(MASTER_ICW4_PORT, 0b00010001);    // ICW4: 特殊全嵌套, 非缓冲数据连接, 手动结束中断
-										   // 注: 由于进入中断后关闭了IF, 所以特殊全嵌套模式 无用(低优先级中断并不会被高优先级中断打断)
 
 	// initialize Slave 8259A
 	outb(SLAVE_ICW1_PORT, 0b00010001);     // ICW1: 边沿触发, 级联 8259, 需要ICW4.
