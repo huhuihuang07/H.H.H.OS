@@ -10,26 +10,24 @@ char* strcpy(char* dest, const char* src)
 	char* lptr = dest;
 	char* rptr = (char*)src;
 
-	while(*lptr++ = *rptr++);
+	while(!IsEqual(*lptr++ = *rptr++, EOS));
 
 	return dest;
 }
 
-char* strncpy(char* dest, const char* src, size_t strlen)
+char* strncpy(char* dest, const char* src, size_t n)
 {
 	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
 
 	char* lptr = dest;
 	char* rptr = (char*)src;
 
-	while((*lptr++ = *rptr++) && !IsEqual(strlen, 0))
-	{
-		strlen--;
-	}
+	while((!IsEqual(*lptr++ = *rptr++, EOS)) && (!IsEqual(n--, 0)));
 
-	if(!IsEqual(strlen, 0))
+	if(!IsEqual(n, 0))
 	{
-		while(--strlen){
+		while((!IsEqual(n--, 0)))
+		{
 			*lptr++ = EOS;
 		}
 	}
@@ -41,9 +39,20 @@ char* strcat(char* dest, const char* src)
 {
 	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
 
-	char* ptr = dest + strlen(dest);
+	char* ptr = AddrOffset(dest, strlen(dest));
 
 	strcpy(ptr, src);
+
+	return dest;
+}
+
+char* strncat(char* dest, const char* src, size_t n)
+{
+	assert((!IsEqual(dest, nullptr)) && (!IsEqual(src, nullptr)));
+
+	char* ptr = AddrOffset(dest, strlen(dest));
+
+	strncpy(ptr, src, n);
 
 	return dest;
 }
@@ -54,16 +63,30 @@ size_t strlen(const char* str)
 
 	char* ptr = (char*)str;
 
-	while(*ptr++);
+	while(!IsEqual(*ptr++, EOS));
 
-	return (ptr - str) - 1;
+	return AddrIndex(str, ptr) - 1;
 }
 
 int strcmp(const char* lhs, const char* rhs)
 {
 	assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
 
-	while((IsEqual(*lhs, *rhs)) && (*lhs) && (*rhs)){
+	while(IsEqual(*lhs, *rhs) && (!IsEqual(*lhs, EOS)) && (!IsEqual(*rhs, EOS)))
+	{
+		lhs++;
+		rhs++;
+	}
+
+	return *lhs < *rhs ? -1 : *lhs > *rhs;
+}
+
+int strncmp(const char* lhs, const char* rhs, size_t n)
+{
+	assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
+
+	while((!IsEqual(n--, 0)) && IsEqual(*lhs, *rhs) && (!IsEqual(*lhs, EOS)) && (!IsEqual(*rhs, EOS)))
+	{
 		lhs++;
 		rhs++;
 	}
@@ -77,7 +100,8 @@ char* strchr(const char* str, int ch)
 
 	char* ptr = (char*)str;
 
-	while((!IsEqual(*ptr, ch)) && (*ptr)){
+	while((!IsEqual(*ptr, ch)) && (!IsEqual(*ptr, EOS)))
+	{
 		++ptr;
 	}
 
@@ -88,9 +112,10 @@ char* strrchr(const char* str, int ch)
 {
 	assert((!IsEqual(str, nullptr)));
 
-	char* ptr = (char*)str + strlen(str);
+	char* ptr = AddrOffset(str, strlen(str));
 
-	while((!IsEqual(*ptr, ch)) && (!IsEqual(str, ptr))){
+	while((!IsEqual(*ptr, ch)) && (!IsEqual(str, ptr)))
+	{
 		--ptr;
 	}
 
@@ -104,7 +129,7 @@ int memcmp(const void* lhs, const void* rhs, size_t count)
 	char* lptr = (char*)lhs;
 	char* rptr = (char*)rhs;
 
-	while((count --) && (*lptr++ = *rptr++));
+	while((!IsEqual(count--, 0)) && IsEqual(*lptr++, *rptr++));
 
 	return *lptr < *rptr ? -1 : *lptr > *rptr;
 }
@@ -115,7 +140,8 @@ void* memset(void* dest, int ch, size_t count)
 
 	char* ptr = (char*)dest;
 
-	while(count--){
+	while(!IsEqual(count--, 0))
+	{
 		*ptr++ = ch;
 	}
 
@@ -129,9 +155,10 @@ void* memcpy(void* dest, const void* src, size_t count)
 	char* lptr = (char*)dest;
 	char* rptr = (char*)src;
 
-	if(lptr <= rptr){
-
-		while(count--){
+	if(lptr <= rptr)
+	{
+		while((!IsEqual(count--, 0)))
+		{
 			*lptr++ = *rptr++;
 		}
 
@@ -139,7 +166,8 @@ void* memcpy(void* dest, const void* src, size_t count)
 		lptr += count - 1;
 		rptr += count - 1;
 
-		while(count--){
+		while((!IsEqual(count--, 0)))
+		{
 			*lptr-- = *rptr--;
 		}
 	}
@@ -153,7 +181,8 @@ void* memchr(const void* str, int ch, size_t count)
 	
 	char* ptr = (char*)str;
 
-	while((count--) && (!IsEqual(*ptr, ch))){
+	while((!IsEqual(count--, 0)) && (!IsEqual(*ptr, ch)))
+	{
 		++ptr;
 	}
 
@@ -169,13 +198,13 @@ char* strdup(const char* src)
 	return strcpy(ret, src);
 }
 
-char* strndup(const char* src, size_t strlen)
+char* strndup(const char* src, size_t n)
 {
 	assert(!IsEqual(src, nullptr));
 
-	char* ret = malloc(strlen + 1);
+	char* ret = malloc(n + 1);
 
-	return strncpy(ret, src, strlen + 1);
+	return strncpy(ret, src, n + 1);
 }
 
 static int* make_pmt(const char* str)
@@ -206,27 +235,27 @@ static int* make_pmt(const char* str)
 	return ret;
 }
 
-int strfind(const char* src, const char* findStr)
+int strfind(const char* src, const char* needle)
 {
-	assert((!IsEqual(src, nullptr)) && (!IsEqual(findStr, nullptr)));
+	assert((!IsEqual(src, nullptr)) && (!IsEqual(needle, nullptr)));
 
-	int sLen = strlen(src), fLen = strlen(findStr), i = 0, j = 0;
+	int sLen = strlen(src), fLen = strlen(needle), i = 0, j = 0;
 
 	if((fLen <= 0) || (fLen > sLen))
 	{
 		return -1;
 	}
 
-	int* pmt = make_pmt(findStr);
+	int* pmt = make_pmt(needle);
 
 	for(i = 0, j = 0; (!IsEqual(i, fLen)) && (!IsEqual(j, sLen)); ++j)
 	{
-		while((!IsEqual(i, 0) && (!IsEqual(src[j], findStr[i]))))
+		while((!IsEqual(i, 0) && (!IsEqual(src[j], needle[i]))))
 		{
 			i = pmt[i - 1];
 		}
 
-		if(IsEqual(src[j], findStr[i]))
+		if(IsEqual(src[j], needle[i]))
 		{
 			++i;
 		}
@@ -235,4 +264,13 @@ int strfind(const char* src, const char* findStr)
 	free(pmt);
 
 	return IsEqual(i, fLen) ? j - fLen : -1;
+}
+
+char* strstr(const char* src, const char* needle)
+{
+	assert((!IsEqual(src, nullptr)) && (!IsEqual(needle, nullptr)));
+
+	int index = strfind(src, needle);
+
+	return IsEqual(index, -1) ? nullptr : AddrOffset(src, index);
 }

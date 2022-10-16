@@ -4,19 +4,6 @@
 #include "interrupt.h"
 #include "pic.h"
 
-typedef enum{
-	Systerm = 0,
-	User = 3,
-}PrivilegeLevel;
-
-#define INTERRUPT_NUM 256
-
-typedef void (* handler)(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
-
-void DefaultInterruptHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
-
-handler handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
-
 // define External interrupt
 #define TimerInterrupt      IRQ_CLOCK
 
@@ -24,6 +11,19 @@ handler handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
 #define SysCallInterrupt    0x80
 
 #define PageFaultInterrupt  0x0e
+
+typedef enum{
+	Systerm = 0,
+	User = 3,
+}PrivilegeLevel;
+
+#define INTERRUPT_NUM 256
+
+typedef void (* handlerFun)(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
+
+void DefaultInterruptHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
+
+handlerFun handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
 
 #ifndef DeclExternalInterrupt
 #define DeclExternalInterrupt(name) 	 \

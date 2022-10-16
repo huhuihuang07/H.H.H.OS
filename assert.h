@@ -6,11 +6,15 @@
 void assertionFailure(const char *exp, const char *file, u32 line);
 
 #ifndef assert
+#ifdef NODEBUG
+#define assert(exp)  ((void)0)
+#else
 #define assert(exp) \
 		if(exp)     \
 		;           \
 		else        \
 			assertionFailure(#exp, __FILE__,  __LINE__)
+#endif
 #endif
 
 #endif //!ASSERT_H
