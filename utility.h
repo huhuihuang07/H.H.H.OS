@@ -5,12 +5,17 @@
 
 #ifndef AddrOffset
 #define AddrOffset(p, i) \
-		((void*)((u32)(p) + (i) * sizeof(*p)))
+		((void*)((u32)(p) + (i) * sizeof(*(p))))
 #endif
 
 #ifndef AddrIndex
 #define AddrIndex(b, a) \
-		(((u32)(a) - (u32)(b)) / sizeof(*b))
+		(((u32)(a) - (u32)(b)) / sizeof(*(b)))
+#endif
+
+#ifndef ArraySize
+#define ArraySize(a) \
+		(sizeof(a) / sizeof(*(a)))
 #endif		
 
 #ifndef offsetof

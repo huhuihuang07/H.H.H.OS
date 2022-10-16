@@ -7,11 +7,9 @@
 #define FaultSize 0x16
 #endif
 
-extern void DefaultInterruptHandlerEntry();
+#define ENTRY_SIZE 0x30
 
-extern void DefaultFaultHandlerEntry();
-
-extern void DebugInit();
+extern u32 handler_entry_table[ENTRY_SIZE];
 
 void InterruptModuleInit();
 

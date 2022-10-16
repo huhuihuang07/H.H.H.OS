@@ -1,47 +1,16 @@
 %include "common.asm"
 
-global DefaultInterruptHandlerEntry
-global DefaultFaultHandlerEntry
-global TimerHandlerEntry
-global DebugHandlerEntry
-global SysCallHandlerEntry
-global PageFaultHandlerEntry
+global handler_entry_table
+global SysCallHanderEntry
 
-extern DefaultInterruptHandler
-extern DefaultFaultHandler
-extern TimerHandler
-extern DebugHandler
+extern handler_table
 extern SysCallHandler
-extern PageFaultHandler
-
 extern gCurrentTaskAddr
-extern SendEOI
 
-[section .handler]
+[section .text]
 [bits 32]
-
-%macro CheckRPL 0
-	push ax
-	mov ax, gs
-	cmp ax, 0
-	pop ax
-%endmacro
-
-; fault service routine RPL = 0
-%macro BeginFSRRPL0 0
-	sti
-
-	pushad
-
-	push ds
-	push es
-	push fs
-	push gs
-%endmacro
-
-; fault service routine RPL = 3
-%macro BeginFSRRPL3 0
-	sti 
+SysCallHanderEntry:
+    sub esp, 4
 
 	pushad
 
@@ -62,59 +31,19 @@ extern SendEOI
 
 	mov ss, si
 	mov esp, BaseOfLoader
-%endmacro
-
-; interrupt service routine RPL = 0
-%macro BeginISRRPL0 0
+	
 	sti
 
-	pushad
+	push edx
+	push ecx
+	push ebx
+	push eax
 
-	push ds
-	push es
-	push fs
-	push gs
-%endmacro
+	call SysCallHandler
 
-; interrupt service routine RPL = 3
-%macro BeginISRRPL3 0
-	sti
-
-	sub esp, 4
-
-	pushad
-
-	push ds
-	push es
-	push fs
-	push gs
-
-	mov dword [gCurrentTaskAddr], esp
-
-	mov si, Video32Selector
-	mov gs, si
-
-	mov si, FlatModeDataSelector
-	mov ds, si
-	mov es, si
-	mov fs, si
-
-	mov ss, si
-	mov esp, BaseOfLoader
-%endmacro
-
-%macro EndISRRPL0 0
-	pop gs
-	pop fs
-	pop es
-	pop ds
-
-	popad
-
-	retf
-%endmacro
-
-%macro EndISRRPL3 0
+	; save system call return value
+	mov ebx, dword [gCurrentTaskAddr]
+	mov dword [ebx + 0x2c], eax
 
 	mov esp, dword [gCurrentTaskAddr]
 
@@ -127,10 +56,76 @@ extern SendEOI
 
 	add esp, 4
 
-	iret
-%endmacro
+	iret	
+; end of [section .text]
 
-%macro EndFSRRPL0 0
+%macro INTERRUPT_HANDLER 2
+[section .text]
+[bits 32]
+interrupt_%1_handler:
+
+%ifn %2
+    push 0
+%endif
+
+interrupt_%1_entry:
+	pushad
+
+	push ds
+	push es
+	push fs
+	push gs
+
+	mov ecx, dword [esp + 4 * 12]
+
+CheckRPL_%1:
+	mov ax, gs
+	cmp ax, 0
+	jne RPL0_%1
+
+RPL3_%1:
+	mov dword [gCurrentTaskAddr], esp
+
+	mov ax, Video32Selector
+	mov gs, ax
+
+	mov ax, FlatModeDataSelector
+	mov ds, ax
+	mov es, ax
+	mov fs, ax
+
+	mov ss, ax
+	mov esp, BaseOfLoader
+
+	push 3
+
+	jmp next_%1
+
+RPL0_%1:
+	push 0
+
+next_%1:	
+	sti
+
+	push ecx
+	push %1
+
+	mov eax, dword [handler_table + %1 * 4]
+
+	cmp eax, 0
+	je no_call_%1
+
+	call eax
+
+no_call_%1:
+	add esp, 12
+
+	cmp dword [esp - 4], 0
+	je iret_%1
+
+	mov esp, dword [gCurrentTaskAddr]
+
+iret_%1:
 	pop gs
 	pop fs
 	pop es
@@ -140,135 +135,119 @@ extern SendEOI
 
 	add esp, 4
 
-	retf
-%endmacro	
+	iret
+; end of [section .text]	
 
-; Default fault hanlder entry
-DefaultFaultHandlerEntry:
-CheckRPL
-	je DefaultFaultRPL3
+%endmacro
 
-BeginFSRRPL0
-	mov eax, dword [esp + 12 * 4]
+; define interrupt function
+INTERRUPT_HANDLER 0x00, 0; divide by zero
+INTERRUPT_HANDLER 0x01, 0; debug
+INTERRUPT_HANDLER 0x02, 0; non maskable interrupt
+INTERRUPT_HANDLER 0x03, 0; breakpoint
 
-	push eax
+INTERRUPT_HANDLER 0x04, 0; overflow
+INTERRUPT_HANDLER 0x05, 0; bound range exceeded
+INTERRUPT_HANDLER 0x06, 0; invalid opcode
+INTERRUPT_HANDLER 0x07, 0; device not avilable
 
-	call DefaultFaultHandler
+INTERRUPT_HANDLER 0x08, 1; double fault
+INTERRUPT_HANDLER 0x09, 0; coprocessor segment overrun
+INTERRUPT_HANDLER 0x0a, 1; invalid TSS
+INTERRUPT_HANDLER 0x0b, 1; segment not present
 
-	add esp, 4
-EndFSRRPL0
+INTERRUPT_HANDLER 0x0c, 1; stack segment fault
+INTERRUPT_HANDLER 0x0d, 1; general protection fault
+INTERRUPT_HANDLER 0x0e, 1; page fault
+INTERRUPT_HANDLER 0x0f, 0; reserved
 
-DefaultFaultRPL3:
-BeginFSRRPL3
-	mov ebx, dword [gCurrentTaskAddr]
+INTERRUPT_HANDLER 0x10, 0; x87 floating point exception
+INTERRUPT_HANDLER 0x11, 1; alignment check
+INTERRUPT_HANDLER 0x12, 0; machine check
+INTERRUPT_HANDLER 0x13, 0; SIMD Floating - Point Exception
 
-	push dword [ebx + 12 * 4]
+INTERRUPT_HANDLER 0x14, 0; Virtualization Exception
+INTERRUPT_HANDLER 0x15, 1; Control Protection Exception
+INTERRUPT_HANDLER 0x16, 0; reserved
+INTERRUPT_HANDLER 0x17, 0; reserved
 
-	call DefaultFaultHandler
+INTERRUPT_HANDLER 0x18, 0; reserved
+INTERRUPT_HANDLER 0x19, 0; reserved
+INTERRUPT_HANDLER 0x1a, 0; reserved
+INTERRUPT_HANDLER 0x1b, 0; reserved
 
-	add esp, 0x04
-EndISRRPL3	
+INTERRUPT_HANDLER 0x1c, 0; reserved
+INTERRUPT_HANDLER 0x1d, 0; reserved
+INTERRUPT_HANDLER 0x1e, 0; reserved
+INTERRUPT_HANDLER 0x1f, 0; reserved
 
+INTERRUPT_HANDLER 0x20, 0; clock 时钟中断
+INTERRUPT_HANDLER 0x21, 0
+INTERRUPT_HANDLER 0x22, 0
+INTERRUPT_HANDLER 0x23, 0
+INTERRUPT_HANDLER 0x24, 0
+INTERRUPT_HANDLER 0x25, 0
+INTERRUPT_HANDLER 0x26, 0
+INTERRUPT_HANDLER 0x27, 0
+INTERRUPT_HANDLER 0x28, 0; rtc 实时时钟
+INTERRUPT_HANDLER 0x29, 0
+INTERRUPT_HANDLER 0x2a, 0
+INTERRUPT_HANDLER 0x2b, 0
+INTERRUPT_HANDLER 0x2c, 0
+INTERRUPT_HANDLER 0x2d, 0
+INTERRUPT_HANDLER 0x2e, 0
+INTERRUPT_HANDLER 0x2f, 0
 
-; Default interrupt hanlder entry
-DefaultInterruptHandlerEntry:
-CheckRPL
-	je DefaultInterruptRPL3
+[section .data]
+[bits 32]
+handler_entry_table:
+    dd interrupt_0x00_handler
+    dd interrupt_0x01_handler
+    dd interrupt_0x02_handler
+    dd interrupt_0x03_handler
+    dd interrupt_0x04_handler
+    dd interrupt_0x05_handler
+    dd interrupt_0x06_handler
+    dd interrupt_0x07_handler
+    dd interrupt_0x08_handler
+    dd interrupt_0x09_handler
+    dd interrupt_0x0a_handler
+    dd interrupt_0x0b_handler
+    dd interrupt_0x0c_handler
+    dd interrupt_0x0d_handler
+    dd interrupt_0x0e_handler
+    dd interrupt_0x0f_handler
+    dd interrupt_0x10_handler
+    dd interrupt_0x11_handler
+    dd interrupt_0x12_handler
+    dd interrupt_0x13_handler
+    dd interrupt_0x14_handler
+    dd interrupt_0x15_handler
+    dd interrupt_0x16_handler
+    dd interrupt_0x17_handler
+    dd interrupt_0x18_handler
+    dd interrupt_0x19_handler
+    dd interrupt_0x1a_handler
+    dd interrupt_0x1b_handler
+    dd interrupt_0x1c_handler
+    dd interrupt_0x1d_handler
+    dd interrupt_0x1e_handler
+    dd interrupt_0x1f_handler
+    dd interrupt_0x20_handler
+    dd interrupt_0x21_handler
+    dd interrupt_0x22_handler
+    dd interrupt_0x23_handler
+    dd interrupt_0x24_handler
+    dd interrupt_0x25_handler
+    dd interrupt_0x26_handler
+    dd interrupt_0x27_handler
+    dd interrupt_0x28_handler
+    dd interrupt_0x29_handler
+    dd interrupt_0x2a_handler
+    dd interrupt_0x2b_handler
+    dd interrupt_0x2c_handler
+    dd interrupt_0x2d_handler
+    dd interrupt_0x2e_handler
+    dd interrupt_0x2f_handler
 
-BeginISRRPL0
-	call DefaultInterruptHandler
-EndISRRPL0
-
-DefaultInterruptRPL3:
-BeginISRRPL3
-	call DefaultInterruptHandler
-EndISRRPL3
-
-; Time interrupt hanlder entry
-TimerHandlerEntry:
-CheckRPL
-	je TimerRPL3
-
-BeginISRRPL0
-	push 0x20
-
-	call SendEOI
-
-	add esp, 4
-EndISRRPL0
-
-TimerRPL3:
-BeginISRRPL3
-	call TimerHandler
-EndISRRPL3
-
-; Debug interrupt hanlder entry
-DebugHandlerEntry:
-CheckRPL
-	je DebugRPL3
-
-BeginISRRPL0
-EndISRRPL0
-
-DebugRPL3:
-BeginISRRPL3
-	push dword [gCurrentTaskAddr]
-
-	call DebugHandler
-
-	add esp, 0x04
-EndISRRPL3
-
-; System Call interrupt hanlder entry
-SysCallHandlerEntry:
-CheckRPL
-	je SysCallRPL3
-
-BeginISRRPL0
-EndISRRPL0
-
-SysCallRPL3:
-
-BeginISRRPL3
-	push edx
-	push ecx
-	push ebx
-	push eax
-
-	call SysCallHandler
-
-	add esp, 0x10
-
-	; save system call return value
-	mov ebx, dword [gCurrentTaskAddr]
-	
-	mov dword [ebx + 0x2c], eax
-EndISRRPL3
-
-; Page Fault handler entry
-PageFaultHandlerEntry:
-CheckRPL
-	je PageFaultRPL3	
-
-BeginFSRRPL0
-	mov eax, dword [esp + 12 * 4]
-
-	push eax
-
-	call PageFaultHandler
-
-	add esp, 4
-EndFSRRPL0
-
-PageFaultRPL3:
-BeginFSRRPL3
-	mov ebx, dword [gCurrentTaskAddr]
-
-	push dword [ebx + 12 * 4]
-
-	call PageFaultHandler
-
-	add esp, 0x04
-EndISRRPL3	
-
-; end of [section .handler]
+ ; end of [section .data]  

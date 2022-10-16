@@ -17,6 +17,7 @@ void Sleep(u32 ms);
 bool RegisterApp(const char* name, pFunc tMain, u8 priority);
 u16 printf(const char* format, ...);
 
+extern void SysCallHanderEntry();
 extern u32 SysCall(u32 type, u32 cmd, u32 param1, u32 param2);  
 
 #endif //!SYSCALL_H

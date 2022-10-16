@@ -281,36 +281,6 @@ static void KillTask()
 	Schedule();
 }
 
-static void PrintTaskInfo(u32 addr)
-{
-	RegisterValue* registerInfo = StructOffset(addr, Task, rv);
-	ClearScreen();
-	SetPrintPos(0, 0);
-	print("-------------------------------\n");
-	print("|=== Commom register value ===|\n");
-	print("| eax --> %p\n", registerInfo->eax);
-	print("| ebx --> %p\n", registerInfo->ebx);
-	print("| ecx --> %p\n", registerInfo->ecx);
-	print("| edx --> %p\n", registerInfo->edx);
-	print("| ebp --> %p\n", registerInfo->ebp);
-	print("| esi --> %p\n", registerInfo->esi);
-	print("| edi --> %p\n", registerInfo->edi);
-	print("|=== Segment register value ==|\n");
-	print("| ds --> 0b%b\n", registerInfo->ds);
-	print("| es --> 0b%b\n", registerInfo->es);
-	print("| fs --> 0b%b\n", registerInfo->fs);
-	print("| gs --> 0b%b\n", registerInfo->gs);
-	print("|==== Combin register value ==|\n");
-	print("| ss --> 0b%b\n", registerInfo->ss);
-	print("| esp --> %p\n", registerInfo->esp);
-	print("| eflags --> %p\n", registerInfo->eflags);
-	print("| cs --> 0b%b\n", registerInfo->cs);
-	print("| eip --> %p\n", registerInfo->eip);
-	print("|==== End register value =====|\n");
-	print("-------------------------------\n");
-	while(true); // TODO
-}
-
 static void WaitToReady(Queue* pWaitQueue)
 {
 	while(!IsEqual(Queue_Length(pWaitQueue), 0))
@@ -404,10 +374,6 @@ u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2)
 			SleepToReady();
 			RunningToReady();
 			Schedule();
-			break;
-		}
-		case SysCall_Task_PrintInfo : {
-			PrintTaskInfo(param1);
 			break;
 		}
 		case SysCall_Task_Register : {

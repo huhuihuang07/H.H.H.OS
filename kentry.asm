@@ -47,9 +47,9 @@ InitGlobal:
 	push ebp
 	mov ebp, esp
 
-	push ax
-	push bx
-	push cx
+	push eax
+	push ebx
+	push ecx
 
 	push ds
 	push es
@@ -84,41 +84,41 @@ InitGlobal:
 
 	; init Memory Info
 	mov cx, 20
-	mov bx, 0
+	xor ebx, ebx
 
 	mov al, byte [es:bx + 16]
-	mov byte [ds:bx + gMemInfo + 0], al
+	mov byte [ds:ebx + gMemInfo + 0], al
 
 readMemInfo:
 	; BaseAddrLow
 	mov eax, dword [es:bx + 17]
-	mov dword [ds:bx + gMemInfo + 1], eax
+	mov dword [ds:ebx + gMemInfo + 1], eax
 
 	; BaseAddrHigh
 	mov eax, dword [es:bx + 21]
-	mov dword [ds:bx + gMemInfo + 5], eax
+	mov dword [ds:ebx + gMemInfo + 5], eax
 
 	; LengthLow
 	mov eax, dword [es:bx + 25]
-	mov dword [ds:bx + gMemInfo + 9], eax
+	mov dword [ds:ebx + gMemInfo + 9], eax
 
 	; LengthHigh
 	mov eax, dword [es:bx + 29]
-	mov dword [ds:bx + gMemInfo + 13], eax
+	mov dword [ds:ebx + gMemInfo + 13], eax
 
 	; Type
 	mov eax, dword [es:bx + 33]
-	mov dword [ds:bx + gMemInfo + 17], eax
+	mov dword [ds:ebx + gMemInfo + 17], eax
 
-	add bx, 0x14
+	add ebx, 0x14
 	loop readMemInfo
 
 	pop es
 	pop ds
 
-	pop cx
-	pop bx
-	pop ax
+	pop ecx
+	pop ebx
+	pop eax
 
 	leave
 	ret	

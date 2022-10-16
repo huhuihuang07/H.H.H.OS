@@ -1,4 +1,5 @@
 #include "syscall.h"
+#include "interrupt.h"
 #include "memory.h"
 #include "screen.h"
 #include "assert.h"
@@ -8,7 +9,7 @@ extern void SysCallInit();
 
 void SystemCallModuleInit()
 {
-	SysCallInit();
+	SetInterruptGate(0x80, (u32)(SysCallHanderEntry));
 }
 
 void Exit(int status)

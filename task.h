@@ -73,12 +73,11 @@ typedef struct{
 }AppInfo;
 
 typedef enum{
-	SysCall_Task_Kill = 0,
+	SysCall_Task_Kill     = 0,
 	SysCall_Task_Schedule = 1,
-	SysCall_Task_PrintInfo = 2,
-	SysCall_Task_Register = 3,
-	SysCall_Task_Wait = 4,
-	SysCall_Task_Sleep = 5,
+	SysCall_Task_Register = 2,
+	SysCall_Task_Wait     = 3,
+	SysCall_Task_Sleep    = 4,
 }SysCall_TASK_CMD;
 
 static TaskNode* AppInfoToTaskNode(AppInfo* appInfo);
@@ -96,8 +95,6 @@ static void TaskEntry();
 static void Schedule();
 
 static void KillTask();
-
-static void PrintTaskInfo(u32 addr);
 
 static void ReadyToRunning();
 

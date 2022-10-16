@@ -4,59 +4,52 @@
 #include "interrupt.h"
 #include "pic.h"
 
+typedef enum{
+	Systerm = 0,
+	User = 3,
+}PrivilegeLevel;
+
+#define INTERRUPT_NUM 256
+
+typedef void (* handler)(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
+
+void DefaultInterruptHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
+
+handler handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
+
 // define External interrupt
 #define TimerInterrupt      IRQ_CLOCK
 
 // define Internal interrupt
-#define DebugInterrupt      0x03
 #define SysCallInterrupt    0x80
 
 #define PageFaultInterrupt  0x0e
 
 #ifndef DeclExternalInterrupt
 #define DeclExternalInterrupt(name) 	 \
-	extern void name##HandlerEntry();    \
+	void name##Handler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel); \
 	void name##Init()                    \
 	{                                    \
-		SetInterruptHandler(name##Interrupt, (u32)name##HandlerEntry); \
-                                                                       \
-        SetInterruptMask(name##Interrupt, Enable);                     \
-	}                                                                  \
-	void name##Handler()
+		handler_table[IRQ_MASTER_NR + name##Interrupt] = name##Handler; \
+                                                                        \
+        SetInterruptMask(name##Interrupt, Enable);                      \
+	}                                                   
 #endif
 
 #ifndef DeclInternalInterrupt
 #define DeclInternalInterrupt(name)      \
-	extern void name##HandlerEntry();    \
+	void name##Handler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel); \
 	void name##Init()                    \
 	{                                    \
-		SetInterruptGate(name##Interrupt, (u32)name##HandlerEntry); \
-	}                                                               \
-	u32 name##Handler()
-#endif	
-
-#ifndef DeclInternalFault
-#define DeclInternalFault(name)      \
-	extern void name##HandlerEntry();    \
-	void name##Init()                    \
-	{                                    \
-		SetInterruptGate(name##Interrupt, (u32)name##HandlerEntry); \
-	}                                                               \
-	void name##Handler(u32 error)
+		handler_table[name##Interrupt] = name##Handler; \
+	}                                                   
 #endif	
 
 // Declare External interrupt handler
-DeclExternalInterrupt(Timer);
-
-// Declare Internal interrupt handler
-DeclInternalInterrupt(Debug);
-DeclInternalInterrupt(SysCall);
+DeclExternalInterrupt(Timer)
 
 // Declare Internal fault handler
-DeclInternalFault(PageFault);
-
-void DefaultInterruptHandler();
-void DefaultFaultHandler(u32 error);
+DeclInternalInterrupt(PageFault)
 
 extern void SystemCall(u32 param);
 extern u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
