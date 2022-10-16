@@ -53,8 +53,6 @@ void Sleep(u32 ms)
 
 u16 printf(const char* format, ...)
 {
-	assert(!IsEqual(format, nullptr));
-
 	u16 ret = 0;
 
 	va_list v_arg;

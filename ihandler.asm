@@ -59,6 +59,12 @@ SysCallHanderEntry:
 	iret	
 ; end of [section .text]
 
+[section .data]
+[bits 32]
+handler_entry_table:
+
+ ; end of [section .data] 
+
 %macro INTERRUPT_HANDLER 2
 [section .text]
 [bits 32]
@@ -136,11 +142,15 @@ iret_%1:
 	add esp, 4
 
 	iret
-; end of [section .text]	
+; end of [section .text]
+
+[section .data]
+[bits 32]
+	dd	interrupt_%1_handler
 
 %endmacro
 
-; define interrupt function
+; define interrupt handler function
 INTERRUPT_HANDLER 0x00, 0; divide by zero
 INTERRUPT_HANDLER 0x01, 0; debug
 INTERRUPT_HANDLER 0x02, 0; non maskable interrupt
@@ -197,57 +207,3 @@ INTERRUPT_HANDLER 0x2c, 0
 INTERRUPT_HANDLER 0x2d, 0
 INTERRUPT_HANDLER 0x2e, 0
 INTERRUPT_HANDLER 0x2f, 0
-
-[section .data]
-[bits 32]
-handler_entry_table:
-    dd interrupt_0x00_handler
-    dd interrupt_0x01_handler
-    dd interrupt_0x02_handler
-    dd interrupt_0x03_handler
-    dd interrupt_0x04_handler
-    dd interrupt_0x05_handler
-    dd interrupt_0x06_handler
-    dd interrupt_0x07_handler
-    dd interrupt_0x08_handler
-    dd interrupt_0x09_handler
-    dd interrupt_0x0a_handler
-    dd interrupt_0x0b_handler
-    dd interrupt_0x0c_handler
-    dd interrupt_0x0d_handler
-    dd interrupt_0x0e_handler
-    dd interrupt_0x0f_handler
-    dd interrupt_0x10_handler
-    dd interrupt_0x11_handler
-    dd interrupt_0x12_handler
-    dd interrupt_0x13_handler
-    dd interrupt_0x14_handler
-    dd interrupt_0x15_handler
-    dd interrupt_0x16_handler
-    dd interrupt_0x17_handler
-    dd interrupt_0x18_handler
-    dd interrupt_0x19_handler
-    dd interrupt_0x1a_handler
-    dd interrupt_0x1b_handler
-    dd interrupt_0x1c_handler
-    dd interrupt_0x1d_handler
-    dd interrupt_0x1e_handler
-    dd interrupt_0x1f_handler
-    dd interrupt_0x20_handler
-    dd interrupt_0x21_handler
-    dd interrupt_0x22_handler
-    dd interrupt_0x23_handler
-    dd interrupt_0x24_handler
-    dd interrupt_0x25_handler
-    dd interrupt_0x26_handler
-    dd interrupt_0x27_handler
-    dd interrupt_0x28_handler
-    dd interrupt_0x29_handler
-    dd interrupt_0x2a_handler
-    dd interrupt_0x2b_handler
-    dd interrupt_0x2c_handler
-    dd interrupt_0x2d_handler
-    dd interrupt_0x2e_handler
-    dd interrupt_0x2f_handler
-
- ; end of [section .data]  

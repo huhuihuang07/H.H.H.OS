@@ -80,7 +80,7 @@ u16 PrintIntDec(int n);
 u16 PrintIntHex(int n);
 u16 PrintAddress(u32 n);
 
-u8 putchar(char c);
+u8 putchar(const char c);
 u16 printk(const char* format, va_list v_arg);
 u16 print(const char* format, ...);
 
