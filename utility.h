@@ -53,7 +53,7 @@
 
 #ifndef TestBit
 #define TestBit(value, pos) \
-		(IsEqual(((value) >> (pos)) & 1, 1))
+		(IsEqual(((value) >> (pos)) & 0x01, 0x01))
 #endif
 
 #ifndef Max

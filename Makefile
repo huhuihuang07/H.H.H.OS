@@ -18,7 +18,6 @@ kernelSrc := kmain.c \
 			pic.c  \
 			interrupt.c \
 			ihandler.c \
-			utility.c \
 			list.c \
 			queue.c \
 			stack.c \
@@ -29,6 +28,7 @@ kernelSrc := kmain.c \
 			memory.c \
 			vMemory.c \
 			pMemory.c \
+			bitmap.c \
 			clock.c
 
 kernelAsm := kentry.asm \

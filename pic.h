@@ -48,8 +48,10 @@
 #define IRQ_MASTER_NR 0x20 // 主片起始向量号
 #define IRQ_SLAVE_NR 0x28  // 从片起始向量号
 
+// End Of Interrupt
 #define PIC_EOI 0x20      // 通知中断控制器中断结束
-#define PIC_CLOSE 0xff    // 关闭所有中断
+// Close All Interrupt
+#define PIC_CAI 0xff      // 关闭所有中断
 
 void InitPIC();
 u8 ReadIMR(u16 port);
@@ -57,6 +59,9 @@ void WriteIMR(u16 port, u8 value);
 void SendEOI(u16 port);
 
 void SetInterruptMask(u32 irq, State state);
-void SetIFState(State state);
+State SetIFState(State state);
+State DisableIF();
+State EnableIF();
+State GetIFState();
 
 #endif //!PIC_H

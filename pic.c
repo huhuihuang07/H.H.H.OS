@@ -18,13 +18,47 @@ void SendEOI(u16 port)
 	outb(port, PIC_EOI);
 }
 
-void SetIFState(State state)
+State GetIFState()
 {
-	if(IsEqual(state, Enable)){
+	u32 eflags = 0;
+
+	asm volatile(
+		"pushfl        \n"
+		"popl     %%eax\n"
+		"movl %%eax, %0\n"
+		: "=r"(eflags)
+		:
+		: "eax"
+	);
+
+	return TestBit(eflags, 9);
+}
+
+State SetIFState(State state)
+{
+	State ret = GetIFState();
+
+	if(IsEqual(state, Enable) && !IsEqual(ret, state))
+	{
 		asm volatile("sti");
-	}else{
+	}
+
+	if(IsEqual(state, Disable) && !IsEqual(ret, state))
+	{
 		asm volatile("cli");
 	}
+
+	return ret;
+}
+
+State DisableIF()
+{
+	return SetIFState(Disable);
+}
+
+State EnableIF()
+{
+	return SetIFState(Enable);
 }
 
 void SetInterruptMask(u32 irq, State state)
@@ -53,7 +87,7 @@ void SetInterruptMask(u32 irq, State state)
 		{
 			u16 value = ReadIMR(SLAVE_IMR_PORT);
 
-			if(IsEqual(value, PIC_CLOSE))
+			if(IsEqual(value, PIC_CAI))
 			{
 				WriteIMR(MASTER_IMR_PORT, SetBit(ReadIMR(MASTER_IMR_PORT), IRQ_CASCADE));
 			}
@@ -76,9 +110,9 @@ void InitPIC()
 	outb(SLAVE_ICW4_PORT, 0b00000001);     // ICW4: 普通全嵌套, 非缓冲数据连接, 手动结束中断
 
 	// close all interrupt
-	WriteIMR(MASTER_IMR_PORT, PIC_CLOSE);
+	WriteIMR(MASTER_IMR_PORT, PIC_CAI);
 
-	WriteIMR(SLAVE_IMR_PORT, PIC_CLOSE);
+	WriteIMR(SLAVE_IMR_PORT, PIC_CAI);
 
 	// open IF
 	SetIFState(Enable);	

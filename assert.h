@@ -7,7 +7,7 @@ void assertionFailure(const char *exp, const char *file, u32 line);
 
 #ifndef assert
 #ifdef NODEBUG
-#define assert(exp)  ((void)0)
+#define assert(exp)
 #else
 #define assert(exp) \
 		if(exp)     \
