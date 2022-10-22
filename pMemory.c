@@ -2,9 +2,10 @@
 #include "kernel.h"
 #include "utility.h"
 #include "assert.h"
+#include "screen.h"
 
 static PMemList gPMemList = {0}; // 定长分配 4K 内存页, 使用引用计数 
-static FMemList gFMemList = {0}; // 定长分配 32bite 内存，不使用引用计数 
+static FMemList gFMemList = {0}; // 定长分配 32bytes 内存，不使用引用计数 
 static VMemList gVMemList = {0}; // 变长分配 不使用引用计数
 
 static VMemList* pVMemList = &gVMemList;
@@ -34,9 +35,9 @@ void pMemoryModuleInit()
 		}
 	}
 
-	assert((pageBase <= PAGE_BASE < (pageBase + pageSize)) && PAGE_IsValid(pageSize));
+	assert((pageBase <= PAGE_BASE < (pageBase + pageSize)));
 
-	u32 PMemSize = pageSize - PAGE_BASE;
+	u32 PMemSize = (pageSize - PAGE_BASE) & ((-1) << 12);
 
 	PMemInit((void*)(PAGE_BASE), PMemSize);
 

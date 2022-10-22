@@ -158,6 +158,11 @@ bool SetPrintColor(PrintColor color)
 	return ret;
 }
 
+PrintColor GetPrintColor()
+{
+	return printInfo.color;
+}
+
 u8 putchar(const char c)
 {
 	bool ret = IsEqual(c, '\n') || IsEqual(c, '\t');

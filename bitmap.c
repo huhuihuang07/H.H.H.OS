@@ -72,13 +72,13 @@ bool BitMap_Scan(BitMap* bitmap, u32 count, u32* start)
 		return true;
 	}
 
-	u32 left = bitmap->length << 3 - index;
+	u32 lastIndex = bitmap->length << 3 + 1;
 
 	u32 nextIndex = index + 1;
 
 	u32 counter = 1;
 
-	while(!IsEqual(left--, 0))
+	while(!IsEqual(lastIndex, nextIndex))
 	{
 		if(BitMap_Test(bitmap, nextIndex))
 		{
