@@ -153,20 +153,20 @@ void UnLinkPage(u32 vAddr)
 
 	page_entry_t* entry = AddrOffset(pte, PTEIndex(vAddr));
 
-	assert(entry->present);
+	assert(IsEqual(entry->present, 1));
 
 	memset(entry, 0, sizeof(*entry));
 
 	bool clear = true;
 
-	for(int i = 0; !IsEqual(i, PAGE_MAX) && clear; ++i)
+	for(int i = 0; !IsEqual(i, PAGE_MAX) && IsEqual(clear, true); ++i)
 	{
 		entry = (page_entry_t*)(AddrOffset(pte, i));
 
 		clear = !IsEqual(entry->present, 1);
 	}
 
-	if(clear)
+	if(IsEqual(clear, true))
 	{
 		PMemFree(pte);
 
@@ -187,7 +187,7 @@ static page_entry_t* GetPTE(u32 vAddr, bool create)
 {
 	page_entry_t* ret = AddrOffset(GetPDE(), PDEIndex(vAddr));
 
-	assert(create || (!create && ret->present));
+	assert(IsEqual(create, true) || (IsEqual(create, false) && IsEqual(ret->present, 1)));
 
 	if(IsEqual(ret->present, 0))
 	{

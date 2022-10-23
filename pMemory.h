@@ -16,7 +16,7 @@
 #endif 
 
 #ifndef PAGE_BASE
-#define PAGE_BASE 0x20000 // 128K, 页表起始位置
+#define PAGE_BASE 0x1a000 // 104K, 页表起始位置
 #endif 
 
 #ifndef PAGE_IsValid

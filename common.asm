@@ -2,7 +2,7 @@
 BaseOfBoot   equ 0x7c00
 BaseOfLoader equ 0x9000
 BaseOfKernel equ 0xa000
-BaseOfAPP    equ 0x20000
+BaseOfAPP    equ 0x1a000
 
 ; Segment Attribute 段属性
 DA_32       equ 0x4000 ; 保护模式下32位段

@@ -20,7 +20,7 @@
 
 #ifndef Index 
 #define Index(i, j) \
-        ((i) * 1024 + (j))
+        ((((u32)(i)) << 10u) + (j))
 #endif		
 
 #ifndef PAGE_MAX

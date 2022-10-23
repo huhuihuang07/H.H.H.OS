@@ -75,6 +75,7 @@ void InitScreen();
 bool ClearScreen();
 bool SetPrintPos(u8 w, u8 h);
 bool SetPrintColor(PrintColor color);
+PrintColor GetPrintColor();
 u16 PrintString(const char* buffer);
 u16 PrintIntDec(int n);
 u16 PrintIntHex(int n);
