@@ -2,13 +2,46 @@
 
 build:
 
+NASM    := nasm
+LD      := ld
+CC      := gcc
+OBJCOPY := objcopy
+
+RM := rm
+DD := dd
+MKDIR := mkdir
+CORPY := cp
+
+SUDO := sudo
+ECHO := echo
+
+BXIMAGE := bximage
+
+MOUNT  := mount 
+UMOUNT := umount
+
+MNTPATH := /mnt
+
+V := @
+
+CFLAGS  := -I. -m32 -fno-builtin -fno-stack-protector -nostdlib
+EFLAGS  := -E -MM
+LDFLAGS := -m elf_i386 -s
+DDFLAGS := bs=512 count=1 conv=notrunc
+RMFLAGS := -rf
+
+MOUNTFLAGS := -o loop
+
+OBJCOPYFLAGS := -O binary -R .note -R .comment -S
+BXIMAGEFLAGS := -q -fd -size=1.44
+
 DIR_DEPS := deps
 DIR_EXES := exes
 DIR_OBJS := objs
 
 DIRS := $(DIR_DEPS) $(DIR_EXES) $(DIR_OBJS)	
 
-Root := $(realpath ..)
+RootDIR := $(realpath ./)
 
 kernelSrc := kmain.c \
 			  task.c \
@@ -59,15 +92,6 @@ commonSrc := common.asm
 
 dataImg := data.img
 
-RM := rm -rf
-
-MOUNT  := mount -o loop
-UMOUNT := umount
-
-MNTPATH := /mnt
-
-CFLAGS := -m32 -fno-builtin -fno-stack-protector -nostdlib
-
 ASM_OBJS := $(patsubst %.asm, %.obj, $(kernelAsm))
 ASM_OBJS := $(addprefix $(DIR_OBJS)/, $(ASM_OBJS))
 
@@ -94,53 +118,53 @@ ifeq ("$(MAKECMDGOALS)", "")
 endif
 
 $(bootBin) : $(bootSrc) $(blfuncSrc) $(commonSrc)
-	nasm $< -o $@
-	dd if=$@ of=$(dataImg) bs=512 count=1 conv=notrunc
+	$(NASM) $< -o $@
+	$(DD) if=$@ of=$(dataImg) $(DDFLAGS)
 
 $(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
-	nasm $< -o $@
-	sudo $(MOUNT) $(dataImg) $(MNTPATH)
-	sudo cp $@ $(MNTPATH)/$(notdir $@)
-	sudo $(UMOUNT) $(MNTPATH)
+	$(NASM) $< -o $@
+	$(SUDO) $(MOUNT) $(MOUNTFLAGS) $(dataImg) $(MNTPATH)
+	$(SUDO) $(CORPY) $(RootDIR)/$@ $(MNTPATH)/$(notdir $@)
+	$(SUDO) $(UMOUNT) $(MNTPATH)
 
 $(DIR_OBJS)/%.o : %.c
-	gcc -I. $(CFLAGS) -c $(filter %.c, $^) -o $@
+	$(CC) $(CFLAGS) -c $(filter %.c, $^) -o $@
 
 $(DIR_OBJS)/%.obj : %.asm $(commonSrc)	
-	nasm -f elf $< -o $@
+	$(NASM) -f elf $< -o $@
 
 $(kernelElf) : $(ASM_OBJS) $(OBJS)
-	ld -m elf_i386 -s -T$(kernelLds) $^ -o $@	
+	$(LD) $(LDFLAGS) -T$(kernelLds) $^ -o $@	
 
 $(kernelBin) : $(kernelElf)
-	objcopy -O binary -R .note -R .comment -S $< $@	
-	sudo $(MOUNT) $(dataImg) $(MNTPATH)
-	sudo cp $@ $(MNTPATH)/$(notdir $@)
-	sudo $(UMOUNT) $(MNTPATH)
+	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@	
+	$(SUDO) $(MOUNT) $(MOUNTFLAGS) $(dataImg) $(MNTPATH)
+	$(SUDO) $(CORPY) $(RootDIR)/$@ $(MNTPATH)/$(notdir $@)
+	$(SUDO) $(UMOUNT) $(MNTPATH)
 
 $(dataImg):
-	bximage $@ -q -fd -size=1.44
+	$(BXIMAGE) $@ $(BXIMAGEFLAGS)
 
 $(DIRS):
-	mkdir $@
+	$(MKDIR) $@
 
 ifeq ("$(wildcard $(DIR_DEPS))", "")
 $(DIR_DEPS)/%.dep : $(DIR_DEPS) %.c
 else
 $(DIR_DEPS)/%.dep : %.c	
 endif
-	@echo "Creating $@ ..."
-	@set -e; \
-	gcc -MM -E $(filter %.c, $^) | sed 's,\(.*\)\.o[ :]*,objs/\1.o : ,g' > $@
+	$(V)$(ECHO) "Creating $@ ..."
+	$(V)set -e; \
+	$(CC) $(EFLAGS) $(filter %.c, $^) | sed 's,\(.*\)\.o[ :]*,objs/\1.o : ,g' > $@
 
 clean:
-	$(RM) $(rmFiles)
-	@echo "clean Success!"
+	$(RM) $(RMFLAGS) $(rmFiles)
+	$(V)$(ECHO) "clean Success!"
 
 build:$(DIR_OBJS) $(dataImg) $(bootBin) $(loadBin) $(kernelBin)
-	@echo "build Success!"
+	$(V)$(ECHO) "build Success!"
 
 rebuild:
-	@$(MAKE) clean
-	@$(MAKE) build
-	@echo "rebuild Success!"
+	$(V)$(MAKE) clean
+	$(V)$(MAKE) build
+	$(V)$(ECHO) "rebuild Success!"

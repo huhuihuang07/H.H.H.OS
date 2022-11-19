@@ -5,9 +5,9 @@
 #include "utility.h"
 #include "assert.h"
 
-static PrintInfo printInfo = {0, 0, SCREEN_GRAY};
+static PrintInfo printInfo = {0, 0, SCREEN_LIGHT_GREY};
 
-static u16 SCREEN_ERASER = (SCREEN_GRAY << 8) | ' ';
+static const u16 SCREEN_ERASER = (SCREEN_LIGHT_GREY << 8) | ' ';
 
 static u16 SCREEN_POS = 0;
 
@@ -143,16 +143,10 @@ bool SetPrintPos(u8 w, u8 h)
 
 bool SetPrintColor(PrintColor color)
 {
-	bool ret = true;
+	bool ret = (SCREEN_INVALID < color) && (color < SCREEN_NUM);
 
-	switch(color){
-		case SCREEN_GRAY   : { printInfo.color = color; break; }
-		case SCREEN_BLUE   : { printInfo.color = color; break; }
-		case SCREEN_GREEN  : { printInfo.color = color; break; }
-		case SCREEN_RED    : { printInfo.color = color; break; }
-		case SCREEN_YELLOW : { printInfo.color = color; break; }
-		case SCREEN_WHITE  : { printInfo.color = color; break; }
-		default : ret = false;
+	if(ret){
+		printInfo.color = color;
 	}
 
 	return ret;
