@@ -20,8 +20,7 @@ static void _List_Del(ListNode* node, ListNode* prev, ListNode* next)
 
 void List_Init(List* list)
 {
-	list->prev = list;
-	list->next = list;
+	list->prev = list->next = list;
 }
 
 void List_Add(List* list, ListNode* node)
