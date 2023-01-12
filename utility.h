@@ -5,32 +5,32 @@
 
 #ifndef AddrOffset
 #define AddrOffset(p, i) \
-		((void*)((u32)(p) + (i) * sizeof(*(p))))
+	((void*)((u32)(p) + (i) * sizeof(*(p))))
 #endif
 
 #ifndef AddrIndex
 #define AddrIndex(b, a) \
-		(((u32)(a) - (u32)(b)) / sizeof(*(b)))
+	(((u32)(a) - (u32)(b)) / sizeof(*(b)))
 #endif
 
 #ifndef ArraySize
 #define ArraySize(a) \
-		(sizeof(a) / sizeof(*(a)))
+	(sizeof(a) / sizeof(*(a)))
 #endif		
 
 #ifndef offsetof
 #define offsetof(TYPE, MEMBER) \
-		((size_t)&((TYPE*)nullptr)->MEMBER)
+	((size_t)&((TYPE*)nullptr)->MEMBER)
 #endif
 
 #ifndef container_of
 #define container_of(ptr, TYPE, MEMBER) \
-		((TYPE *)((char*)(ptr) - offsetof(TYPE, MEMBER)))
+	((TYPE *)((char*)(ptr) - offsetof(TYPE, MEMBER)))
 #endif	
 
 #ifndef StructOffset
 #define StructOffset(ptr, TYPE, MEMBER) \
-		((void*)((u32)(ptr) + offsetof(TYPE, MEMBER))) 
+	((void*)((u32)(ptr) + offsetof(TYPE, MEMBER))) 
 #endif	
 
 #ifndef IsEqual
@@ -43,17 +43,17 @@
 
 #ifndef SetBit
 #define SetBit(value, pos) \
-		((value) | (1 << (pos)))
+	((value) | (1 << (pos)))
 #endif
 
 #ifndef ClearBit
 #define ClearBit(value, pos) \
-		((value) & (~(1 << (pos))))
+	((value) & (~(1 << (pos))))
 #endif		
 
 #ifndef TestBit
 #define TestBit(value, pos) \
-		(IsEqual(((value) >> (pos)) & 0x01, 0x01))
+	(IsEqual(((value) >> (pos)) & 0x01, 0x01))
 #endif
 
 #ifndef Max
