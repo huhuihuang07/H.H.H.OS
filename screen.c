@@ -11,6 +11,13 @@ static const u16 SCREEN_ERASER = (SCREEN_LIGHT_GREY << 8) | ' ';
 
 static u16 SCREEN_POS = 0;
 
+static const char* logo[] = {
+	"   ____       _         \n\0",
+	"  / __ \\___  (_)_ __   \n\0",
+	" / /_/ / _ \\/ /\\ \\ / \n\0",
+	" \\____/_//_/_//_\\_\\  \n\0",
+};
+
 // 设置当前光标位置
 static bool SetCursorPos(u8 w, u8 h)
 {
@@ -115,6 +122,14 @@ bool ClearScreen()
 		}
 	}
 
+	SetPrintPos(0, 0);
+
+	u8 logoLen = ArraySize(logo);
+
+	for(u8 i = 0; !IsEqual(i, logoLen); ++i){
+		print(logo[i]);
+	}
+
 	return IsEqual(ret, (SCREEN_WIDTH * SCREEN_HEIGHT));
 }
 
@@ -123,8 +138,6 @@ void InitScreen()
 	assert(ClearScreen());
 
 	SetScreenPos(0, SCREEN_POS = 0);
-
-	SetPrintPos(0, 0);
 }
 
 bool SetPrintPos(u8 w, u8 h)

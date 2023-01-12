@@ -4,11 +4,6 @@
 
 int KMain(int argc, char* argv[])
 {
-	for(int i = 0; !IsEqual(argc, i); ++i)
-	{
-		print("argv : %s\n", argv[i]);
-	}
-
 	SystemCallModuleInit();
 
 	TaskModuleInit();

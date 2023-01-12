@@ -34,11 +34,11 @@
 #endif	
 
 #ifndef IsEqual
-#define IsEqual(a, b) ({              \
-		unsigned ta = (unsigned)(a);  \
-		unsigned tb = (unsigned)(b);  \
-		!(ta - tb);                   \
-	})
+#define IsEqual(a, b) ({         \
+	unsigned ta = (unsigned)(a); \
+	unsigned tb = (unsigned)(b); \
+	!(ta - tb);                  \
+})
 #endif
 
 #ifndef SetBit
@@ -57,18 +57,28 @@
 #endif
 
 #ifndef Max
-#define Max(a, b) \
-	((a) >= (b) ? (a) : (b))
+#define Max(a, b) ({          \
+	signed ta = (signed)(a);  \
+	signed tb = (signed)(b);  \
+	(ta >= tb) ? ta : tb;     \
+}) 
 #endif
 
 #ifndef Min
-#define Min(a, b) \
-	((a) <= (b) ? (a) : (b))
+#define Min(a, b) ({          \
+	signed ta = (signed)(a);  \
+	signed tb = (signed)(b);  \
+	(ta <= tb) ? ta : tb;     \
+})
 #endif
 
 #ifndef Clamp
-#define Clamp(v, a, b) \
-	Max(a, Min(v, b))
+#define Clamp(v, a, b) ({     \
+	signed ta = (signed)(a);  \
+	signed tb = (signed)(b);  \
+	signed tv = (signed)(v);  \
+	Min(tb, Max(tv, ta));     \
+})
 #endif	
 
 #endif //!UTILITY_H
