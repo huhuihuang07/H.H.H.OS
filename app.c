@@ -3,5 +3,4 @@
 
 void AMain()
 {
-
 }

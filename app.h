@@ -5,4 +5,4 @@
 
 void AMain();
 
-#endif //!APP_H
+#endif //! APP_H

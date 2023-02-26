@@ -12,41 +12,44 @@
 #endif
 
 #ifndef PAGE_SIZE
-#define PAGE_SIZE 0x1000  // 一页的大小 4K
-#endif 
+#define PAGE_SIZE 0x1000 // 一页的大小 4K
+#endif
 
 #ifndef PAGE_BASE
 #define PAGE_BASE 0x1a000 // 104K, 页表起始位置
-#endif 
+#endif
 
 #ifndef PAGE_IsValid
 #define PAGE_IsValid(addr) \
-		(IsEqual((u32)(addr) & 0xfff, 0))
+	(IsEqual((u32)(addr)&0xfff, 0))
 #endif
 
 #define PM_ALLOC_SIZE PAGE_SIZE
-#define PM_NODE_SIZE  sizeof(PMemNode)
+#define PM_NODE_SIZE sizeof(PMemNode)
 
-typedef int8 (PMemUnit)[PM_ALLOC_SIZE];
+typedef int8(PMemUnit)[PM_ALLOC_SIZE];
 
 typedef struct _PMemNode PMemNode;
 
-typedef union {
-	PMemNode* next;
-	PMemUnit* ptr;
-}PMemUnion;
+typedef union
+{
+	PMemNode *next;
+	PMemUnit *ptr;
+} PMemUnion;
 
-struct _PMemNode{
+struct _PMemNode
+{
 	PMemUnion node;
 	u32 refCount;
 };
 
-typedef struct{
-	PMemNode* head;
-	PMemNode* nBase;
-	PMemUnit* uBase;
+typedef struct
+{
+	PMemNode *head;
+	PMemNode *nBase;
+	PMemUnit *uBase;
 	u32 max;
-}PMemList;
+} PMemList;
 
 static PMemList gPMemList;
 
@@ -55,57 +58,60 @@ static PMemList gPMemList;
 #endif
 
 #define FM_ALLOC_SIZE 32
-#define FM_NODE_SIZE  sizeof(FMemNode)
-#define FM_SIZE       0x400
+#define FM_NODE_SIZE sizeof(FMemNode)
+#define FM_SIZE 0x400
 
-typedef int8 (FMemUnit)[FM_ALLOC_SIZE];
+typedef int8(FMemUnit)[FM_ALLOC_SIZE];
 
-typedef union _FMemNode{
-	union _FMemNode* next;
-	FMemUnit* ptr;
-}FMemNode;
+typedef union _FMemNode
+{
+	union _FMemNode *next;
+	FMemUnit *ptr;
+} FMemNode;
 
-typedef struct{
-	FMemNode* node;
-	FMemNode* nBase;
-	FMemUnit* uBase;
+typedef struct
+{
+	FMemNode *node;
+	FMemNode *nBase;
+	FMemUnit *uBase;
 	u32 max;
-}FMemList;
+} FMemList;
 
 static FMemList gFMemList;
 
 #define VM_HEAD_SIZE sizeof(VMemHead)
 
-typedef struct{
+typedef struct
+{
 	ListNode head;
-	void* ptr;
+	void *ptr;
 	u32 used;
 	u32 free;
-}VMemHead;
+} VMemHead;
 
 typedef List VMemList;
 
 static VMemList gVMemList;
-static VMemList* pVMemList;
+static VMemList *pVMemList;
 
 u32 memoryBase;
 u32 memorySize;
 
 void pMemoryModuleInit();
 
-void* pMalloc(size_t size);
-bool pFree(const void* ptr);
+void *pMalloc(size_t size);
+bool pFree(const void *ptr);
 
-static void FMemInit(void* mem, u32 size);
-static void* FMemAlloc();
-static bool FMemFree(const void* ptr);
+static void FMemInit(void *mem, u32 size);
+static void *FMemAlloc();
+static bool FMemFree(const void *ptr);
 
-static void VMemInit(void* mem, u32 size);
-static void* VMemAlloc(size_t size);
-static bool VMemFree(const void* ptr);
+static void VMemInit(void *mem, u32 size);
+static void *VMemAlloc(size_t size);
+static bool VMemFree(const void *ptr);
 
-static void PMemInit(void* mem, u32 size);
-void* PMemAlloc(const void* ptr);
-void PMemFree(const void* ptr);
+static void PMemInit(void *mem, u32 size);
+void *PMemAlloc(const void *ptr);
+void PMemFree(const void *ptr);
 
-#endif //!MEMORY_H
+#endif //! MEMORY_H

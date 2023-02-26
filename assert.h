@@ -10,11 +10,11 @@ void assertionFailure(const char *exp, const char *file, u32 line);
 #define assert(exp)
 #else
 #define assert(exp) \
-		if(exp)     \
+	if (exp)        \
 		;           \
-		else        \
-			assertionFailure(#exp, __FILE__,  __LINE__)
+	else            \
+		assertionFailure(#exp, __FILE__, __LINE__)
 #endif
 #endif
 
-#endif //!ASSERT_H
+#endif //! ASSERT_H

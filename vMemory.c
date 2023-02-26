@@ -12,19 +12,19 @@ void vMemoryModuleInit()
 	EnablePage();
 }
 
-void* CreatePDE()
+void *CreatePDE()
 {
-	page_entry_t* pde = (page_entry_t*)PMemAlloc(nullptr);
+	page_entry_t *pde = (page_entry_t *)PMemAlloc(nullptr);
 
 	memset(pde, 0, PAGE_SIZE);
 
-	for(u32 i = 0; !IsEqual(i, 1); ++i)
+	for (u32 i = 0; !IsEqual(i, 1); ++i)
 	{
-		page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
+		page_entry_t *pte = (page_entry_t *)PMemAlloc(nullptr);
 
 		memset(pte, 0, PAGE_SIZE);
 
-		for(u32 j = 1; !IsEqual(j, PAGE_MAX); ++j)
+		for (u32 j = 1; !IsEqual(j, PAGE_MAX); ++j)
 		{
 			SetPageEntry(AddrOffset(pte, j), Index(i, j));
 		}
@@ -34,27 +34,26 @@ void* CreatePDE()
 
 	SetPageEntry(AddrOffset(pde, PAGE_MAX - 1), PGEIndex(pde));
 
-	return (void*)(pde);
+	return (void *)(pde);
 }
 
-static void SetPageEntry(page_entry_t* entry, u32 index)
+static void SetPageEntry(page_entry_t *entry, u32 index)
 {
 	memset(entry, 0, sizeof(*entry));
 
-    entry->present = 1;
-    entry->write = 1;
-    entry->user = 1;
-    entry->index = index;
+	entry->present = 1;
+	entry->write = 1;
+	entry->user = 1;
+	entry->index = index;
 }
 
 static void FlushTLB(u32 vaddr)
 {
-    asm volatile(
-    	"invlpg (%0)" 
-    	:
-    	:"r"(vaddr)
-        : "memory"
-    );
+	asm volatile(
+		"invlpg (%0)"
+		:
+		: "r"(vaddr)
+		: "memory");
 }
 
 static void EnablePage()
@@ -65,8 +64,7 @@ static void EnablePage()
 		"movl %%eax,      %%cr0\n"
 		:
 		:
-		: "eax"
-	);
+		: "eax");
 }
 
 static void DisablePage()
@@ -77,8 +75,7 @@ static void DisablePage()
 		"movl %%eax,      %%cr0\n"
 		:
 		:
-		: "eax"
-	);
+		: "eax");
 }
 
 static u32 GetCr3()
@@ -90,8 +87,7 @@ static u32 GetCr3()
 		"movl %%eax,    %0\n"
 		: "=r"(pde)
 		:
-		: "eax"
-	);
+		: "eax");
 
 	return pde;
 }
@@ -105,8 +101,7 @@ static void SetCr3(u32 pde)
 		"movl %%eax, %%cr3\n"
 		:
 		: "r"(pde)
-		: "eax"
-	);
+		: "eax");
 }
 
 static u32 GetCr2()
@@ -118,24 +113,25 @@ static u32 GetCr2()
 		"movl %%eax,    %0\n"
 		: "=r"(vAddr)
 		:
-		: "eax"
-	);
+		: "eax");
 
 	return vAddr;
 }
 
 void PageFault(u32 error)
 {
-	page_error_code_t* pError = (page_error_code_t*)(&error);	
+	page_error_code_t *pError = (page_error_code_t *)(&error);
 
-	if(IsEqual(pError->present, 0))
+	if (IsEqual(pError->present, 0))
 	{
 		u32 vAddr = GetCr2();
 
 		u32 pAddr = vAddr > (memoryBase + memorySize) ? (u32)(PMemAlloc(nullptr)) : vAddr;
 
 		LinkPage(vAddr, pAddr);
-	}else{
+	}
+	else
+	{
 		print("%s error : %p ", __FUNCTION__, error);
 	}
 }
@@ -149,9 +145,9 @@ void LinkPage(u32 vAddr, u32 pAddr)
 
 void UnLinkPage(u32 vAddr)
 {
-	page_entry_t* pte = GetPTE(vAddr, false);
+	page_entry_t *pte = GetPTE(vAddr, false);
 
-	page_entry_t* entry = AddrOffset(pte, PTEIndex(vAddr));
+	page_entry_t *entry = AddrOffset(pte, PTEIndex(vAddr));
 
 	assert(IsEqual(entry->present, 1));
 
@@ -159,18 +155,18 @@ void UnLinkPage(u32 vAddr)
 
 	bool clear = true;
 
-	for(int i = 0; !IsEqual(i, PAGE_MAX) && IsEqual(clear, true); ++i)
+	for (int i = 0; !IsEqual(i, PAGE_MAX) && IsEqual(clear, true); ++i)
 	{
-		entry = (page_entry_t*)(AddrOffset(pte, i));
+		entry = (page_entry_t *)(AddrOffset(pte, i));
 
 		clear = !IsEqual(entry->present, 1);
 	}
 
-	if(IsEqual(clear, true))
+	if (IsEqual(clear, true))
 	{
 		PMemFree(pte);
 
-		page_entry_t* pde = GetPDE();
+		page_entry_t *pde = GetPDE();
 
 		entry = AddrOffset(pde, PDEIndex(vAddr));
 
@@ -178,25 +174,25 @@ void UnLinkPage(u32 vAddr)
 	}
 }
 
-static page_entry_t* GetPDE()
+static page_entry_t *GetPDE()
 {
-	return (page_entry_t*)(0x3ff << 22 | 0x3ff << 12 | 0);
+	return (page_entry_t *)(0x3ff << 22 | 0x3ff << 12 | 0);
 }
 
-static page_entry_t* GetPTE(u32 vAddr, bool create)
+static page_entry_t *GetPTE(u32 vAddr, bool create)
 {
-	page_entry_t* ret = AddrOffset(GetPDE(), PDEIndex(vAddr));
+	page_entry_t *ret = AddrOffset(GetPDE(), PDEIndex(vAddr));
 
 	assert(IsEqual(create, true) || (IsEqual(create, false) && IsEqual(ret->present, 1)));
 
-	if(IsEqual(ret->present, 0))
+	if (IsEqual(ret->present, 0))
 	{
-		page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
+		page_entry_t *pte = (page_entry_t *)PMemAlloc(nullptr);
 
 		memset(pte, 0, PAGE_SIZE);
 
 		SetPageEntry(ret, PGEIndex(pte));
 	}
 
-	return (page_entry_t*)(0x3ff << 22 | (PDEIndex(vAddr) << 12) | 0);
+	return (page_entry_t *)(0x3ff << 22 | (PDEIndex(vAddr) << 12) | 0);
 }

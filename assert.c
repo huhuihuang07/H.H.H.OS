@@ -13,5 +13,6 @@ void assertionFailure(const char *exp, const char *file, u32 line)
 		"--> line : %d\n",
 		exp, file, line);
 
-	while(true);
+	while (true)
+		;
 }

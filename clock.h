@@ -3,7 +3,7 @@
 
 #include "type.h"
 
-// 可编程定时计数器 (Programmable Interval Timer PIT) 
+// 可编程定时计数器 (Programmable Interval Timer PIT)
 
 // 定时器0 端口
 #ifndef PIT_CHAN0_REG
@@ -35,4 +35,4 @@ void ClockInit();
 
 extern void TimerInit();
 
-#endif //!CLOCK_H
+#endif //! CLOCK_H

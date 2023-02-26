@@ -2,7 +2,7 @@
 #define TYPE_H
 
 #ifndef nullptr
-#define nullptr (void*)0
+#define nullptr (void *)0
 #endif
 
 #ifndef NULL
@@ -10,7 +10,7 @@
 #endif
 
 #ifndef _packed
-#define _packed __attribute__ ((packed))
+#define _packed __attribute__((packed))
 #endif
 
 #ifndef EOF
@@ -26,15 +26,16 @@ typedef enum
 {
 	false = 0,
 	true = !false,
-}bool;
+} bool;
 #endif
 
-typedef enum{
+typedef enum
+{
 	Disable = 0,
 	Enable = !Disable,
-}State;
+} State;
 
-typedef void (* pFunc)();
+typedef void (*pFunc)();
 
 typedef signed char int8;
 
@@ -56,22 +57,22 @@ typedef unsigned int size_t;
 
 typedef int32 pid_t;
 
-typedef char* va_list;
+typedef char *va_list;
 
 #ifndef _INTSIZEOF
-#define _INTSIZEOF(tp)   ( (sizeof(tp) + sizeof(int) - 1) & ~(sizeof(int) - 1) )
+#define _INTSIZEOF(tp) ((sizeof(tp) + sizeof(int) - 1) & ~(sizeof(int) - 1))
 #endif
 
 #ifndef va_start
-#define va_start(p_list,arg)  ( p_list = (va_list)&arg + _INTSIZEOF(arg) )
+#define va_start(p_list, arg) (p_list = (va_list)&arg + _INTSIZEOF(arg))
 #endif
 
 #ifndef va_arg
-#define va_arg(p_list,tp)    ( *(tp *)((p_list += _INTSIZEOF(tp)) - _INTSIZEOF(tp)) )
+#define va_arg(p_list, tp) (*(tp *)((p_list += _INTSIZEOF(tp)) - _INTSIZEOF(tp)))
 #endif
 
 #ifndef va_end
-#define va_end(p_list)      ( p_list = (va_list)0 )
+#define va_end(p_list) (p_list = (va_list)0)
 #endif
 
-#endif //!TYPE_H
+#endif //! TYPE_H

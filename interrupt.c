@@ -20,7 +20,7 @@ bool InterruptGateInit()
 {
 	bool ret = true;
 
-	for(u16 i = 0; (!IsEqual(i, ENTRY_SIZE)) && ret; ++i)
+	for (u16 i = 0; (!IsEqual(i, ENTRY_SIZE)) && ret; ++i)
 	{
 		ret = SetInterruptGate(i, handler_entry_table[i]);
 	}

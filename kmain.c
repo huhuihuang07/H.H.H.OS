@@ -2,7 +2,7 @@
 #include "utility.h"
 #include "memory.h"
 
-int KMain(int argc, char* argv[])
+int KMain(int argc, char *argv[])
 {
 	SystemCallModuleInit();
 

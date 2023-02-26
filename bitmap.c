@@ -3,7 +3,7 @@
 #include "assert.h"
 #include "utility.h"
 
-void BitMap_Init(BitMap* bitmap, void* bits, u32 length)
+void BitMap_Init(BitMap *bitmap, void *bits, u32 length)
 {
 	assert((!IsEqual(bitmap, nullptr)) && (!IsEqual(bits, nullptr)) && (length > 0));
 
@@ -14,7 +14,7 @@ void BitMap_Init(BitMap* bitmap, void* bits, u32 length)
 	memset(bitmap->bits, 0, bitmap->length);
 }
 
-bool BitMap_Test(BitMap* bitmap, u32 index)
+bool BitMap_Test(BitMap *bitmap, u32 index)
 {
 	assert(!IsEqual(bitmap, nullptr));
 
@@ -27,7 +27,7 @@ bool BitMap_Test(BitMap* bitmap, u32 index)
 	return TestBit(bitmap->bits[bytes], bits);
 }
 
-void BitMap_Set(BitMap* bitmap, u32 index, bool value)
+void BitMap_Set(BitMap *bitmap, u32 index, bool value)
 {
 	assert(!IsEqual(bitmap, nullptr));
 
@@ -40,32 +40,32 @@ void BitMap_Set(BitMap* bitmap, u32 index, bool value)
 	bitmap->bits[bytes] = IsEqual(value, true) ? SetBit(bitmap->bits[bytes], bits) : ClearBit(bitmap->bits[bytes], bits);
 }
 
-bool BitMap_Scan(BitMap* bitmap, u32 count, u32* start)
+bool BitMap_Scan(BitMap *bitmap, u32 count, u32 *start)
 {
 	assert((!IsEqual(bitmap, nullptr)) && (IsEqual(start, nullptr)) && (count > 0) && (count <= (bitmap->length << 3)));
 
 	u32 bytes = 0;
 
-	while(IsEqual(bitmap->bits[bytes], 0xff) && (bytes < bitmap->length))
+	while (IsEqual(bitmap->bits[bytes], 0xff) && (bytes < bitmap->length))
 	{
 		++bytes;
 	}
 
-	if(IsEqual(bytes, bitmap->length))
+	if (IsEqual(bytes, bitmap->length))
 	{
 		return false;
 	}
 
 	u8 bits = 0;
 
-	while(TestBit(bitmap->bits[bytes], bits))
+	while (TestBit(bitmap->bits[bytes], bits))
 	{
 		++bits;
 	}
 
 	u32 index = bytes << 3 + bits;
 
-	if(IsEqual(count, 1))
+	if (IsEqual(count, 1))
 	{
 		*start = index;
 		BitMap_Set(bitmap, index, true);
@@ -78,16 +78,18 @@ bool BitMap_Scan(BitMap* bitmap, u32 count, u32* start)
 
 	u32 counter = 1;
 
-	while(!IsEqual(lastIndex, nextIndex))
+	while (!IsEqual(lastIndex, nextIndex))
 	{
-		if(BitMap_Test(bitmap, nextIndex))
+		if (BitMap_Test(bitmap, nextIndex))
 		{
 			counter = 0;
-		}else{
+		}
+		else
+		{
 			counter++;
 		}
 
-		if(IsEqual(counter, count))
+		if (IsEqual(counter, count))
 		{
 			*start = nextIndex - count + 1;
 			break;
@@ -96,12 +98,12 @@ bool BitMap_Scan(BitMap* bitmap, u32 count, u32* start)
 		nextIndex++;
 	}
 
-	if(!IsEqual(counter, count))
+	if (!IsEqual(counter, count))
 	{
 		return false;
 	}
 
-	while(!IsEqual(counter, 0))
+	while (!IsEqual(counter, 0))
 	{
 		BitMap_Set(bitmap, *start + counter - 1, true);
 
