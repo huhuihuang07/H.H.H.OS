@@ -2,3 +2,4 @@ deps/
 objs/
 data.img
 .vscode/
+.clang-format

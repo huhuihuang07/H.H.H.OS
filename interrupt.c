@@ -6,31 +6,31 @@
 
 bool SetInterruptGate(u8 InterruptVectorNumber, u32 Handlerfunc)
 {
-	return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, Handlerfunc, 0, DA_386IGate + DA_DPL3);
+    return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, Handlerfunc, 0, DA_386IGate + DA_DPL3);
 }
 
 bool SetInterruptHandler(u8 irq, u32 Handlerfunc)
 {
-	assert((IRQ_CLOCK <= irq) && (irq <= IRQ_HARDDISK2));
+    assert((IRQ_CLOCK <= irq) && (irq <= IRQ_HARDDISK2));
 
-	return SetInterruptGate(IRQ_MASTER_NR + irq, Handlerfunc);
+    return SetInterruptGate(IRQ_MASTER_NR + irq, Handlerfunc);
 }
 
 bool InterruptGateInit()
 {
-	bool ret = true;
+    bool ret = true;
 
-	for (u16 i = 0; (!IsEqual(i, ENTRY_SIZE)) && ret; ++i)
-	{
-		ret = SetInterruptGate(i, handler_entry_table[i]);
-	}
+    for (u16 i = 0; (!IsEqual(i, ENTRY_SIZE)) && ret; ++i)
+    {
+        ret = SetInterruptGate(i, handler_entry_table[i]);
+    }
 
-	return ret;
+    return ret;
 }
 
 void InterruptModuleInit()
 {
-	InterruptGateInit();
+    InterruptGateInit();
 
-	InitPIC();
+    InitPIC();
 }

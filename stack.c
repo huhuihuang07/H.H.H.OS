@@ -1,66 +1,65 @@
 #include "stack.h"
 
-void Stack_Init(Stack *stack)
+void Stack_Init(Stack* stack)
 {
-	List_Init(StructOffset(stack, Stack, head));
+    List_Init(StructOffset(stack, Stack, head));
 
-	stack->length = 0;
+    stack->length = 0;
 }
 
-bool Stack_IsEmpty(Stack *stack)
+bool Stack_IsEmpty(Stack* stack)
 {
-	return (List_IsEmpty(StructOffset(stack, Stack, head))) && (IsEqual(stack->length, 0));
+    return (List_IsEmpty(StructOffset(stack, Stack, head))) && (IsEqual(stack->length, 0));
 }
 
-bool Stack_IsContained(Stack *stack, StackNode *node)
+bool Stack_IsContained(Stack* stack, StackNode* node)
 {
-	StackNode *pos = nullptr;
+    StackNode* pos = nullptr;
 
-	List_ForEach(StructOffset(stack, Stack, head), pos)
-	{
-		if (IsEqual(pos, node))
-		{
-			break;
-		}
-	}
+    List_ForEach(StructOffset(stack, Stack, head), pos)
+    {
+        if (IsEqual(pos, node))
+        {
+            break;
+        }
+    }
 
-	return IsEqual(pos, node);
+    return IsEqual(pos, node);
 }
 
-void Stack_Push(Stack *stack, StackNode *node)
+void Stack_Push(Stack* stack, StackNode* node)
 {
-	List_Add(StructOffset(stack, Stack, head), node);
+    List_Add(StructOffset(stack, Stack, head), node);
 
-	stack->length++;
+    stack->length++;
 }
 
-void Stack_Pop(Stack *stack)
+void Stack_Pop(Stack* stack)
 {
-	if (IsEqual(Stack_IsEmpty(stack), false))
-	{
+    if (IsEqual(Stack_IsEmpty(stack), false))
+    {
+        List_DelNode(stack->head.next);
 
-		List_DelNode(stack->head.next);
-
-		stack->length--;
-	}
+        stack->length--;
+    }
 }
 
-StackNode *Stack_Top(Stack *stack)
+StackNode* Stack_Top(Stack* stack)
 {
-	if (IsEqual(Stack_IsEmpty(stack), false))
-	{
-		return stack->head.next;
-	}
+    if (IsEqual(Stack_IsEmpty(stack), false))
+    {
+        return stack->head.next;
+    }
 
-	return nullptr;
+    return nullptr;
 }
 
-u32 Stack_Length(Stack *stack)
+u32 Stack_Length(Stack* stack)
 {
-	return stack->length;
+    return stack->length;
 }
 
-void Stack_Destroy(Stack *stack, pDestroyFunc func)
+void Stack_Destroy(Stack* stack, pDestroyFunc func)
 {
-	List_Destroy(StructOffset(stack, Stack, head), func);
+    List_Destroy(StructOffset(stack, Stack, head), func);
 }

@@ -1,18 +1,18 @@
 #include "assert.h"
 #include "screen.h"
 
-void assertionFailure(const char *exp, const char *file, u32 line)
+void assertionFailure(const char* exp, const char* file, u32 line)
 {
-	ClearScreen();
+    ClearScreen();
 
-	SetPrintPos(0, 0);
+    SetPrintPos(0, 0);
 
-	print(
-		"--> assert(%s) failed!!!\n"
-		"--> file : %s\n"
-		"--> line : %d\n",
-		exp, file, line);
+    print(
+        "--> assert(%s) failed!!!\n"
+        "--> file : %s\n"
+        "--> line : %d\n",
+        exp, file, line);
 
-	while (true)
-		;
+    while (true)
+        ;
 }

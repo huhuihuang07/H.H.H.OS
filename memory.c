@@ -2,17 +2,17 @@
 
 void MemoryModuleInit()
 {
-	pMemoryModuleInit();
+    pMemoryModuleInit();
 
-	vMemoryModuleInit();
+    vMemoryModuleInit();
 }
 
 void* malloc(size_t size)
 {
-	return pMalloc(size);
+    return pMalloc(size);
 }
 
 void free(const void* ptr)
 {
-	pFree(ptr);
+    pFree(ptr);
 }
