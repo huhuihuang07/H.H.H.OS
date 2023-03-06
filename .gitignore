@@ -2,7 +2,6 @@ deps/
 objs/
 data.img
 .vscode/
-.clang-format
 GPATH
 GRTAGS
 GTAGS
