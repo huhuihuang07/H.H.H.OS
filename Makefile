@@ -22,6 +22,8 @@ UMOUNT := umount
 
 MNTPATH := /mnt
 
+GFILES := GPATH GRTAGS GTAGS
+
 V := @
 
 CFLAGS  := -I. -m32 -fno-builtin -fno-stack-protector -nostdlib
@@ -103,7 +105,7 @@ OBJS := $(addprefix $(DIR_OBJS)/, $(OBJS))
 DEPS := $(patsubst %.c, %.dep, $(SRCS))
 DEPS := $(addprefix $(DIR_DEPS)/, $(DEPS))
 
-rmFiles := $(dataImg) $(DIRS)
+rmFiles := $(dataImg) $(GFILES) $(DIRS)
 
 ifeq ("$(MAKECMDGOALS)", "rebuild")
 -include $(DEPS)	
@@ -148,6 +150,10 @@ $(dataImg):
 $(DIRS):
 	$(MKDIR) $@
 
+$(GFILES) : $(kernelSrc)
+	gtags	
+	global -u
+
 ifeq ("$(wildcard $(DIR_DEPS))", "")
 $(DIR_DEPS)/%.dep : $(DIR_DEPS) %.c
 else
@@ -161,7 +167,7 @@ clean:
 	$(RM) $(RMFLAGS) $(rmFiles)
 	$(V)$(ECHO) "clean Success!"
 
-build:$(DIR_OBJS) $(dataImg) $(bootBin) $(loadBin) $(kernelBin)
+build:$(DIR_OBJS) $(dataImg) $(bootBin) $(loadBin) $(kernelBin) $(GFILES)
 	$(V)$(ECHO) "build Success!"
 
 rebuild:
