@@ -1,5 +1,4 @@
-#ifndef BITMAP_H
-#define BITMAP_H
+#pragma once
 
 #include "type.h"
 
@@ -16,5 +15,3 @@ bool BitMap_Test(BitMap *bitmap, u32 index);
 void BitMap_Set(BitMap *bitmap, u32 index, bool value);
 
 bool BitMap_Scan(BitMap *bitmap, u32 count, u32 *start);
-
-#endif //! BITMAP_H

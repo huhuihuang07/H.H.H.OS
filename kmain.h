@@ -1,5 +1,4 @@
-#ifndef KMAIN_H
-#define KMAIN_H
+#pragma once
 
 #include "type.h"
 
@@ -10,5 +9,3 @@ extern void SystemCallModuleInit();
 extern void TaskModuleInit();
 
 extern void LaunchTask();
-
-#endif // !KMAIN_H

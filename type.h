@@ -1,5 +1,4 @@
-#ifndef TYPE_H
-#define TYPE_H
+#pragma once
 
 #ifndef nullptr
 #define nullptr (void *)0
@@ -74,5 +73,3 @@ typedef char *va_list;
 #ifndef va_end
 #define va_end(p_list) (p_list = (va_list)0)
 #endif
-
-#endif //! TYPE_H

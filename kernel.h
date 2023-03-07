@@ -1,5 +1,4 @@
-#ifndef KERNEL_H
-#define KERNEL_H
+#pragma once
 
 #include "type.h"
 #include "const.h"
@@ -60,5 +59,3 @@ bool GetDescValue(Descriptor *pDescriptor, u32 *pBase, u32 *pLimit, u16 *pAttrib
 
 bool SetGateValue(Gate *pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute);
 bool GetGateValue(Gate *pGate, u16 *pSelector, u32 *pOffset, u8 *pParamterCount, u8 *pAttribute);
-
-#endif //! KERNEL_H

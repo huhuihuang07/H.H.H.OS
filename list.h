@@ -1,5 +1,4 @@
-#ifndef LIST_H
-#define LIST_H
+#pragma once
 
 #include "utility.h"
 
@@ -37,5 +36,3 @@ bool List_IsLast(List* list, ListNode* node);
 bool List_IsEmpty(List* list);
 ListNode* List_FindNode(List* list, ListNode* node, pFindFunc func);
 void List_Destroy(List* list, pDestroyFunc func);
-
-#endif //!LIST_H

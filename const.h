@@ -1,5 +1,4 @@
-#ifndef CONST_H
-#define CONST_H
+#pragma once
 
 // global variable
 #define BaseOfBoot 0x7c00
@@ -73,5 +72,3 @@
 #define LDT_Code32Selector (LDT_Code32Index << 3) + SA_TIL + SA_RPL3
 #define LDT_Data32Selector (LDT_Data32Index << 3) + SA_TIL + SA_RPL3
 #define LDT_Stack32Selector (LDT_Stack32Index << 3) + SA_TIL + SA_RPL3
-
-#endif //! CONST_H

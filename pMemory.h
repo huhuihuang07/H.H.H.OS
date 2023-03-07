@@ -1,5 +1,4 @@
-#ifndef PMEMORY_H
-#define PMEMORY_H
+#pragma once
 
 #include "list.h"
 
@@ -113,5 +112,3 @@ static bool VMemFree(const void *ptr);
 static void PMemInit(void *mem, u32 size);
 void *PMemAlloc(const void *ptr);
 void PMemFree(const void *ptr);
-
-#endif //! MEMORY_H

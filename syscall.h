@@ -1,5 +1,4 @@
-#ifndef SYSCALL_H
-#define SYSCALL_H
+#pragma once
 
 #include "utility.h"
 
@@ -20,5 +19,3 @@ u16 printf(const char *format, ...);
 
 extern void SysCallHanderEntry();
 extern u32 SysCall(u32 type, u32 cmd, u32 param1, u32 param2);
-
-#endif //! SYSCALL_H

@@ -1,8 +1,5 @@
-#ifndef APP_H
-#define APP_H
+#pragma once
 
 #include "type.h"
 
 void AMain();
-
-#endif //! APP_H

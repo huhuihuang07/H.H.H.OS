@@ -1,5 +1,4 @@
-#ifndef STRING_H
-#define STRING_H
+#pragma once
 
 #include "type.h"
 
@@ -22,5 +21,3 @@ int memcmp(const void *lhs, const void *rhs, size_t count);
 void *memset(void *dest, int ch, size_t count);
 void *memcpy(void *dest, const void *src, size_t count);
 void *memchr(const void *str, int ch, size_t count);
-
-#endif //! STRING_H

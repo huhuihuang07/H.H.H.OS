@@ -1,5 +1,4 @@
-#ifndef UTILITY_H
-#define UTILITY_H
+#pragma once
 
 #include "type.h"
 
@@ -94,5 +93,3 @@
 	Min(tb, Max(tv, ta));    \
 })
 #endif
-
-#endif //! UTILITY_H

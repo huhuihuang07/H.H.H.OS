@@ -1,5 +1,4 @@
-#ifndef TASK_H
-#define TASK_H
+#pragma once
 
 #include "kernel.h"
 #include "queue.h"
@@ -131,5 +130,3 @@ extern void ClockInit();
 extern void AMain();
 
 extern u32 jiffy;
-
-#endif //! TASK_H

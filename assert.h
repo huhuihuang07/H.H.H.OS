@@ -1,5 +1,4 @@
-#ifndef ASSERT_H
-#define ASSERT_H
+#pragma once
 
 #include "type.h"
 
@@ -16,5 +15,3 @@ void assertionFailure(const char *exp, const char *file, u32 line);
 		assertionFailure(#exp, __FILE__, __LINE__)
 #endif
 #endif
-
-#endif //! ASSERT_H

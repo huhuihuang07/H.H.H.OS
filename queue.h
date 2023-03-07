@@ -1,5 +1,4 @@
-#ifndef QUEUE_H
-#define QUEUE_H
+#pragma once
 
 #include "list.h"
 
@@ -20,5 +19,3 @@ QueueNode *Queue_Remove(Queue *queue);
 u32 Queue_Length(Queue *queue);
 void Queue_Rotate(Queue *queue);
 void Queue_Destroy(Queue *queue, pDestroyFunc func);
-
-#endif //! QUEUE_H

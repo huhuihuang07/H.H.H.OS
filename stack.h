@@ -1,5 +1,4 @@
-#ifndef STACK_H
-#define STACK_H
+#pragma once
 
 #include "list.h"
 
@@ -19,5 +18,3 @@ void Stack_Pop(Stack *stack);
 StackNode *Stack_Top(Stack *stack);
 u32 Stack_Length(Stack *stack);
 void Stack_Destroy(Stack *stack, pDestroyFunc func);
-
-#endif //! STACK_H

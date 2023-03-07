@@ -1,5 +1,4 @@
-#ifndef CLOCK_H
-#define CLOCK_H
+#pragma once
 
 #include "type.h"
 
@@ -34,5 +33,3 @@ u32 jiffy = 1000 / HZ;
 void ClockInit();
 
 extern void TimerInit();
-
-#endif //! CLOCK_H

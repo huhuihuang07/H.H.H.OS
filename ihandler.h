@@ -1,5 +1,4 @@
-#ifndef IHANDLER_H
-#define IHANDLER_H
+#pragma once
 
 #include "interrupt.h"
 #include "pic.h"
@@ -56,5 +55,3 @@ DeclExternalInterrupt(Timer)
 extern u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
 extern u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2);
 extern void PageFault(u32 error);
-
-#endif //! IHANDLER_H

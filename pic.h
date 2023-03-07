@@ -1,5 +1,4 @@
-#ifndef PIC_H
-#define PIC_H
+#pragma once
 
 #include "type.h"
 
@@ -63,5 +62,3 @@ State SetIFState(State state);
 State DisableIF();
 State EnableIF();
 State GetIFState();
-
-#endif //! PIC_H

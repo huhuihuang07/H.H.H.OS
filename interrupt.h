@@ -1,5 +1,4 @@
-#ifndef INTERRUPT_H
-#define INTERRUPT_H
+#pragma once
 
 #include "type.h"
 
@@ -18,5 +17,3 @@ bool InterruptGateInit();
 bool SetInterruptGate(u8 InterruptVectorNumber, u32 Handlerfunc);
 
 bool SetInterruptHandler(u8 irq, u32 Handlerfunc);
-
-#endif //! INTERRUPT_H

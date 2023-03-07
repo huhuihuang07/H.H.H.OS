@@ -1,5 +1,4 @@
-#ifndef VMEMORY_H
-#define VMEMORY_H
+#pragma once
 
 #include "pMemory.h"
 
@@ -87,5 +86,3 @@ static void SetPageEntry(page_entry_t *entry, u32 index);
 extern void PageFaultInit();
 
 extern const u32 gMemSize;
-
-#endif //! VMEMORY_H

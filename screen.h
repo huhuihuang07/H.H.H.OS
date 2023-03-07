@@ -1,5 +1,4 @@
-#ifndef SCREEN_H
-#define SCREEN_H
+#pragma once
 
 #include "type.h"
 
@@ -104,5 +103,3 @@ u16 print(const char *format, ...);
 u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2);
 
 extern int printChar(const u32 position, const u16 value);
-
-#endif //! SCREEN_H

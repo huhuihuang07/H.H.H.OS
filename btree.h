@@ -1,5 +1,4 @@
-#ifndef BTREE_H
-#define BTREE_H
+#pragma once
 
 #include "utility.h"
 
@@ -29,5 +28,3 @@ u32 BTree_Degree(BTreeRoot *root);
 u32 BTree_Count(BTreeRoot *root);
 u32 BTree_Hight(BTreeRoot *root);
 void BTree_Clear(BTreeRoot *root, pDestroyFunc func);
-
-#endif //! BTREE_H
