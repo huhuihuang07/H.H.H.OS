@@ -71,7 +71,7 @@ size_t strlen(const char* str)
     return AddrIndex(str, ptr) - 1;
 }
 
-int strcmp(const char* lhs, const char* rhs)
+int32_t strcmp(const char* lhs, const char* rhs)
 {
     assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
 
@@ -84,7 +84,7 @@ int strcmp(const char* lhs, const char* rhs)
     return *lhs < *rhs ? -1 : *lhs > *rhs;
 }
 
-int strncmp(const char* lhs, const char* rhs, size_t n)
+int32_t strncmp(const char* lhs, const char* rhs, size_t n)
 {
     assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
 
@@ -97,7 +97,7 @@ int strncmp(const char* lhs, const char* rhs, size_t n)
     return *lhs < *rhs ? -1 : *lhs > *rhs;
 }
 
-char* strchr(const char* str, int ch)
+char* strchr(const char* str, int32_t ch)
 {
     assert((!IsEqual(str, nullptr)));
 
@@ -111,7 +111,7 @@ char* strchr(const char* str, int ch)
     return IsEqual(*ptr, ch) ? ptr : nullptr;
 }
 
-char* strrchr(const char* str, int ch)
+char* strrchr(const char* str, int32_t ch)
 {
     assert((!IsEqual(str, nullptr)));
 
@@ -125,7 +125,7 @@ char* strrchr(const char* str, int ch)
     return IsEqual(*ptr, ch) ? ptr : nullptr;
 }
 
-int memcmp(const void* lhs, const void* rhs, size_t count)
+int32_t memcmp(const void* lhs, const void* rhs, size_t count)
 {
     assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
 
@@ -138,7 +138,7 @@ int memcmp(const void* lhs, const void* rhs, size_t count)
     return *lptr < *rptr ? -1 : *lptr > *rptr;
 }
 
-void* memset(void* dest, int ch, size_t count)
+void* memset(void* dest, int32_t ch, size_t count)
 {
     assert((!IsEqual(dest, nullptr)));
 
@@ -180,7 +180,7 @@ void* memcpy(void* dest, const void* src, size_t count)
     return dest;
 }
 
-void* memchr(const void* str, int ch, size_t count)
+void* memchr(const void* str, int32_t ch, size_t count)
 {
     assert((!IsEqual(str, nullptr)));
 
@@ -212,17 +212,17 @@ char* strndup(const char* src, size_t n)
     return strncpy(ret, src, n + 1);
 }
 
-static int* make_pmt(const char* str)
+static int32_t* make_pmt(const char* str)
 {
-    int len = strlen(str);
+    int32_t len = strlen(str);
 
-    int* ret = (int*)malloc(sizeof(int) * len);
+    int32_t* ret = (int32_t*)malloc(sizeof(int32_t) * len);
 
-    int ll = 0;
+    int32_t ll = 0;
 
     ret[0] = ll;
 
-    for (int i = 1; !IsEqual(i, len); ++i)
+    for (int32_t i = 1; !IsEqual(i, len); ++i)
     {
         while ((!IsEqual(ll, 0)) && (!IsEqual(str[i], str[ll])))
         {
@@ -240,18 +240,18 @@ static int* make_pmt(const char* str)
     return ret;
 }
 
-int strfind(const char* src, const char* needle)
+int32_t strfind(const char* src, const char* needle)
 {
     assert((!IsEqual(src, nullptr)) && (!IsEqual(needle, nullptr)));
 
-    int sLen = strlen(src), fLen = strlen(needle), i = 0, j = 0;
+    int32_t sLen = strlen(src), fLen = strlen(needle), i = 0, j = 0;
 
     if ((fLen <= 0) || (fLen > sLen))
     {
         return -1;
     }
 
-    int* pmt = make_pmt(needle);
+    int32_t* pmt = make_pmt(needle);
 
     for (i = 0, j = 0; (!IsEqual(i, fLen)) && (!IsEqual(j, sLen)); ++j)
     {
@@ -275,7 +275,7 @@ char* strstr(const char* src, const char* needle)
 {
     assert((!IsEqual(src, nullptr)) && (!IsEqual(needle, nullptr)));
 
-    int index = strfind(src, needle);
+    int32_t index = strfind(src, needle);
 
     return IsEqual(index, -1) ? nullptr : AddrOffset(src, index);
 }

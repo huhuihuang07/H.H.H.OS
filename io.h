@@ -2,8 +2,8 @@
 
 #include "type.h"
 
-extern const u8 inb(const u16 port);
-extern const u16 inw(const u16 port);
+extern const uint8_t inb(const uint16_t port);
+extern const uint16_t inw(const uint16_t port);
 
-extern void outb(const u16 port, const u8 value);
-extern void outw(const u16 port, const u16 value);
+extern void outb(const uint16_t port, const uint8_t value);
+extern void outw(const uint16_t port, const uint16_t value);

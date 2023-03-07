@@ -2,7 +2,7 @@
 
 #include "type.h"
 
-int Kmain(int argc, char* argv[]);
+int32_t Kmain(int32_t argc, char* argv[]);
 
 extern void SystemCallModuleInit();
 

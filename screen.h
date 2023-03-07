@@ -62,7 +62,7 @@ typedef enum
 	SCREEN_YELLOW = 0x0e,		 // 黄色
 	SCREEN_WHITE = 0x0f,		 // 白色
 	SCREEN_NUM
-} PrintColor;
+} PrintColor_t;
 
 typedef enum
 {
@@ -71,35 +71,35 @@ typedef enum
 	SCREEN_OCTAL = 0x08,
 	SCREEN_DECIMAL = 0x0a,
 	SCREEN_HEXADEC = 0x10
-} PrintRadix;
+} PrintRadix_t;
 
 typedef struct
 {
-	u8 width;
-	u8 height;
-	PrintColor color;
-} PrintInfo;
+	uint8_t width;
+	uint8_t height;
+	PrintColor_t color;
+} PrintInfo_t;
 
 typedef enum
 {
 	SysCall_Screen_Printf = 0,
-} SysCall_SCREEN_CMD;
+} SysCall_SCREEN_CMD_t;
 
 void InitScreen();
 
 bool ClearScreen();
-bool SetPrintPos(u8 w, u8 h);
-bool SetPrintColor(PrintColor color);
-PrintColor GetPrintColor();
-u16 PrintString(const char *buffer);
-u16 PrintIntDec(int n);
-u16 PrintIntHex(int n);
-u16 PrintAddress(u32 n);
+bool SetPrintPos(uint8_t w, uint8_t h);
+bool SetPrintColor(PrintColor_t color);
+PrintColor_t GetPrintColor();
+uint16_t PrintString(const char *buffer);
+uint16_t PrintIntDec(int32_t n);
+uint16_t PrintIntHex(int32_t n);
+uint16_t PrintAddress(uint32_t n);
 
-u8 putchar(const char c);
-u16 printk(const char *format, va_list v_arg);
-u16 print(const char *format, ...);
+uint8_t putchar(const char c);
+uint16_t printk(const char *format, va_list v_arg);
+uint16_t print(const char *format, ...);
 
-u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2);
+uint32_t ScreenCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 
-extern int printChar(const u32 position, const u16 value);
+extern int32_t printChar(const uint32_t position, const uint16_t value);

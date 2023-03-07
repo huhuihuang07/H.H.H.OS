@@ -5,57 +5,57 @@
 
 typedef struct
 {
-	u16 limit1;
-	u16 base1;
-	u8 base2;
-	u8 attr1;
-	u8 attr2_limit2;
-	u8 base3;
-} Descriptor;
+	uint16_t limit1;
+	uint16_t base1;
+	uint8_t base2;
+	uint8_t attr1;
+	uint8_t attr2_limit2;
+	uint8_t base3;
+} Descriptor_t;
 
 typedef struct
 {
-	Descriptor *const entry;
-	const u16 size;
-} GdtInfo;
+	Descriptor_t *const entry;
+	const uint16_t size;
+} GdtInfo_t;
 
 typedef struct
 {
-	u16 offset1;
-	u16 selector;
-	u8 paramterCount;
-	u8 attribute;
-	u16 offset2;
-} Gate;
+	uint16_t offset1;
+	uint16_t selector;
+	uint8_t paramterCount;
+	uint8_t attribute;
+	uint16_t offset2;
+} Gate_t;
 
 typedef struct
 {
-	Gate *const entry;
-	const u16 size;
-} IdtInfo;
+	Gate_t *const entry;
+	const uint16_t size;
+} IdtInfo_t;
 
 typedef struct
 {
-	u32 BaseAddrLow;
-	u32 BaseAddrHigh;
-	u32 LengthLow;
-	u32 LengthHigh;
-	u32 Type;
-} ARDS;
+	uint32_t BaseAddrLow;
+	uint32_t BaseAddrHigh;
+	uint32_t LengthLow;
+	uint32_t LengthHigh;
+	uint32_t Type;
+} ARDS_t;
 
 typedef struct
 {
-	const u8 ARDSNumber;
-	const ARDS ards[20];
-} _packed MemInfo;
+	const uint8_t ARDSNumber;
+	const ARDS_t ards[20];
+} _packed MemInfo_t;
 
-const GdtInfo gGdtInfo;
-const IdtInfo gIdtInfo;
-const MemInfo gMemInfo;
-const u32 gMemSize;
+const GdtInfo_t gGdtInfo;
+const IdtInfo_t gIdtInfo;
+const MemInfo_t gMemInfo;
+const uint32_t gMemSize;
 
-bool SetDescValue(Descriptor *pDescriptor, u32 base, u32 limit, u16 attribute);
-bool GetDescValue(Descriptor *pDescriptor, u32 *pBase, u32 *pLimit, u16 *pAttribute);
+bool SetDescValue(Descriptor_t *pDescriptor, uint32_t base, uint32_t limit, uint16_t attribute);
+bool GetDescValue(Descriptor_t *pDescriptor, uint32_t *pBase, uint32_t *pLimit, uint16_t *pAttribute);
 
-bool SetGateValue(Gate *pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute);
-bool GetGateValue(Gate *pGate, u16 *pSelector, u32 *pOffset, u8 *pParamterCount, u8 *pAttribute);
+bool SetGateValue(Gate_t *pGate, uint16_t selector, uint32_t offset, uint8_t paramterCount, uint8_t attribute);
+bool GetGateValue(Gate_t *pGate, uint16_t *pSelector, uint32_t *pOffset, uint8_t *pParamterCount, uint8_t *pAttribute);

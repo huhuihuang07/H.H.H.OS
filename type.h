@@ -34,29 +34,29 @@ typedef enum
 	Enable = !Disable,
 } State;
 
-typedef void (*pFunc)();
+typedef void (*pFunc_t)();
 
-typedef signed char int8;
+typedef signed char int8_t;
 
-typedef signed short int16;
+typedef signed short int16_t;
 
-typedef signed int int32;
+typedef signed int int32_t;
 
-typedef signed long long int64;
+typedef signed long long int64_t;
 
-typedef unsigned char u8;
+typedef unsigned char uint8_t;
 
-typedef unsigned short u16;
+typedef unsigned short uint16_t;
 
-typedef unsigned int u32;
+typedef unsigned int uint32_t;
 
-typedef unsigned long long u64;
+typedef unsigned long long uint64_t;
 
 typedef unsigned int size_t;
 
-typedef int32 pid_t;
+typedef int32_t pid_t;
 
-typedef char *va_list;
+typedef char* va_list;
 
 #ifndef _INTSIZEOF
 #define _INTSIZEOF(tp) ((sizeof(tp) + sizeof(int) - 1) & ~(sizeof(int) - 1))

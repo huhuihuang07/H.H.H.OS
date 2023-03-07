@@ -3,24 +3,24 @@
 #include "assert.h"
 #include "io.h"
 
-u8 ReadIMR(u16 port)
+uint8_t ReadIMR(uint16_t port)
 {
     return inb(port);
 }
 
-void WriteIMR(u16 port, u8 value)
+void WriteIMR(uint16_t port, uint8_t value)
 {
     outb(port, value);
 }
 
-void SendEOI(u16 port)
+void SendEOI(uint16_t port)
 {
     outb(port, PIC_EOI);
 }
 
 State GetIFState()
 {
-    u32 eflags = 0;
+    uint32_t eflags = 0;
 
     asm volatile(
         "pushfl        \n"
@@ -60,11 +60,11 @@ State EnableIF()
     return SetIFState(Enable);
 }
 
-void SetInterruptMask(u32 irq, State state)
+void SetInterruptMask(uint32_t irq, State state)
 {
     assert((IRQ_CLOCK <= irq) && (irq <= IRQ_HARDDISK2));
 
-    u16 port = irq < IRQ_RTC ? MASTER_IMR_PORT : (irq -= IRQ_RTC, SLAVE_IMR_PORT);
+    uint16_t port = irq < IRQ_RTC ? MASTER_IMR_PORT : (irq -= IRQ_RTC, SLAVE_IMR_PORT);
 
     if (IsEqual(state, Enable))
     {
@@ -72,7 +72,7 @@ void SetInterruptMask(u32 irq, State state)
 
         if (IsEqual(port, SLAVE_IMR_PORT))
         {
-            u16 value = ReadIMR(MASTER_IMR_PORT);
+            uint16_t value = ReadIMR(MASTER_IMR_PORT);
 
             if (TestBit(value, IRQ_CASCADE))
             {
@@ -86,7 +86,7 @@ void SetInterruptMask(u32 irq, State state)
 
         if (IsEqual(port, SLAVE_IMR_PORT))
         {
-            u16 value = ReadIMR(SLAVE_IMR_PORT);
+            uint16_t value = ReadIMR(SLAVE_IMR_PORT);
 
             if (IsEqual(value, PIC_CAI))
             {

@@ -2,19 +2,19 @@
 
 #include "list.h"
 
-typedef ListNode StackNode;
+typedef ListNode_t StackNode_t;
 
 typedef struct
 {
-	StackNode head;
-	u32 length;
-} Stack;
+	StackNode_t head;
+	uint32_t length;
+} Stack_t;
 
-void Stack_Init(Stack *stack);
-bool Stack_IsEmpty(Stack *stack);
-bool Stack_IsContained(Stack *stack, StackNode *node);
-void Stack_Push(Stack *stack, StackNode *node);
-void Stack_Pop(Stack *stack);
-StackNode *Stack_Top(Stack *stack);
-u32 Stack_Length(Stack *stack);
-void Stack_Destroy(Stack *stack, pDestroyFunc func);
+void Stack_Init(Stack_t *stack);
+bool Stack_IsEmpty(Stack_t *stack);
+bool Stack_IsContained(Stack_t *stack, StackNode_t *node);
+void Stack_Push(Stack_t *stack, StackNode_t *node);
+void Stack_Pop(Stack_t *stack);
+StackNode_t *Stack_Top(Stack_t *stack);
+uint32_t Stack_Length(Stack_t *stack);
+void Stack_Destroy(Stack_t *stack, pDestroyFunc_t func);

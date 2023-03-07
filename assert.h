@@ -2,7 +2,7 @@
 
 #include "type.h"
 
-void assertionFailure(const char *exp, const char *file, u32 line);
+void AssertionFailure(const char *exp, const char *file, uint32_t line);
 
 #ifndef assert
 #ifdef NODEBUG
@@ -12,6 +12,6 @@ void assertionFailure(const char *exp, const char *file, u32 line);
 	if (exp)        \
 		;           \
 	else            \
-		assertionFailure(#exp, __FILE__, __LINE__)
+		AssertionFailure(#exp, __FILE__, __LINE__)
 #endif
 #endif

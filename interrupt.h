@@ -8,12 +8,12 @@
 
 #define ENTRY_SIZE 0x30
 
-extern u32 handler_entry_table[ENTRY_SIZE];
+extern uint32_t handler_entry_table[ENTRY_SIZE];
 
 void InterruptModuleInit();
 
 bool InterruptGateInit();
 
-bool SetInterruptGate(u8 InterruptVectorNumber, u32 Handlerfunc);
+bool SetInterruptGate(uint8_t InterruptVectorNumber, uint32_t Handlerfunc);
 
-bool SetInterruptHandler(u8 irq, u32 Handlerfunc);
+bool SetInterruptHandler(uint8_t irq, uint32_t Handlerfunc);

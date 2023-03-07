@@ -4,12 +4,12 @@
 
 #ifndef AddrOffset
 #define AddrOffset(p, i) \
-	((void *)((u32)(p) + (i) * sizeof(*(p))))
+	((void *)((uint32_t)(p) + (i) * sizeof(*(p))))
 #endif
 
 #ifndef AddrIndex
 #define AddrIndex(b, a) \
-	(((u32)(a) - (u32)(b)) / sizeof(*(b)))
+	(((uint32_t)(a) - (uint32_t)(b)) / sizeof(*(b)))
 #endif
 
 #ifndef ArraySize
@@ -29,7 +29,7 @@
 
 #ifndef StructOffset
 #define StructOffset(ptr, TYPE, MEMBER) \
-	((void *)((u32)(ptr) + offsetof(TYPE, MEMBER)))
+	((void *)((uint32_t)(ptr) + offsetof(TYPE, MEMBER)))
 #endif
 
 #ifndef IsEqual

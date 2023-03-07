@@ -28,7 +28,7 @@
 #define HZ 100
 #endif
 
-u32 jiffy = 1000 / HZ;
+uint32_t jiffy = 1000 / HZ;
 
 void ClockInit();
 

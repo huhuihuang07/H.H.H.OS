@@ -13,9 +13,9 @@ static char* messages[] = {
     "#NM Device Not Available (No Math Coprocessor)\0",
     "#DF Double Fault\0",
     "    Coprocessor Segment Overrun (reserved)\0",
-    "#TS Invalid TSS\0",
+    "#TS Invalid TSS_t\0",
     "#NP Segment Not Present\0",
-    "#SS Stack-Segment Fault\0",
+    "#SS Stack_t-Segment Fault\0",
     "#GP General Protection\0",
     "#PF Page Fault\0",
     "--  (Intel reserved. Do not use.)\0",
@@ -27,7 +27,7 @@ static char* messages[] = {
     "#CP Control Protection Exception\0",
 };
 
-void TimerHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel)
+void TimerHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel)
 {
     if (IsEqual(privilegeLevel, User))
     {
@@ -37,12 +37,12 @@ void TimerHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel)
     SendEOI(MASTER_EOI_PORT);
 }
 
-void PageFaultHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel)
+void PageFaultHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel)
 {
     PageFault(error_code);
 }
 
-void DefaultInterruptHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel)
+void DefaultInterruptHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel)
 {
     print("Interrupt : %p %p", vector, error_code);
 
@@ -52,9 +52,9 @@ void DefaultInterruptHandler(u32 vector, u32 error_code, PrivilegeLevel privileg
     }
 }
 
-u32 SysCallHandler(u32 type, u32 cmd, u32 param1, u32 param2)
+uint32_t SysCallHandler(uint32_t type, uint32_t cmd, uint32_t param1, uint32_t param2)
 {
-    u32 ret = 0;
+    uint32_t ret = 0;
 
     switch (type)
     {

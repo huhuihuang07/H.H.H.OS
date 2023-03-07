@@ -1,13 +1,13 @@
 #include "kernel.h"
 #include "utility.h"
 
-const GdtInfo gGdtInfo = {nullptr, 0};
-const IdtInfo gIdtInfo = {nullptr, 0};
-const MemInfo gMemInfo = {0};
+const GdtInfo_t gGdtInfo = {nullptr, 0};
+const IdtInfo_t gIdtInfo = {nullptr, 0};
+const MemInfo_t gMemInfo = {0};
 
-const u32 gMemSize = 0;
+const uint32_t gMemSize = 0;
 
-bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
+bool SetDescValue(Descriptor_t* pDescriptor, uint32_t base, uint32_t limit, uint16_t attribute)
 {
     bool ret = !IsEqual(pDescriptor, nullptr);
 
@@ -24,7 +24,7 @@ bool SetDescValue(Descriptor* pDescriptor, u32 base, u32 limit, u16 attribute)
     return ret;
 }
 
-bool GetDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttribute)
+bool GetDescValue(Descriptor_t* pDescriptor, uint32_t* pBase, uint32_t* pLimit, uint16_t* pAttribute)
 {
     bool ret = pDescriptor && pBase && pLimit && pAttribute;
 
@@ -38,7 +38,7 @@ bool GetDescValue(Descriptor* pDescriptor, u32* pBase, u32* pLimit, u16* pAttrib
     return ret;
 }
 
-bool SetGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 attribute)
+bool SetGateValue(Gate_t* pGate, uint16_t selector, uint32_t offset, uint8_t paramterCount, uint8_t attribute)
 {
     bool ret = !IsEqual(pGate, nullptr);
 
@@ -54,7 +54,7 @@ bool SetGateValue(Gate* pGate, u16 selector, u32 offset, u8 paramterCount, u8 at
     return ret;
 }
 
-bool GetGateValue(Gate* pGate, u16* pSelector, u32* pOffset, u8* pParamterCount, u8* pAttribute)
+bool GetGateValue(Gate_t* pGate, uint16_t* pSelector, uint32_t* pOffset, uint8_t* pParamterCount, uint8_t* pAttribute)
 {
     bool ret = pGate && pSelector && pOffset && pParamterCount && pAttribute;
 

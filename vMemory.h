@@ -4,22 +4,22 @@
 
 #ifndef PGEIndex
 #define PGEIndex(addr) \
-    (((u32)(addr)) >> 12u)
+    (((uint32_t)(addr)) >> 12u)
 #endif
 
 #ifndef PDEIndex
 #define PDEIndex(addr) \
-    ((((u32)(addr)) >> 22u) & 0x3ff)
+    ((((uint32_t)(addr)) >> 22u) & 0x3ff)
 #endif
 
 #ifndef PTEIndex
 #define PTEIndex(addr) \
-    ((((u32)(addr)) >> 12u) & 0x3ff)
+    ((((uint32_t)(addr)) >> 12u) & 0x3ff)
 #endif
 
 #ifndef Index
 #define Index(i, j) \
-    ((((u32)(i)) << 10u) + (j))
+    ((((uint32_t)(i)) << 10u) + (j))
 #endif
 
 #ifndef PAGE_MAX
@@ -33,56 +33,56 @@
 
 typedef struct
 {
-    u8 present : 1;  // 在内存中
-    u8 write : 1;    // 0 只读 1 可读可写
-    u8 user : 1;     // 1 所有人 0 超级用户 DPL < 3
-    u8 pwt : 1;      // page write through 1 直写模式，0 回写模式
-    u8 pcd : 1;      // page cache disable 禁止该页缓冲
-    u8 accessed : 1; // 被访问过，用于统计使用频率
-    u8 dirty : 1;    // 脏页，表示该页缓冲被写过
-    u8 pat : 1;      // page attribute table 页大小 4K/4M
-    u8 global : 1;   // 全局，所有进程都用到了，该页不刷新缓冲
-    u8 ignored : 3;  // 该安排的都安排了，送给操作系统吧
-    u32 index : 20;  // 页索引
+    uint8_t present : 1;  // 在内存中
+    uint8_t write : 1;    // 0 只读 1 可读可写
+    uint8_t user : 1;     // 1 所有人 0 超级用户 DPL < 3
+    uint8_t pwt : 1;      // page write through 1 直写模式，0 回写模式
+    uint8_t pcd : 1;      // page cache disable 禁止该页缓冲
+    uint8_t accessed : 1; // 被访问过，用于统计使用频率
+    uint8_t dirty : 1;    // 脏页，表示该页缓冲被写过
+    uint8_t pat : 1;      // page attribute table 页大小 4K/4M
+    uint8_t global : 1;   // 全局，所有进程都用到了，该页不刷新缓冲
+    uint8_t ignored : 3;  // 该安排的都安排了，送给操作系统吧
+    uint32_t index : 20;  // 页索引
 } _packed page_entry_t;
 
 typedef struct
 {
-    u8 present : 1;
-    u8 write : 1;
-    u8 user : 1;
-    u8 reserved0 : 1;
-    u8 fetch : 1;
-    u8 protection : 1;
-    u8 shadow : 1;
-    u16 reserved1 : 8;
-    u8 sgx : 1;
-    u16 reserved2;
+    uint8_t present : 1;
+    uint8_t write : 1;
+    uint8_t user : 1;
+    uint8_t reserved0 : 1;
+    uint8_t fetch : 1;
+    uint8_t protection : 1;
+    uint8_t shadow : 1;
+    uint16_t reserved1 : 8;
+    uint8_t sgx : 1;
+    uint16_t reserved2;
 } _packed page_error_code_t;
 
 void vMemoryModuleInit();
 
-void PageFault(u32 error);
+void PageFault(uint32_t error);
 
-void LinkPage(u32 vAddr, u32 pAddr);
-void UnLinkPage(u32 vAddr);
+void LinkPage(uint32_t vAddr, uint32_t pAddr);
+void UnLinkPage(uint32_t vAddr);
 void *CreatePDE();
 
 static page_entry_t *GetPDE();
-static page_entry_t *GetPTE(u32 vAddr, bool create);
+static page_entry_t *GetPTE(uint32_t vAddr, bool create);
 
 static void EnablePage();
 static void DisablePage();
 
-static u32 GetCr3();
-static void SetCr3(u32 pde);
+static uint32_t GetCr3();
+static void SetCr3(uint32_t pde);
 
-static u32 GetCr2();
+static uint32_t GetCr2();
 
-static void FlushTLB(u32 vaddr);
+static void FlushTLB(uint32_t vaddr);
 
-static void SetPageEntry(page_entry_t *entry, u32 index);
+static void SetPageEntry(page_entry_t *entry, uint32_t index);
 
 extern void PageFaultInit();
 
-extern const u32 gMemSize;
+extern const uint32_t gMemSize;

@@ -1,6 +1,6 @@
 #include "kmain.h"
 
-int KMain(int argc, char* argv[])
+int32_t KMain(int32_t argc, char* argv[])
 {
     SystemCallModuleInit();
 

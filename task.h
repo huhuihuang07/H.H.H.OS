@@ -7,69 +7,69 @@
 
 typedef struct
 {
-	u32 gs;
-	u32 fs;
-	u32 es;
-	u32 ds;
-	u32 edi;
-	u32 esi;
-	u32 ebp;
-	u32 kesp;
-	u32 ebx;
-	u32 edx;
-	u32 ecx;
-	u32 eax;
-	u32 error_code;
-	u32 eip;
-	u32 cs;
-	u32 eflags;
-	u32 esp;
-	u32 ss;
-} RegisterValue;
+	uint32_t gs;
+	uint32_t fs;
+	uint32_t es;
+	uint32_t ds;
+	uint32_t edi;
+	uint32_t esi;
+	uint32_t ebp;
+	uint32_t kesp;
+	uint32_t ebx;
+	uint32_t edx;
+	uint32_t ecx;
+	uint32_t eax;
+	uint32_t error_code;
+	uint32_t eip;
+	uint32_t cs;
+	uint32_t eflags;
+	uint32_t esp;
+	uint32_t ss;
+} RegisterValue_t;
 
 typedef struct
 {
-	u32 previous;	// 4
-	u32 esp0;		// 4
-	u32 ss0;		// 4
-	u32 unused[22]; // 4 * 22 = 88
-	u16 reserved;	// 2
-	u16 iomb;		// 2
-} TSS;				/*Task state segment*/
+	uint32_t previous;	// 4
+	uint32_t esp0;		// 4
+	uint32_t ss0;		// 4
+	uint32_t unused[22]; // 4 * 22 = 88
+	uint16_t reserved;	// 2
+	uint16_t iomb;		// 2
+} TSS_t;				/*Task_t state segment*/
 
 typedef struct
 {
-	RegisterValue rv;			  // sizeof(u32) * 18 = 4 * 18 = 72
-	Descriptor ldt[TASK_LDT_LEN]; // sizeof(Descriptor) * TASK_LDT_LEN = 8 * 3 = 24
+	RegisterValue_t rv;			  // sizeof(uint32_t) * 18 = 4 * 18 = 72
+	Descriptor_t ldt[TASK_LDT_LEN]; // sizeof(Descriptor_t) * TASK_LDT_LEN = 8 * 3 = 24
 	pid_t pid;
 	pid_t ppid;
-	pFunc tMain;
-	Queue *wait;
-	int8 *stack;
+	pFunc_t tMain;
+	Queue_t *wait;
+	int8_t *stack;
 	char *name;
-	u32 ticks;
-	u16 ldtSelector;
-	u16 total;
-	u16 current;
-} Task;
+	uint32_t ticks;
+	uint16_t ldtSelector;
+	uint16_t total;
+	uint16_t current;
+} Task_t;
 
 typedef struct
 {
-	ListNode lHead;
-	QueueNode qHead;
-} Head;
+	ListNode_t lHead;
+	QueueNode_t qHead;
+} Head_t;
 
 typedef struct
 {
-	Head head;
-	Task task;
-} TaskNode;
+	Head_t head;
+	Task_t task;
+} TaskNode_t;
 
 typedef struct
 {
 	const char *name;
-	pFunc tMain;
-	u8 priority;
+	pFunc_t tMain;
+	uint8_t priority;
 } AppInfo;
 
 typedef enum
@@ -79,9 +79,9 @@ typedef enum
 	SysCall_Task_Register = 2,
 	SysCall_Task_Wait = 3,
 	SysCall_Task_Sleep = 4,
-} SysCall_TASK_CMD;
+} SysCall_TASK_CMD_t;
 
-static TaskNode *AppInfoToTaskNode(AppInfo *appInfo);
+static TaskNode_t *AppInfoToTaskNode(AppInfo *appInfo);
 
 static bool CreateTaskToReady(AppInfo *appInfo);
 
@@ -89,7 +89,7 @@ static void InitIdleTask();
 
 static void InitInitTask();
 
-static void PrepareForRun(volatile Task *pTask);
+static void PrepareForRun(volatile Task_t *pTask);
 
 static void TaskEntry();
 
@@ -103,30 +103,30 @@ static void RunningToReady();
 
 static void SleepToReady();
 
-static void WaitToReady(Queue *pWaitQueue);
+static void WaitToReady(Queue_t *pWaitQueue);
 
-static void RunningToWait(Queue *pWaitQueue);
+static void RunningToWait(Queue_t *pWaitQueue);
 
-static void RunningToSleep(u32 ms);
+static void RunningToSleep(uint32_t ms);
 
-static bool FindTarget(ListNode *lhs, ListNode *rhs);
+static bool FindTarget(ListNode_t *lhs, ListNode_t *rhs);
 
-static TaskNode *FindTaskByName(const char *name);
+static TaskNode_t *FindTaskByName(const char *name);
 
 static bool WaitTask(const char *name);
 
-static bool SleepTask(u32 ms);
+static bool SleepTask(uint32_t ms);
 
-u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
+uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 
 void TaskModuleInit();
 
 void LaunchTask();
 
-extern void RunTask(volatile const Task *const pTask);
+extern void RunTask(volatile const Task_t *const pTask);
 
 extern void ClockInit();
 
 extern void AMain();
 
-extern u32 jiffy;
+extern uint32_t jiffy;

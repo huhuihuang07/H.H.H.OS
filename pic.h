@@ -53,11 +53,11 @@
 #define PIC_CAI 0xff // 关闭所有中断
 
 void InitPIC();
-u8 ReadIMR(u16 port);
-void WriteIMR(u16 port, u8 value);
-void SendEOI(u16 port);
+uint8_t ReadIMR(uint16_t port);
+void WriteIMR(uint16_t port, uint8_t value);
+void SendEOI(uint16_t port);
 
-void SetInterruptMask(u32 irq, State state);
+void SetInterruptMask(uint32_t irq, State state);
 State SetIFState(State state);
 State DisableIF();
 State EnableIF();

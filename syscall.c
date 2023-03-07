@@ -9,12 +9,12 @@ extern void SysCallInit();
 
 void SystemCallModuleInit()
 {
-    SetInterruptGate(0x80, (u32)(SysCallHanderEntry));
+    SetInterruptGate(0x80, (uint32_t)(SysCallHanderEntry));
 }
 
-void Exit(int status)
+void Exit(int32_t status)
 {
-    SysCall(SysCall_Task, SysCall_Task_Kill, status, (u32)(nullptr));
+    SysCall(SysCall_Task, SysCall_Task_Kill, status, (uint32_t)(nullptr));
 }
 
 void Debug()
@@ -22,7 +22,7 @@ void Debug()
     asm volatile("int $0x03");
 }
 
-bool RegisterApp(const char* name, pFunc tMain, u8 priority)
+bool RegisterApp(const char* name, pFunc_t tMain, uint8_t priority)
 {
     bool ret = false;
 
@@ -34,7 +34,7 @@ bool RegisterApp(const char* name, pFunc tMain, u8 priority)
 
     appInfo->priority = priority;
 
-    ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (u32)(appInfo), (u32)(nullptr)), 0) ? false : true;
+    ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (uint32_t)(appInfo), (uint32_t)(nullptr)), 0) ? false : true;
 
     free(appInfo);
 
@@ -43,23 +43,23 @@ bool RegisterApp(const char* name, pFunc tMain, u8 priority)
 
 void Wait(const char* name)
 {
-    SysCall(SysCall_Task, SysCall_Task_Wait, (u32)(name), (u32)(nullptr));
+    SysCall(SysCall_Task, SysCall_Task_Wait, (uint32_t)(name), (uint32_t)(nullptr));
 }
 
-void Sleep(u32 ms)
+void Sleep(uint32_t ms)
 {
-    SysCall(SysCall_Task, SysCall_Task_Sleep, ms, (u32)(nullptr));
+    SysCall(SysCall_Task, SysCall_Task_Sleep, ms, (uint32_t)(nullptr));
 }
 
-u16 printf(const char* format, ...)
+uint16_t printf(const char* format, ...)
 {
-    u16 ret = 0;
+    uint16_t ret = 0;
 
     va_list v_arg;
 
     va_start(v_arg, format);
 
-    ret = SysCall(SysCall_Screen, SysCall_Screen_Printf, (u32)(format), (u32)(v_arg));
+    ret = SysCall(SysCall_Screen, SysCall_Screen_Printf, (uint32_t)(format), (uint32_t)(v_arg));
 
     va_end(v_arg);
 

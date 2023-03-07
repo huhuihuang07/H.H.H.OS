@@ -4,14 +4,14 @@
 
 typedef struct
 {
-	u8 *bits;
-	u32 length;
-} BitMap;
+	uint8_t *bits;
+	uint32_t length;
+} BitMap_t;
 
-void BitMap_Init(BitMap *bitmap, void *bits, u32 length);
+void BitMap_Init(BitMap_t *bitmap, void *bits, uint32_t length);
 
-bool BitMap_Test(BitMap *bitmap, u32 index);
+bool BitMap_Test(BitMap_t *bitmap, uint32_t index);
 
-void BitMap_Set(BitMap *bitmap, u32 index, bool value);
+void BitMap_Set(BitMap_t *bitmap, uint32_t index, bool value);
 
-bool BitMap_Scan(BitMap *bitmap, u32 count, u32 *start);
+bool BitMap_Scan(BitMap_t *bitmap, uint32_t count, uint32_t *start);

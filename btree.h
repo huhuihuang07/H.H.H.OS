@@ -7,24 +7,24 @@ typedef enum
 	BTreePos_ANY = 1 << 0,
 	BTreePos_LEFT = 1 << 1,
 	BTreePos_RIGHT = BTreePos_LEFT | BTreePos_ANY,
-} BTreePos;
+} BTreePos_t;
 
-typedef struct _BTreeNode
+typedef struct _BTreeNode_t
 {
-	struct _BTreeNode *parent;
-	struct _BTreeNode *lChild;
-	struct _BTreeNode *rChild;
-} BTreeNode;
+	struct _BTreeNode_t *parent;
+	struct _BTreeNode_t *lChild;
+	struct _BTreeNode_t *rChild;
+} BTreeNode_t;
 
-typedef BTreeNode BTreeRoot;
+typedef BTreeNode_t BTreeRoot;
 
-typedef void (*pDestroyFunc)(BTreeNode *);
+typedef void (*pDestroyFunc_t)(BTreeNode_t *);
 
 void BTree_Init(BTreeRoot *root);
-bool BTree_Insert(BTreeRoot *root, BTreeNode *node, BTreePos pos);
-BTreeNode *BTree_Remove(BTreeRoot *root, BTreeNode *node);
-BTreeNode *BTree_Find(BTreeRoot *root, BTreeNode *node);
-u32 BTree_Degree(BTreeRoot *root);
-u32 BTree_Count(BTreeRoot *root);
-u32 BTree_Hight(BTreeRoot *root);
-void BTree_Clear(BTreeRoot *root, pDestroyFunc func);
+bool BTree_Insert(BTreeRoot *root, BTreeNode_t *node, BTreePos_t pos);
+BTreeNode_t *BTree_Remove(BTreeRoot *root, BTreeNode_t *node);
+BTreeNode_t *BTree_Find(BTreeRoot *root, BTreeNode_t *node);
+uint32_t BTree_Degree(BTreeRoot *root);
+uint32_t BTree_Count(BTreeRoot *root);
+uint32_t BTree_Hight(BTreeRoot *root);
+void BTree_Clear(BTreeRoot *root, pDestroyFunc_t func);

@@ -15,19 +15,19 @@ typedef enum
 {
 	Systerm = 0,
 	User = 3,
-} PrivilegeLevel;
+} PrivilegeLevel_t;
 
 #define INTERRUPT_NUM 256
 
-typedef void (*handlerFun)(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
+typedef void (*handlerFun)(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel);
 
-void DefaultInterruptHandler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel);
+void DefaultInterruptHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel);
 
 handlerFun handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
 
 #ifndef DeclExternalInterrupt
 #define DeclExternalInterrupt(name)                                                \
-	void name##Handler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel); \
+	void name##Handler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel); \
 	void name##Init()                                                              \
 	{                                                                              \
 		handler_table[IRQ_MASTER_NR + name##Interrupt] = name##Handler;            \
@@ -38,7 +38,7 @@ handlerFun handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
 
 #ifndef DeclInternalInterrupt
 #define DeclInternalInterrupt(name)                                                \
-	void name##Handler(u32 vector, u32 error_code, PrivilegeLevel privilegeLevel); \
+	void name##Handler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel); \
 	void name##Init()                                                              \
 	{                                                                              \
 		handler_table[name##Interrupt] = name##Handler;                            \
@@ -48,10 +48,10 @@ handlerFun handler_table[INTERRUPT_NUM] = {DefaultInterruptHandler};
 // Declare External interrupt handler
 DeclExternalInterrupt(Timer)
 
-	// Declare Internal fault handler
-	DeclInternalInterrupt(PageFault)
+// Declare Internal fault handler
+DeclInternalInterrupt(PageFault)
 
-		extern void SystemCall(u32 param);
-extern u32 TaskCallHandler(u32 cmd, u32 param1, u32 param2);
-extern u32 ScreenCallHandler(u32 cmd, u32 param1, u32 param2);
-extern void PageFault(u32 error);
+extern void SystemCall(uint32_t param);
+extern uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
+extern uint32_t ScreenCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
+extern void PageFault(uint32_t error);

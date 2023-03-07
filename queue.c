@@ -1,22 +1,22 @@
 #include "queue.h"
 
-void Queue_Init(Queue* queue)
+void Queue_Init(Queue_t* queue)
 {
-    List_Init(StructOffset(queue, Queue, head));
+    List_Init(StructOffset(queue, Queue_t, head));
 
     queue->length = 0;
 }
 
-bool Queue_IsEmpty(Queue* queue)
+bool Queue_IsEmpty(Queue_t* queue)
 {
-    return (List_IsEmpty(StructOffset(queue, Queue, head))) && (IsEqual(queue->length, 0));
+    return (List_IsEmpty(StructOffset(queue, Queue_t, head))) && (IsEqual(queue->length, 0));
 }
 
-bool Queue_IsContained(Queue* queue, QueueNode* node)
+bool Queue_IsContained(Queue_t* queue, QueueNode_t* node)
 {
-    QueueNode* pos = nullptr;
+    QueueNode_t* pos = nullptr;
 
-    List_ForEach(StructOffset(queue, Queue, head), pos)
+    List_ForEach(StructOffset(queue, Queue_t, head), pos)
     {
         if (IsEqual(pos, node))
         {
@@ -27,17 +27,17 @@ bool Queue_IsContained(Queue* queue, QueueNode* node)
     return IsEqual(pos, node);
 }
 
-void Queue_Add(Queue* queue, QueueNode* node)
+void Queue_Add(Queue_t* queue, QueueNode_t* node)
 {
     if (!IsEqual(node, nullptr))
     {
-        List_AddTail(StructOffset(queue, Queue, head), node);
+        List_AddTail(StructOffset(queue, Queue_t, head), node);
 
         queue->length++;
     }
 }
 
-QueueNode* Queue_Front(Queue* queue)
+QueueNode_t* Queue_Front(Queue_t* queue)
 {
     if (IsEqual(Queue_IsEmpty(queue), false))
     {
@@ -47,9 +47,9 @@ QueueNode* Queue_Front(Queue* queue)
     return nullptr;
 }
 
-QueueNode* Queue_Remove(Queue* queue)
+QueueNode_t* Queue_Remove(Queue_t* queue)
 {
-    QueueNode* node = nullptr;
+    QueueNode_t* node = nullptr;
 
     if (IsEqual(Queue_IsEmpty(queue), false))
     {
@@ -61,17 +61,17 @@ QueueNode* Queue_Remove(Queue* queue)
     return node;
 }
 
-u32 Queue_Length(Queue* queue)
+uint32_t Queue_Length(Queue_t* queue)
 {
     return queue->length;
 }
 
-void Queue_Rotate(Queue* queue)
+void Queue_Rotate(Queue_t* queue)
 {
     Queue_Add(queue, Queue_Remove(queue));
 }
 
-void Queue_Destroy(Queue* queue, pDestroyFunc func)
+void Queue_Destroy(Queue_t* queue, pDestroyFunc_t func)
 {
-    List_Destroy(StructOffset(queue, Queue, head), func);
+    List_Destroy(StructOffset(queue, Queue_t, head), func);
 }
