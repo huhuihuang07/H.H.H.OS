@@ -48,9 +48,9 @@ typedef struct
 	PMemNode_t *nBase;
 	PMemUnit_t *uBase;
 	uint32_t max;
-} PMemList;
+} PMemList_t;
 
-static PMemList gPMemList;
+static PMemList_t gPMemList;
 
 #ifndef MEMORY_BASE
 #define MEMORY_BASE 0x100000 // 1M，可用内存开始的位置
@@ -88,10 +88,10 @@ typedef struct
 	uint32_t free;
 } VMemHead_t;
 
-typedef List VMemList;
+typedef List VMemList_t;
 
-static VMemList gVMemList;
-static VMemList *pVMemList;
+static VMemList_t gVMemList;
+static VMemList_t *pVMemList;
 
 uint32_t memoryBase;
 uint32_t memorySize;

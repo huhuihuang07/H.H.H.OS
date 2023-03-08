@@ -29,17 +29,17 @@ typedef struct
 
 typedef struct
 {
-	uint32_t previous;	// 4
-	uint32_t esp0;		// 4
-	uint32_t ss0;		// 4
+	uint32_t previous;	 // 4
+	uint32_t esp0;		 // 4
+	uint32_t ss0;		 // 4
 	uint32_t unused[22]; // 4 * 22 = 88
-	uint16_t reserved;	// 2
-	uint16_t iomb;		// 2
-} TSS_t;				/*Task_t state segment*/
+	uint16_t reserved;	 // 2
+	uint16_t iomb;		 // 2
+} TSS_t;				/* Task_t state segment */
 
 typedef struct
 {
-	RegisterValue_t rv;			  // sizeof(uint32_t) * 18 = 4 * 18 = 72
+	RegisterValue_t rv;			    // sizeof(uint32_t) * 18 = 4 * 18 = 72
 	Descriptor_t ldt[TASK_LDT_LEN]; // sizeof(Descriptor_t) * TASK_LDT_LEN = 8 * 3 = 24
 	pid_t pid;
 	pid_t ppid;

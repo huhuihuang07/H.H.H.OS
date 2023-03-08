@@ -4,11 +4,11 @@
 #include "assert.h"
 #include "screen.h"
 
-static PMemList gPMemList = {0};   // 定长分配 4K 内存页, 使用引用计数
+static PMemList_t gPMemList = {0}; // 定长分配 4K 内存页, 使用引用计数
 static FMemList_t gFMemList = {0}; // 定长分配 32bytes 内存，不使用引用计数
-static VMemList gVMemList = {0};   // 变长分配 不使用引用计数
+static VMemList_t gVMemList = {0}; // 变长分配 不使用引用计数
 
-static VMemList* pVMemList = &gVMemList;
+static VMemList_t* pVMemList = &gVMemList;
 
 uint32_t memoryBase = 0; // 堆空间基地址， 应该等于1M
 uint32_t memorySize = 0; // 堆空间大小

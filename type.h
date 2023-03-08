@@ -32,7 +32,7 @@ typedef enum
 {
 	Disable = 0,
 	Enable = !Disable,
-} State;
+} state_t;
 
 typedef void (*pFunc_t)();
 

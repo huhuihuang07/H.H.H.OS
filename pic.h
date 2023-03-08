@@ -57,8 +57,8 @@ uint8_t ReadIMR(uint16_t port);
 void WriteIMR(uint16_t port, uint8_t value);
 void SendEOI(uint16_t port);
 
-void SetInterruptMask(uint32_t irq, State state);
-State SetIFState(State state);
-State DisableIF();
-State EnableIF();
-State GetIFState();
+void SetInterruptMask(uint32_t irq, state_t state);
+state_t SetIFState(state_t state);
+state_t DisableIF();
+state_t EnableIF();
+state_t GetIFState();

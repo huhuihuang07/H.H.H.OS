@@ -18,7 +18,7 @@ void SendEOI(uint16_t port)
     outb(port, PIC_EOI);
 }
 
-State GetIFState()
+state_t GetIFState()
 {
     uint32_t eflags = 0;
 
@@ -33,9 +33,9 @@ State GetIFState()
     return TestBit(eflags, 9);
 }
 
-State SetIFState(State state)
+state_t SetIFState(state_t state)
 {
-    State ret = GetIFState();
+    state_t ret = GetIFState();
 
     if (IsEqual(state, Enable) && !IsEqual(ret, state))
     {
@@ -50,17 +50,17 @@ State SetIFState(State state)
     return ret;
 }
 
-State DisableIF()
+state_t DisableIF()
 {
     return SetIFState(Disable);
 }
 
-State EnableIF()
+state_t EnableIF()
 {
     return SetIFState(Enable);
 }
 
-void SetInterruptMask(uint32_t irq, State state)
+void SetInterruptMask(uint32_t irq, state_t state)
 {
     assert((IRQ_CLOCK <= irq) && (irq <= IRQ_HARDDISK2));
 
