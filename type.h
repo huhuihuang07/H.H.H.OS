@@ -1,7 +1,7 @@
 #pragma once
 
 #ifndef nullptr
-#define nullptr (void *)0
+#define nullptr (void*)0
 #endif
 
 #ifndef NULL
@@ -21,17 +21,15 @@
 #endif
 
 #ifndef __cplusplus
-typedef enum
-{
-	false = 0,
-	true = !false,
+typedef enum {
+    false = 0,
+    true = !false,
 } bool;
 #endif
 
-typedef enum
-{
-	Disable = 0,
-	Enable = !Disable,
+typedef enum {
+    Disable = 0,
+    Enable = !Disable,
 } state_t;
 
 typedef void (*pFunc_t)();
@@ -67,7 +65,7 @@ typedef char* va_list;
 #endif
 
 #ifndef va_arg
-#define va_arg(p_list, tp) (*(tp *)((p_list += _INTSIZEOF(tp)) - _INTSIZEOF(tp)))
+#define va_arg(p_list, tp) (*(tp*)((p_list += _INTSIZEOF(tp)) - _INTSIZEOF(tp)))
 #endif
 
 #ifndef va_end

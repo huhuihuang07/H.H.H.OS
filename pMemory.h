@@ -20,7 +20,7 @@
 
 #ifndef PAGE_IsValid
 #define PAGE_IsValid(addr) \
-	(IsEqual((uint32_t)(addr)&0xfff, 0))
+    (IsEqual((uint32_t)(addr)&0xfff, 0))
 #endif
 
 #define PM_ALLOC_SIZE PAGE_SIZE
@@ -30,24 +30,23 @@ typedef int8_t(PMemUnit_t)[PM_ALLOC_SIZE];
 
 typedef struct _PMemNode_t PMemNode_t;
 
-typedef union
-{
-	PMemNode_t *next;
-	PMemUnit_t *ptr;
+typedef union {
+    PMemNode_t* next;
+    PMemUnit_t* ptr;
 } PMemUnion_t;
 
 struct _PMemNode_t
 {
-	PMemUnion_t node;
-	uint32_t refCount;
+    PMemUnion_t node;
+    uint32_t refCount;
 };
 
 typedef struct
 {
-	PMemNode_t *head;
-	PMemNode_t *nBase;
-	PMemUnit_t *uBase;
-	uint32_t max;
+    PMemNode_t* head;
+    PMemNode_t* nBase;
+    PMemUnit_t* uBase;
+    uint32_t max;
 } PMemList_t;
 
 static PMemList_t gPMemList;
@@ -62,18 +61,17 @@ static PMemList_t gPMemList;
 
 typedef int8_t(FMemUnit_t)[FM_ALLOC_SIZE];
 
-typedef union _FMemNode_t
-{
-	union _FMemNode_t *next;
-	FMemUnit_t *ptr;
+typedef union _FMemNode_t {
+    union _FMemNode_t* next;
+    FMemUnit_t* ptr;
 } FMemNode_t;
 
 typedef struct
 {
-	FMemNode_t *node;
-	FMemNode_t *nBase;
-	FMemUnit_t *uBase;
-	uint32_t max;
+    FMemNode_t* node;
+    FMemNode_t* nBase;
+    FMemUnit_t* uBase;
+    uint32_t max;
 } FMemList_t;
 
 static FMemList_t gFMemList;
@@ -82,33 +80,33 @@ static FMemList_t gFMemList;
 
 typedef struct
 {
-	ListNode_t head;
-	void *ptr;
-	uint32_t used;
-	uint32_t free;
+    ListNode_t head;
+    void* ptr;
+    uint32_t used;
+    uint32_t free;
 } VMemHead_t;
 
 typedef List VMemList_t;
 
 static VMemList_t gVMemList;
-static VMemList_t *pVMemList;
+static VMemList_t* pVMemList;
 
 uint32_t memoryBase;
 uint32_t memorySize;
 
 void pMemoryModuleInit();
 
-void *pMalloc(size_t size);
-bool pFree(const void *ptr);
+void* pMalloc(size_t size);
+bool pFree(const void* ptr);
 
-static void FMemInit(void *mem, uint32_t size);
-static void *FMemAlloc();
-static bool FMemFree(const void *ptr);
+static void FMemInit(void* mem, uint32_t size);
+static void* FMemAlloc();
+static bool FMemFree(const void* ptr);
 
-static void VMemInit(void *mem, uint32_t size);
-static void *VMemAlloc(size_t size);
-static bool VMemFree(const void *ptr);
+static void VMemInit(void* mem, uint32_t size);
+static void* VMemAlloc(size_t size);
+static bool VMemFree(const void* ptr);
 
-static void PMemInit(void *mem, uint32_t size);
-void *PMemAlloc(const void *ptr);
-void PMemFree(const void *ptr);
+static void PMemInit(void* mem, uint32_t size);
+void* PMemAlloc(const void* ptr);
+void PMemFree(const void* ptr);
