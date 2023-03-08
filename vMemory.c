@@ -42,9 +42,9 @@ static void SetPageEntry(page_entry_t* entry, uint32_t index)
     memset(entry, 0, sizeof(*entry));
 
     entry->present = 1;
-    entry->write = 1;
-    entry->user = 1;
-    entry->index = index;
+    entry->write   = 1;
+    entry->user    = 1;
+    entry->index   = index;
 }
 
 static void FlushTLB(uint32_t vaddr)

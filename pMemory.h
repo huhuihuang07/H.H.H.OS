@@ -24,7 +24,7 @@
 #endif
 
 #define PM_ALLOC_SIZE PAGE_SIZE
-#define PM_NODE_SIZE sizeof(PMemNode_t)
+#define PM_NODE_SIZE  sizeof(PMemNode_t)
 
 typedef int8_t(PMemUnit_t)[PM_ALLOC_SIZE];
 
@@ -56,8 +56,8 @@ static PMemList_t gPMemList;
 #endif
 
 #define FM_ALLOC_SIZE 32
-#define FM_NODE_SIZE sizeof(FMemNode_t)
-#define FM_SIZE 0x400
+#define FM_NODE_SIZE  sizeof(FMemNode_t)
+#define FM_SIZE       0x400
 
 typedef int8_t(FMemUnit_t)[FM_ALLOC_SIZE];
 

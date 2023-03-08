@@ -23,13 +23,13 @@
 #ifndef __cplusplus
 typedef enum {
     false = 0,
-    true = !false,
+    true  = !false,
 } bool;
 #endif
 
 typedef enum {
     Disable = 0,
-    Enable = !Disable,
+    Enable  = !Disable,
 } state_t;
 
 typedef void (*pFunc_t)();

@@ -156,7 +156,7 @@ bool SetPrintPos(uint8_t w, uint8_t h)
 
     if (ret)
     {
-        printInfo.width = w;
+        printInfo.width  = w;
         printInfo.height = h;
 
         SetCursorPos(w, h);

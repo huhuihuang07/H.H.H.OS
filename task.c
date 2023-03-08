@@ -46,7 +46,7 @@ static void InitTSS()
 
     SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (uint32_t)(pTSS), sizeof(TSS_t) - 1, DA_386TSS + DA_DPL0);
 
-    pTSS->ss0 = GDT_FlatModeDataSelector;
+    pTSS->ss0  = GDT_FlatModeDataSelector;
     pTSS->esp0 = BaseOfLoader;
     pTSS->iomb = sizeof(TSS_t);
 
@@ -117,7 +117,7 @@ static TaskNode_t* AppInfoToTaskNode(AppInfo* appInfo)
 
     ret->task.rv.esp = (uint32_t)(ret->task.stack) + PAGE_SIZE;
 
-    ret->task.rv.cs = LDT_Code32Selector;
+    ret->task.rv.cs  = LDT_Code32Selector;
     ret->task.rv.eip = (uint32_t)(TaskEntry);
 
     ret->task.rv.eflags = 0x3202;

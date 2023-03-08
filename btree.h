@@ -3,8 +3,8 @@
 #include "utility.h"
 
 typedef enum {
-    BTreePos_ANY = 1 << 0,
-    BTreePos_LEFT = 1 << 1,
+    BTreePos_ANY   = 1 << 0,
+    BTreePos_LEFT  = 1 << 1,
     BTreePos_RIGHT = BTreePos_LEFT | BTreePos_ANY,
 } BTreePos_t;
 

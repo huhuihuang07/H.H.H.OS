@@ -43,30 +43,30 @@
 #endif
 
 typedef enum {
-    SCREEN_INVALID = -1,         // 无效
-    SCREEN_BLACK = 0x00,         // 黑色
-    SCREEN_BLUE = 0x01,          // 蓝色
-    SCREEN_GREEN = 0x02,         // 绿色
-    SCREEN_CYAN = 0x03,          // 青色
-    SCREEN_RED = 0x04,           // 红色
-    SCREEN_MAGENTA = 0x05,       // 品红
-    SCREEN_BROWN = 0x06,         // 棕色
-    SCREEN_LIGHT_GREY = 0x07,    // 灰白
-    SCREEN_DARK_GREY = 0x08,     // 深灰
-    SCREEN_LIGHT_BLUE = 0x09,    // 淡蓝
-    SCREEN_LIGHT_GREEN = 0x0a,   // 淡绿
-    SCERRN_LIGHT_CYAN = 0x0b,    // 淡青
-    SCREEN_LIGHT_RED = 0x0c,     // 淡红
+    SCREEN_INVALID       = -1,   // 无效
+    SCREEN_BLACK         = 0x00, // 黑色
+    SCREEN_BLUE          = 0x01, // 蓝色
+    SCREEN_GREEN         = 0x02, // 绿色
+    SCREEN_CYAN          = 0x03, // 青色
+    SCREEN_RED           = 0x04, // 红色
+    SCREEN_MAGENTA       = 0x05, // 品红
+    SCREEN_BROWN         = 0x06, // 棕色
+    SCREEN_LIGHT_GREY    = 0x07, // 灰白
+    SCREEN_DARK_GREY     = 0x08, // 深灰
+    SCREEN_LIGHT_BLUE    = 0x09, // 淡蓝
+    SCREEN_LIGHT_GREEN   = 0x0a, // 淡绿
+    SCERRN_LIGHT_CYAN    = 0x0b, // 淡青
+    SCREEN_LIGHT_RED     = 0x0c, // 淡红
     SCREEN_LIGHT_MAGENTA = 0x0d, // 淡品红
-    SCREEN_YELLOW = 0x0e,        // 黄色
-    SCREEN_WHITE = 0x0f,         // 白色
+    SCREEN_YELLOW        = 0x0e, // 黄色
+    SCREEN_WHITE         = 0x0f, // 白色
     SCREEN_NUM
 } PrintColor_t;
 
 typedef enum {
-    SCREEN_BINARY = 0x02,
+    SCREEN_BINARY  = 0x02,
     SCREEN_TERNARY = 0x03,
-    SCREEN_OCTAL = 0x08,
+    SCREEN_OCTAL   = 0x08,
     SCREEN_DECIMAL = 0x0a,
     SCREEN_HEXADEC = 0x10
 } PrintRadix_t;

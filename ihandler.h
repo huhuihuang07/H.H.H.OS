@@ -13,7 +13,7 @@
 
 typedef enum {
     Systerm = 0,
-    User = 3,
+    User    = 3,
 } PrivilegeLevel_t;
 
 #define INTERRUPT_NUM 256

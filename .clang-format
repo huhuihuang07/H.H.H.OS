@@ -9,10 +9,19 @@ AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 
 # 连续赋值时，对齐所有等号
-AlignConsecutiveAssignments: false
+AlignConsecutiveAssignments: true
 
 # 连续声明时，对齐所有声明的变量名
 AlignConsecutiveDeclarations: false
+
+# 宏对齐
+AlignConsecutiveMacros: true
+
+# 位域对齐
+AlignConsecutiveBitFields: true
+
+# 数组左右对齐
+AlignArrayOfStructures: Right
 
 # 右对齐逃脱换行(使用反斜杠换行)的反斜杠
 AlignEscapedNewlines: Right

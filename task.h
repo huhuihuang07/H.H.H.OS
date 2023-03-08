@@ -73,11 +73,11 @@ typedef struct
 } AppInfo;
 
 typedef enum {
-    SysCall_Task_Kill = 0,
+    SysCall_Task_Kill     = 0,
     SysCall_Task_Schedule = 1,
     SysCall_Task_Register = 2,
-    SysCall_Task_Wait = 3,
-    SysCall_Task_Sleep = 4,
+    SysCall_Task_Wait     = 3,
+    SysCall_Task_Sleep    = 4,
 } SysCall_TASK_CMD_t;
 
 static TaskNode_t* AppInfoToTaskNode(AppInfo* appInfo);

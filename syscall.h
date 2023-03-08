@@ -3,7 +3,7 @@
 #include "utility.h"
 
 typedef enum {
-    SysCall_Task = 0,
+    SysCall_Task   = 0,
     SysCall_Screen = 1,
 } SysCall_TYPE_t;
 
