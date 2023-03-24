@@ -20,7 +20,7 @@
 
 #ifndef PAGE_IsValid
 #define PAGE_IsValid(addr) \
-    (IsEqual((uint32_t)(addr)&0xfff, 0))
+    (IsEqual((uint32_t)(addr)&0xfff, 0u))
 #endif
 
 #define PM_ALLOC_SIZE PAGE_SIZE

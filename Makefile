@@ -64,7 +64,8 @@ kernelSrc := kmain.c \
 			vMemory.c \
 			pMemory.c \
 			bitmap.c \
-			clock.c
+			clock.c \
+			mutex.c
 
 kernelAsm := kentry.asm \
 			   task.asm \

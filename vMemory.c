@@ -94,14 +94,15 @@ static uint32_t GetCr3()
 
 static void SetCr3(uint32_t pde)
 {
-    PAGE_IsValid(pde);
-
-    asm volatile(
-        "movl %0,    %%eax\n"
-        "movl %%eax, %%cr3\n"
-        :
-        : "r"(pde)
-        : "eax");
+    if (PAGE_IsValid(pde))
+    {
+        asm volatile(
+            "movl %0,    %%eax\n"
+            "movl %%eax, %%cr3\n"
+            :
+            : "r"(pde)
+            : "eax");
+    }
 }
 
 static uint32_t GetCr2()
