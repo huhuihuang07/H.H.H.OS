@@ -12,11 +12,11 @@
 #define PageFaultInterrupt 0x0e
 
 typedef enum {
-    Systerm = 0,
-    User    = 3,
+    Kernel = 0,
+    User   = 3,
 } PrivilegeLevel_t;
 
-#define INTERRUPT_NUM 256
+#define INTERRUPT_NUM 256u
 
 typedef void (*handlerFun)(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel);
 

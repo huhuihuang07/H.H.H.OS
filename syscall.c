@@ -1,8 +1,8 @@
 #include "syscall.h"
 #include "interrupt.h"
+#include "mutex.h"
 #include "memory.h"
 #include "screen.h"
-#include "assert.h"
 #include "task.h"
 
 extern void SysCallInit();
@@ -34,7 +34,7 @@ bool RegisterApp(const char* name, pFunc_t tMain, uint8_t priority)
 
     appInfo->priority = priority;
 
-    ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (uint32_t)(appInfo), (uint32_t)(nullptr)), 0) ? false : true;
+    ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (uint32_t)(appInfo), (uint32_t)(nullptr)), 0u) ? false : true;
 
     free(appInfo);
 
@@ -51,9 +51,9 @@ void Sleep(uint32_t ms)
     SysCall(SysCall_Task, SysCall_Task_Sleep, ms, (uint32_t)(nullptr));
 }
 
-uint16_t printf(const char* format, ...)
+uint32_t printf(const char* format, ...)
 {
-    uint16_t ret = 0;
+    uint32_t ret = 0u;
 
     va_list v_arg;
 
@@ -64,4 +64,24 @@ uint16_t printf(const char* format, ...)
     va_end(v_arg);
 
     return ret;
+}
+
+uint32_t CreateMutex()
+{
+    return SysCall(SysCall_Mutex, SysCall_Mutex_Create, (uint32_t)(nullptr), (uint32_t)(nullptr));
+}
+
+void EnterCritical(uint32_t ptr)
+{
+    SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr));
+}
+
+void ExitCritical(uint32_t ptr)
+{
+    SysCall(SysCall_Mutex, SysCall_Mutex_Exit, ptr, (uint32_t)(nullptr));
+}
+
+void DestroyMutex(uint32_t ptr)
+{
+    SysCall(SysCall_Mutex, SysCall_Mutex_Destroy, ptr, (uint32_t)(nullptr));
 }

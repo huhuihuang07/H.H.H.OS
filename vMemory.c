@@ -16,13 +16,13 @@ void* CreatePDE()
 {
     page_entry_t* pde = (page_entry_t*)PMemAlloc(nullptr);
 
-    memset(pde, 0, PAGE_SIZE);
+    memset(pde, 0u, PAGE_SIZE);
 
-    for (uint32_t i = 0; !IsEqual(i, 1); ++i)
+    for (uint32_t i = 0; !IsEqual(i, 1u); ++i)
     {
         page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
 
-        memset(pte, 0, PAGE_SIZE);
+        memset(pte, 0u, PAGE_SIZE);
 
         for (uint32_t j = 1; !IsEqual(j, PAGE_MAX); ++j)
         {
@@ -32,18 +32,18 @@ void* CreatePDE()
         SetPageEntry(AddrOffset(pde, i), PGEIndex(pte));
     }
 
-    SetPageEntry(AddrOffset(pde, PAGE_MAX - 1), PGEIndex(pde));
+    SetPageEntry(AddrOffset(pde, PAGE_MAX - 1u), PGEIndex(pde));
 
     return (void*)(pde);
 }
 
 static void SetPageEntry(page_entry_t* entry, uint32_t index)
 {
-    memset(entry, 0, sizeof(*entry));
+    memset(entry, 0u, sizeof(*entry));
 
-    entry->present = 1;
-    entry->write   = 1;
-    entry->user    = 1;
+    entry->present = 1u;
+    entry->write   = 1u;
+    entry->user    = 1u;
     entry->index   = index;
 }
 
@@ -80,7 +80,7 @@ static void DisablePage()
 
 static uint32_t GetCr3()
 {
-    uint32_t pde = 0;
+    uint32_t pde = 0u;
 
     asm volatile(
         "movl %%cr3, %%eax\n"
@@ -107,7 +107,7 @@ static void SetCr3(uint32_t pde)
 
 static uint32_t GetCr2()
 {
-    uint32_t vAddr = 0;
+    uint32_t vAddr = 0u;
 
     asm volatile(
         "movl %%cr2, %%eax\n"
@@ -123,7 +123,7 @@ void PageFault(uint32_t error)
 {
     page_error_code_t* pError = (page_error_code_t*)(&error);
 
-    if (IsEqual(pError->present, 0))
+    if (IsEqual(pError->present, 0u))
     {
         uint32_t vAddr = GetCr2();
 
@@ -150,9 +150,9 @@ void UnLinkPage(uint32_t vAddr)
 
     page_entry_t* entry = AddrOffset(pte, PTEIndex(vAddr));
 
-    assert(IsEqual(entry->present, 1));
+    assert(IsEqual(entry->present, 1u));
 
-    memset(entry, 0, sizeof(*entry));
+    memset(entry, 0u, sizeof(*entry));
 
     bool clear = true;
 
@@ -160,7 +160,7 @@ void UnLinkPage(uint32_t vAddr)
     {
         entry = (page_entry_t*)(AddrOffset(pte, i));
 
-        clear = !IsEqual(entry->present, 1);
+        clear = !IsEqual(entry->present, 1u);
     }
 
     if (IsEqual(clear, true))
@@ -171,13 +171,13 @@ void UnLinkPage(uint32_t vAddr)
 
         entry = AddrOffset(pde, PDEIndex(vAddr));
 
-        memset(entry, 0, sizeof(*entry));
+        memset(entry, 0u, sizeof(*entry));
     }
 }
 
 static page_entry_t* GetPDE()
 {
-    return (page_entry_t*)(0x3ff << 22 | 0x3ff << 12 | 0);
+    return (page_entry_t*)(0x3ff << 22u | 0x3ff << 12u | 0u);
 }
 
 static page_entry_t* GetPTE(uint32_t vAddr, bool create)
@@ -186,14 +186,14 @@ static page_entry_t* GetPTE(uint32_t vAddr, bool create)
 
     assert(IsEqual(create, true) || (IsEqual(create, false) && IsEqual(ret->present, 1)));
 
-    if (IsEqual(ret->present, 0))
+    if (IsEqual(ret->present, 0u))
     {
         page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
 
-        memset(pte, 0, PAGE_SIZE);
+        memset(pte, 0u, PAGE_SIZE);
 
         SetPageEntry(ret, PGEIndex(pte));
     }
 
-    return (page_entry_t*)(0x3ff << 22 | (PDEIndex(vAddr) << 12) | 0);
+    return (page_entry_t*)(0x3ff << 22u | (PDEIndex(vAddr) << 12u) | 0u);
 }

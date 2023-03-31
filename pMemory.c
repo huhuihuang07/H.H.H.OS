@@ -10,8 +10,8 @@ static VMemList_t gVMemList = {0}; // 变长分配 不使用引用计数
 
 static VMemList_t* pVMemList = &gVMemList;
 
-uint32_t memoryBase = 0; // 堆空间基地址， 应该等于1M
-uint32_t memorySize = 0; // 堆空间大小
+uint32_t memoryBase = 0u; // 堆空间基地址， 应该等于1M
+uint32_t memorySize = 0u; // 堆空间大小
 
 static uint32_t pageBase = -1;
 static uint32_t pageSize = -1;
@@ -37,7 +37,7 @@ void pMemoryModuleInit()
 
     assert((pageBase <= PAGE_BASE < (pageBase + pageSize)));
 
-    uint32_t PMemSize = (pageSize - PAGE_BASE) & ((-1) << 12);
+    uint32_t PMemSize = (pageSize - PAGE_BASE) & ((-1) << 12u);
 
     PMemInit((void*)(PAGE_BASE), PMemSize);
 
@@ -51,7 +51,7 @@ void pMemoryModuleInit()
 
     uint32_t VMemSize = memorySize - FMemSize;
 
-    assert((VMemSize > 0));
+    assert((VMemSize > 0u));
 
     void* VMemBase = (void*)(memoryBase + FMemSize);
 
@@ -62,17 +62,17 @@ static void FMemInit(void* mem, uint32_t size)
 {
     uint32_t max = size / (FM_NODE_SIZE + FM_ALLOC_SIZE);
 
-    assert((max > 0));
+    assert((max > 0u));
 
     gFMemList.max = max;
 
-    FMemNode_t* p = gFMemList.node = gFMemList.nBase = AddrOffset(mem, 0);
+    FMemNode_t* p = gFMemList.node = gFMemList.nBase = AddrOffset(mem, 0u);
 
     gFMemList.uBase = AddrOffset(gFMemList.nBase, gFMemList.max);
 
     for (uint32_t i = 1; !IsEqual(gFMemList.max, i); ++i)
     {
-        p->next = AddrOffset(p, 1);
+        p->next = AddrOffset(p, 1u);
 
         p = p->next;
     }
@@ -130,15 +130,15 @@ static void VMemInit(void* mem, uint32_t size)
 {
     uint32_t free = size - VM_HEAD_SIZE;
 
-    assert((free > 0));
+    assert((free > 0u));
 
     List_Init(pVMemList);
 
-    VMemHead_t* head = AddrOffset(mem, 0);
+    VMemHead_t* head = AddrOffset(mem, 0u);
 
-    head->ptr = AddrOffset(head, 1);
+    head->ptr = AddrOffset(head, 1u);
 
-    head->used = 0;
+    head->used = 0u;
 
     head->free = free;
 
@@ -163,11 +163,11 @@ static void* VMemAlloc(size_t size)
 
             alloc->head.prev = alloc->head.next = nullptr;
 
-            alloc->ptr = AddrOffset(alloc, 1);
+            alloc->ptr = AddrOffset(alloc, 1u);
 
             alloc->used = size;
 
-            alloc->free = 0;
+            alloc->free = 0u;
 
             node->free -= allocSize;
 
@@ -214,22 +214,22 @@ static void PMemInit(void* mem, uint32_t size)
 {
     uint32_t max = (size - PAGE_SIZE) / PAGE_SIZE;
 
-    assert(max > 0);
+    assert(max > 0u);
 
     gPMemList.max = Min(max, (PAGE_SIZE / PM_NODE_SIZE));
 
-    PMemNode_t* p = gPMemList.head = gPMemList.nBase = AddrOffset(mem, 0);
+    PMemNode_t* p = gPMemList.head = gPMemList.nBase = AddrOffset(mem, 0u);
 
     gPMemList.uBase = AddrOffset(gPMemList.nBase, PAGE_SIZE / PM_NODE_SIZE);
 
     for (uint32_t i = 1; !IsEqual(i, gPMemList.max); ++i)
     {
-        p->node.next = (p->refCount = 0, AddrOffset(p, 1));
+        p->node.next = (p->refCount = 0u, AddrOffset(p, 1u));
 
         p = p->node.next;
     }
 
-    p->node.next = (p->refCount = 0, nullptr);
+    p->node.next = (p->refCount = 0u, nullptr);
 }
 
 void* PMemAlloc(const void* ptr)
@@ -250,7 +250,7 @@ void* PMemAlloc(const void* ptr)
 
                 ret = node->node.ptr = AddrOffset(gPMemList.uBase, index);
 
-                node->refCount = 1;
+                node->refCount = 1u;
             }
         }
     }
@@ -262,7 +262,7 @@ void* PMemAlloc(const void* ptr)
         {
             PMemNode_t* node = AddrOffset(gPMemList.nBase, index);
 
-            if (IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+            if (IsEqual(node->node.ptr, ptr) && (node->refCount > 0u))
             {
                 ret = node->node.ptr;
 
@@ -289,11 +289,11 @@ void PMemFree(const void* ptr)
     {
         PMemNode_t* node = AddrOffset(gPMemList.nBase, index);
 
-        if (IsEqual(node->node.ptr, ptr) && (node->refCount > 0))
+        if (IsEqual(node->node.ptr, ptr) && (node->refCount > 0u))
         {
             --node->refCount;
 
-            if (IsEqual(node->refCount, 0))
+            if (IsEqual(node->refCount, 0u))
             {
                 node->node.next = gPMemList.head;
 
@@ -305,7 +305,7 @@ void PMemFree(const void* ptr)
 
 void* pMalloc(size_t size)
 {
-    if (IsEqual(size, 0))
+    if (IsEqual(size, 0u))
     {
         return nullptr;
     }
@@ -336,7 +336,7 @@ bool pFree(const void* ptr)
 
     bool result = FMemFree(ptr);
 
-    if (IsEqual(result, false))
+    if (!result)
     {
         result = VMemFree(ptr);
     }

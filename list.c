@@ -73,7 +73,7 @@ ListNode_t* List_FindNode(List* list, ListNode_t* node, pFindFunc_t func)
 
     List_ForEach(list, pos)
     {
-        if (IsEqual(func(node, pos), true))
+        if (func(node, pos))
         {
             break;
         }

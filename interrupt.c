@@ -6,7 +6,7 @@
 
 bool SetInterruptGate(uint8_t InterruptVectorNumber, uint32_t Handlerfunc)
 {
-    return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, Handlerfunc, 0, DA_386IGate + DA_DPL3);
+    return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, Handlerfunc, 0u, DA_386IGate + DA_DPL3);
 }
 
 bool SetInterruptHandler(uint8_t irq, uint32_t Handlerfunc)

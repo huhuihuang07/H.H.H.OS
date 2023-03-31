@@ -3,11 +3,11 @@
 #include "type.h"
 
 #ifndef SCREEN_WIDTH
-#define SCREEN_WIDTH 80
+#define SCREEN_WIDTH 80u
 #endif
 
 #ifndef SCREEN_HEIGHT
-#define SCREEN_HEIGHT 25
+#define SCREEN_HEIGHT 25u
 #endif
 
 #ifndef SCREEN_MEM_BASE
@@ -88,14 +88,16 @@ bool ClearScreen();
 bool SetPrintPos(uint8_t w, uint8_t h);
 bool SetPrintColor(PrintColor_t color);
 PrintColor_t GetPrintColor();
-uint16_t PrintString(const char* buffer);
-uint16_t PrintIntDec(int32_t n);
-uint16_t PrintIntHex(int32_t n);
-uint16_t PrintAddress(uint32_t n);
+uint32_t PrintString(const char* buffer);
+uint32_t PrintIntDec(int32_t n);
+uint32_t PrintIntHex(int32_t n);
+uint32_t PrintAddress(uint32_t n);
+
+void PrintLogo();
 
 uint8_t putchar(const char c);
-uint16_t printk(const char* format, va_list v_arg);
-uint16_t print(const char* format, ...);
+uint32_t printk(const char* format, va_list v_arg);
+uint32_t print(const char* format, ...);
 
 uint32_t ScreenCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 

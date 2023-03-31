@@ -5,11 +5,11 @@
 #include "utility.h"
 #include "assert.h"
 
-static PrintInfo_t printInfo = {0, 0, SCREEN_LIGHT_GREY};
+static PrintInfo_t printInfo = {0u, 0u, SCREEN_LIGHT_GREY};
 
-static const uint16_t SCREEN_ERASER = (SCREEN_LIGHT_GREY << 8) | ' ';
+static const uint16_t SCREEN_ERASER = (SCREEN_LIGHT_GREY << 8u) | ' ';
 
-static uint16_t SCREEN_POS = 0;
+static uint16_t SCREEN_POS = 0u;
 
 static const char* logo[] = {
     "   ____       _         \n\0",
@@ -29,7 +29,7 @@ static bool SetCursorPos(uint8_t w, uint8_t h)
 
         outb(CRT_ADDR_REG, CRT_CURSOR_H);
 
-        outb(CRT_DATA_REG, (bx >> 8) & 0xff);
+        outb(CRT_DATA_REG, (bx >> 8u) & 0xff);
 
         outb(CRT_ADDR_REG, CRT_CURSOR_L);
 
@@ -50,7 +50,7 @@ static bool SetScreenPos(uint8_t w, uint8_t h)
 
         outb(CRT_ADDR_REG, CRT_START_ADDR_H);
 
-        outb(CRT_DATA_REG, (bx >> 8) & 0xff);
+        outb(CRT_DATA_REG, (bx >> 8u) & 0xff);
 
         outb(CRT_ADDR_REG, CRT_START_ADDR_L);
 
@@ -61,13 +61,13 @@ static bool SetScreenPos(uint8_t w, uint8_t h)
 }
 
 // 向上滚屏
-static void scrollUp()
+static void ScrollUp()
 {
-    SCREEN_POS += 1;
+    SCREEN_POS += 1u;
 
-    printInfo.height -= 1;
+    printInfo.height -= 1u;
 
-    uint32_t address = (SCREEN_POS + SCREEN_HEIGHT) * SCREEN_WIDTH << 1;
+    uint32_t address = (SCREEN_POS + SCREEN_HEIGHT) * SCREEN_WIDTH << 1u;
 
     if (address < SCREEN_MEM_SIZE)
     {
@@ -80,24 +80,24 @@ static void scrollUp()
     }
     else
     {
-        memcpy((void*)(SCREEN_MEM_BASE), (void*)(SCREEN_MEM_BASE + (SCREEN_POS * SCREEN_WIDTH << 1)), (SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1);
+        memcpy((void*)(SCREEN_MEM_BASE), (void*)(SCREEN_MEM_BASE + (SCREEN_POS * SCREEN_WIDTH << 1u)), (SCREEN_HEIGHT - 1u) * SCREEN_WIDTH << 1u);
 
-        uint16_t* base = (uint16_t*)(SCREEN_MEM_BASE + ((SCREEN_HEIGHT - 1) * SCREEN_WIDTH << 1));
+        uint16_t* base = (uint16_t*)(SCREEN_MEM_BASE + ((SCREEN_HEIGHT - 1u) * SCREEN_WIDTH << 1u));
 
         for (int32_t i = 0; !IsEqual(i, SCREEN_WIDTH); ++i)
         {
             base[i] = SCREEN_ERASER;
         }
 
-        SCREEN_POS = 0;
+        SCREEN_POS = 0u;
     }
 
-    SetScreenPos(0, SCREEN_POS);
+    SetScreenPos(0u, SCREEN_POS);
 }
 
 static uint16_t PrintIntRadix(int32_t n, PrintRadix_t radix)
 {
-    uint16_t ret = 0;
+    uint16_t ret = 0u;
 
     if ((SCREEN_BINARY <= radix) && (radix <= SCREEN_HEXADEC))
     {
@@ -116,9 +116,9 @@ static uint16_t PrintIntRadix(int32_t n, PrintRadix_t radix)
 
 bool ClearScreen()
 {
-    uint16_t ret = 0;
+    uint16_t ret = 0u;
 
-    SetPrintPos(0, 0);
+    SetPrintPos(0u, 0u);
 
     for (uint8_t i = 0; !IsEqual(i, SCREEN_WIDTH); ++i)
     {
@@ -131,7 +131,14 @@ bool ClearScreen()
         }
     }
 
-    SetPrintPos(0, 0);
+    SetPrintPos(0u, 0u);
+
+    return IsEqual(ret, (SCREEN_WIDTH * SCREEN_HEIGHT));
+}
+
+void PrintLogo()
+{
+    SetPrintPos(0u, 0u);
 
     uint8_t logoLen = ArraySize(logo);
 
@@ -140,14 +147,14 @@ bool ClearScreen()
         print(logo[i]);
     }
 
-    return IsEqual(ret, (SCREEN_WIDTH * SCREEN_HEIGHT));
+    print("\n");
 }
 
 void InitScreen()
 {
     assert(ClearScreen());
 
-    SetScreenPos(0, SCREEN_POS = 0);
+    PrintLogo();
 }
 
 bool SetPrintPos(uint8_t w, uint8_t h)
@@ -190,13 +197,13 @@ uint8_t putchar(const char c)
     {
         if (IsEqual(c, '\n'))
         {
-            printInfo.width = 0;
+            printInfo.width = 0u;
 
-            printInfo.height += 1;
+            printInfo.height += 1u;
 
             if (IsEqual(printInfo.height, SCREEN_HEIGHT))
             {
-                scrollUp();
+                ScrollUp();
             }
         }
         else
@@ -210,19 +217,19 @@ uint8_t putchar(const char c)
         {
             uint32_t edi = (printInfo.height + SCREEN_POS) * SCREEN_WIDTH + printInfo.width;
 
-            uint16_t ax = (printInfo.color << 8) | c;
+            uint16_t ax = (printInfo.color << 8u) | c;
 
             printInfo.width += printChar(edi, ax);
 
             if (IsEqual(printInfo.width, SCREEN_WIDTH))
             {
-                printInfo.width = 0;
+                printInfo.width = 0u;
 
-                printInfo.height += 1;
+                printInfo.height += 1u;
 
                 if (IsEqual(printInfo.height, SCREEN_HEIGHT))
                 {
-                    scrollUp();
+                    ScrollUp();
                 }
             }
         }
@@ -233,14 +240,14 @@ uint8_t putchar(const char c)
         SetCursorPos(printInfo.width, printInfo.height);
     }
 
-    return ret ? 1 : 0;
+    return ret ? 1u : 0u;
 }
 
-uint16_t PrintString(const char* buffer)
+uint32_t PrintString(const char* buffer)
 {
     assert(!IsEqual(buffer, nullptr));
 
-    uint16_t ret = 0;
+    uint32_t ret = 0u;
 
     while (buffer[ret])
     {
@@ -257,17 +264,17 @@ uint16_t PrintString(const char* buffer)
     return ret;
 }
 
-uint16_t PrintIntDec(int32_t n)
+uint32_t PrintIntDec(int32_t n)
 {
-    return n < 0 ? (putchar('-') + PrintIntDec(-n)) : (PrintIntRadix(n, SCREEN_DECIMAL));
+    return n < 0u ? (putchar('-') + PrintIntDec(-n)) : (PrintIntRadix(n, SCREEN_DECIMAL));
 }
 
-uint16_t PrintIntHex(int32_t n)
+uint32_t PrintIntHex(int32_t n)
 {
     return (PrintString("0x") + PrintIntRadix(n, SCREEN_HEXADEC));
 }
 
-uint16_t PrintAddress(uint32_t n)
+uint32_t PrintAddress(uint32_t n)
 {
     char buffer[] = {'0', 'x', '0', '0', '0', '0', '0', '0', '0', '0', EOS};
 
@@ -281,11 +288,11 @@ uint16_t PrintAddress(uint32_t n)
     return PrintString(buffer);
 }
 
-uint16_t printk(const char* format, va_list v_arg)
+uint32_t printk(const char* format, va_list v_arg)
 {
     assert(!IsEqual(format, nullptr));
 
-    uint16_t ret = 0;
+    uint32_t ret = 0u;
 
     bool flag = false;
 
@@ -353,11 +360,11 @@ uint16_t printk(const char* format, va_list v_arg)
     return ret;
 }
 
-uint16_t print(const char* format, ...)
+uint32_t print(const char* format, ...)
 {
     assert(!IsEqual(format, nullptr));
 
-    uint16_t ret = 0;
+    uint32_t ret = 0u;
 
     va_list v_arg;
 
@@ -372,7 +379,7 @@ uint16_t print(const char* format, ...)
 
 uint32_t ScreenCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
 {
-    uint32_t ret = 0;
+    uint32_t ret = 0u;
 
     switch (cmd)
     {

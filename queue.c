@@ -4,12 +4,12 @@ void Queue_Init(Queue_t* queue)
 {
     List_Init(StructOffset(queue, Queue_t, head));
 
-    queue->length = 0;
+    queue->length = 0u;
 }
 
 bool Queue_IsEmpty(Queue_t* queue)
 {
-    return (List_IsEmpty(StructOffset(queue, Queue_t, head))) && (IsEqual(queue->length, 0));
+    return (List_IsEmpty(StructOffset(queue, Queue_t, head))) && (IsEqual(queue->length, 0u));
 }
 
 bool Queue_IsContained(Queue_t* queue, QueueNode_t* node)
@@ -39,7 +39,7 @@ void Queue_Add(Queue_t* queue, QueueNode_t* node)
 
 QueueNode_t* Queue_Front(Queue_t* queue)
 {
-    if (IsEqual(Queue_IsEmpty(queue), false))
+    if (!Queue_IsEmpty(queue))
     {
         return queue->head.next;
     }
@@ -51,7 +51,7 @@ QueueNode_t* Queue_Remove(Queue_t* queue)
 {
     QueueNode_t* node = nullptr;
 
-    if (IsEqual(Queue_IsEmpty(queue), false))
+    if (!Queue_IsEmpty(queue))
     {
         List_DelNode(node = queue->head.next);
 

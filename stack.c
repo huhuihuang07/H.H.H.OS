@@ -4,12 +4,12 @@ void Stack_Init(Stack_t* stack)
 {
     List_Init(StructOffset(stack, Stack_t, head));
 
-    stack->length = 0;
+    stack->length = 0u;
 }
 
 bool Stack_IsEmpty(Stack_t* stack)
 {
-    return (List_IsEmpty(StructOffset(stack, Stack_t, head))) && (IsEqual(stack->length, 0));
+    return (List_IsEmpty(StructOffset(stack, Stack_t, head))) && (IsEqual(stack->length, 0u));
 }
 
 bool Stack_IsContained(Stack_t* stack, StackNode_t* node)
@@ -36,7 +36,7 @@ void Stack_Push(Stack_t* stack, StackNode_t* node)
 
 void Stack_Pop(Stack_t* stack)
 {
-    if (IsEqual(Stack_IsEmpty(stack), false))
+    if (!Stack_IsEmpty(stack))
     {
         List_DelNode(stack->head.next);
 
@@ -46,7 +46,7 @@ void Stack_Pop(Stack_t* stack)
 
 StackNode_t* Stack_Top(Stack_t* stack)
 {
-    if (IsEqual(Stack_IsEmpty(stack), false))
+    if (!Stack_IsEmpty(stack))
     {
         return stack->head.next;
     }

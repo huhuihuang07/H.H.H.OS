@@ -3,6 +3,8 @@
 #include "type.h"
 #include "const.h"
 
+#define ARDS_MAX_NUMBER 20u
+
 typedef struct
 {
     uint16_t limit1;
@@ -46,7 +48,7 @@ typedef struct
 typedef struct
 {
     const uint8_t ARDSNumber;
-    const ARDS_t ards[20];
+    const ARDS_t ards[ARDS_MAX_NUMBER];
 } _packed MemInfo_t;
 
 const GdtInfo_t gGdtInfo;

@@ -23,12 +23,12 @@ char* strncpy(char* dest, const char* src, size_t n)
     char* lptr = dest;
     char* rptr = (char*)src;
 
-    while ((!IsEqual(*lptr++ = *rptr++, EOS)) && (!IsEqual(n--, 0)))
+    while ((!IsEqual(*lptr++ = *rptr++, EOS)) && (!IsEqual(n--, 0u)))
         ;
 
-    if (!IsEqual(n, 0))
+    if (!IsEqual(n, 0u))
     {
-        while ((!IsEqual(n--, 0)))
+        while ((!IsEqual(n--, 0u)))
         {
             *lptr++ = EOS;
         }
@@ -68,7 +68,7 @@ size_t strlen(const char* str)
     while (!IsEqual(*ptr++, EOS))
         ;
 
-    return AddrIndex(str, ptr) - 1;
+    return AddrIndex(str, ptr) - 1u;
 }
 
 int32_t strcmp(const char* lhs, const char* rhs)
@@ -88,7 +88,7 @@ int32_t strncmp(const char* lhs, const char* rhs, size_t n)
 {
     assert((!IsEqual(lhs, nullptr)) && (!IsEqual(rhs, nullptr)));
 
-    while ((!IsEqual(n--, 0)) && IsEqual(*lhs, *rhs) && (!IsEqual(*lhs, EOS)) && (!IsEqual(*rhs, EOS)))
+    while ((!IsEqual(n--, 0u)) && IsEqual(*lhs, *rhs) && (!IsEqual(*lhs, EOS)) && (!IsEqual(*rhs, EOS)))
     {
         lhs++;
         rhs++;
@@ -132,7 +132,7 @@ int32_t memcmp(const void* lhs, const void* rhs, size_t count)
     char* lptr = (char*)lhs;
     char* rptr = (char*)rhs;
 
-    while ((!IsEqual(count--, 0)) && IsEqual(*lptr++, *rptr++))
+    while ((!IsEqual(count--, 0u)) && IsEqual(*lptr++, *rptr++))
         ;
 
     return *lptr < *rptr ? -1 : *lptr > *rptr;
@@ -144,7 +144,7 @@ void* memset(void* dest, int32_t ch, size_t count)
 
     char* ptr = (char*)dest;
 
-    while (!IsEqual(count--, 0))
+    while (!IsEqual(count--, 0u))
     {
         *ptr++ = ch;
     }
@@ -161,17 +161,17 @@ void* memcpy(void* dest, const void* src, size_t count)
 
     if (lptr <= rptr)
     {
-        while ((!IsEqual(count--, 0)))
+        while ((!IsEqual(count--, 0u)))
         {
             *lptr++ = *rptr++;
         }
     }
     else
     {
-        lptr += count - 1;
-        rptr += count - 1;
+        lptr += count - 1u;
+        rptr += count - 1u;
 
-        while ((!IsEqual(count--, 0)))
+        while ((!IsEqual(count--, 0u)))
         {
             *lptr-- = *rptr--;
         }
@@ -186,7 +186,7 @@ void* memchr(const void* str, int32_t ch, size_t count)
 
     char* ptr = (char*)str;
 
-    while ((!IsEqual(count--, 0)) && (!IsEqual(*ptr, ch)))
+    while ((!IsEqual(count--, 0u)) && (!IsEqual(*ptr, ch)))
     {
         ++ptr;
     }
@@ -198,7 +198,7 @@ char* strdup(const char* src)
 {
     assert(!IsEqual(src, nullptr));
 
-    char* ret = malloc(strlen(src) + 1);
+    char* ret = malloc(strlen(src) + 1u);
 
     return strcpy(ret, src);
 }
@@ -207,9 +207,9 @@ char* strndup(const char* src, size_t n)
 {
     assert(!IsEqual(src, nullptr));
 
-    char* ret = malloc(n + 1);
+    char* ret = malloc(n + 1u);
 
-    return strncpy(ret, src, n + 1);
+    return strncpy(ret, src, n + 1u);
 }
 
 static int32_t* make_pmt(const char* str)
@@ -224,7 +224,7 @@ static int32_t* make_pmt(const char* str)
 
     for (int32_t i = 1; !IsEqual(i, len); ++i)
     {
-        while ((!IsEqual(ll, 0)) && (!IsEqual(str[i], str[ll])))
+        while ((!IsEqual(ll, 0u)) && (!IsEqual(str[i], str[ll])))
         {
             ll = ret[ll - 1];
         }
@@ -255,7 +255,7 @@ int32_t strfind(const char* src, const char* needle)
 
     for (i = 0, j = 0; (!IsEqual(i, fLen)) && (!IsEqual(j, sLen)); ++j)
     {
-        while ((!IsEqual(i, 0) && (!IsEqual(src[j], needle[i]))))
+        while ((!IsEqual(i, 0u) && (!IsEqual(src[j], needle[i]))))
         {
             i = pmt[i - 1];
         }

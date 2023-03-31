@@ -3,7 +3,7 @@
 #include "kernel.h"
 #include "queue.h"
 
-#define TASK_LDT_LEN 3
+#define TASK_LDT_LEN 3u
 
 typedef struct
 {
@@ -29,13 +29,13 @@ typedef struct
 
 typedef struct
 {
-    uint32_t previous;   // 4
-    uint32_t esp0;       // 4
-    uint32_t ss0;        // 4
-    uint32_t unused[22]; // 4 * 22 = 88
-    uint16_t reserved;   // 2
-    uint16_t iomb;       // 2
-} TSS_t;                 /* Task_t state segment */
+    uint32_t previous;    // 4
+    uint32_t esp0;        // 4
+    uint32_t ss0;         // 4
+    uint32_t unused[22u]; // 4 * 22 = 88
+    uint16_t reserved;    // 2
+    uint16_t iomb;        // 2
+} TSS_t;                  /* Task_t state segment */
 
 typedef struct
 {
@@ -115,6 +115,8 @@ static TaskNode_t* FindTaskByName(const char* name);
 static bool WaitTask(const char* name);
 
 static bool SleepTask(uint32_t ms);
+
+static bool RunningQueueIsFull();
 
 uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 

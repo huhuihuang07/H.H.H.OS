@@ -3,7 +3,7 @@ global SysCall
 [section .text]
 [bits 32]
 
-; u32 SysCall(u32 type, u32 cmd, u32 param1, u32 param2)
+; uint32_t SysCall(uint32_t type, uint32_t cmd, uint32_t param1, uint32_t param2)
 SysCall:
 	push ebp
 	mov ebp, esp

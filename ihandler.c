@@ -1,6 +1,7 @@
 #include "ihandler.h"
 #include "syscall.h"
 #include "screen.h"
+#include "mutex.h"
 
 static char* messages[] = {
     "#DE Divide Error\0",
@@ -31,7 +32,7 @@ void TimerHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privile
 {
     if (IsEqual(privilegeLevel, User))
     {
-        TaskCallHandler(1, 0, 0);
+        TaskCallHandler(1u, 0u, 0u);
     }
 
     SendEOI(MASTER_EOI_PORT);
@@ -54,7 +55,7 @@ void DefaultInterruptHandler(uint32_t vector, uint32_t error_code, PrivilegeLeve
 
 uint32_t SysCallHandler(uint32_t type, uint32_t cmd, uint32_t param1, uint32_t param2)
 {
-    uint32_t ret = 0;
+    uint32_t ret = 0u;
 
     switch (type)
     {
@@ -64,6 +65,10 @@ uint32_t SysCallHandler(uint32_t type, uint32_t cmd, uint32_t param1, uint32_t p
         }
         case SysCall_Screen: {
             ret = ScreenCallHandler(cmd, param1, param2);
+            break;
+        }
+        case SysCall_Mutex: {
+            ret = MutexCallHandler(cmd, param1, param2);
             break;
         }
         default:

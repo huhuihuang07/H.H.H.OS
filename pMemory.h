@@ -3,11 +3,11 @@
 #include "list.h"
 
 #ifndef ZONE_VAILD
-#define ZONE_VAILD 1 // ARDS_t 可用内存区域
+#define ZONE_VAILD 1u // ARDS_t 可用内存区域
 #endif
 
 #ifndef ZONE_RESERVED
-#define ZONE_RESERVED 2 // ARDS_t 不可用区域
+#define ZONE_RESERVED 2u // ARDS_t 不可用区域
 #endif
 
 #ifndef PAGE_SIZE
@@ -55,7 +55,7 @@ static PMemList_t gPMemList;
 #define MEMORY_BASE 0x100000 // 1M，可用内存开始的位置
 #endif
 
-#define FM_ALLOC_SIZE 32
+#define FM_ALLOC_SIZE 32u
 #define FM_NODE_SIZE  sizeof(FMemNode_t)
 #define FM_SIZE       0x400
 

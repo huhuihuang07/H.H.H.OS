@@ -109,12 +109,12 @@ uint32_t BTree_Degree(BTreeRoot* root)
 {
     if (IsEqual(root, nullptr))
     {
-        return 0;
+        return 0u;
     }
 
     uint32_t ret = (!!root->lChild) + (!!root->rChild);
 
-    if (IsEqual(ret, 2))
+    if (IsEqual(ret, 2u))
     {
         return ret;
     }
@@ -125,7 +125,7 @@ uint32_t BTree_Degree(BTreeRoot* root)
 
         ret = Max(ret, lDegree);
 
-        if (IsEqual(ret, 2))
+        if (IsEqual(ret, 2u))
         {
             return ret;
         }
@@ -137,7 +137,7 @@ uint32_t BTree_Degree(BTreeRoot* root)
 
         ret = Max(ret, rDegree);
 
-        if (IsEqual(ret, 2))
+        if (IsEqual(ret, 2u))
         {
             return ret;
         }
@@ -150,27 +150,27 @@ uint32_t BTree_Count(BTreeRoot* root)
 {
     if (IsEqual(root, nullptr))
     {
-        return 0;
+        return 0u;
     }
 
-    uint32_t lCount = IsEqual(root->lChild, nullptr) ? 0 : BTree_Count(root->lChild);
+    uint32_t lCount = IsEqual(root->lChild, nullptr) ? 0u : BTree_Count(root->lChild);
 
-    uint32_t rCount = IsEqual(root->rChild, nullptr) ? 0 : BTree_Count(root->rChild);
+    uint32_t rCount = IsEqual(root->rChild, nullptr) ? 0u : BTree_Count(root->rChild);
 
-    return (lCount + rCount + 1);
+    return (lCount + rCount + 1u);
 }
 
 uint32_t BTree_Hight(BTreeRoot* root)
 {
     if (IsEqual(root, nullptr))
     {
-        return 0;
+        return 0u;
     }
 
     uint32_t lHight = BTree_Hight(root->lChild);
     uint32_t rHight = BTree_Hight(root->rChild);
 
-    return Max(lHight, rHight) + 1;
+    return Max(lHight, rHight) + 1u;
 }
 
 void BTree_Clear(BTreeRoot* root, pDestroyFunc_t func)

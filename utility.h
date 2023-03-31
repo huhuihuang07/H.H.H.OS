@@ -56,12 +56,12 @@
 
 #ifndef SetBit
 #define SetBit(value, pos) \
-    ((value) | (1 << (pos)))
+    ((value) | (1u << (pos)))
 #endif
 
 #ifndef ClearBit
 #define ClearBit(value, pos) \
-    ((value) & (~(1 << (pos))))
+    ((value) & (~(1u << (pos))))
 #endif
 
 #ifndef TestBit

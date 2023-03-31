@@ -20,7 +20,7 @@ void SendEOI(uint16_t port)
 
 state_t GetIFState()
 {
-    uint32_t eflags = 0;
+    uint32_t eflags = 0u;
 
     asm volatile(
         "pushfl        \n"
@@ -30,7 +30,7 @@ state_t GetIFState()
         :
         : "eax");
 
-    return TestBit(eflags, 9);
+    return TestBit(eflags, 9u);
 }
 
 state_t SetIFState(state_t state)

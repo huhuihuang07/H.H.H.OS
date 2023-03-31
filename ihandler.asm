@@ -82,9 +82,12 @@ interrupt_%1_entry:
 	push fs
 	push gs
 
+	; ecx --> error_code
 	mov ecx, dword [esp + 4 * 12]
 
 CheckRPL_%1:
+	; RPL = 0 gs --> video32Selector
+	; RPL = 3 gs --> 0
 	mov ax, gs
 	cmp ax, 0
 	jne RPL0_%1
@@ -103,17 +106,21 @@ RPL3_%1:
 	mov ss, ax
 	mov esp, BaseOfLoader
 
+	sti
+
+	; RPL = 3
 	push 3
 
 	jmp next_%1
 
 RPL0_%1:
+	; RPL = 0
 	push 0
 
 next_%1:	
-	sti
-
+	; error_code
 	push ecx
+	; interrupt vector number
 	push %1
 
 	mov eax, dword [handler_table + %1 * 4]
@@ -126,6 +133,7 @@ next_%1:
 no_call_%1:
 	add esp, 12
 
+	; compare RPL
 	cmp dword [esp - 4], 0
 	je iret_%1
 
@@ -139,6 +147,7 @@ iret_%1:
 
 	popad
 
+	; pop error_code
 	add esp, 4
 
 	iret

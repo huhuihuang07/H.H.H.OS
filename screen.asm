@@ -29,6 +29,7 @@ printChar:
 	pop edi
 	pop eax
 
+	; set return value
 	mov eax, 1
 
 	leave
