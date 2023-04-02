@@ -2,6 +2,8 @@
 
 #include "utility.h"
 
+#define SYS_CALL_NUMBER 0x80
+
 typedef enum {
     SysCall_Task   = 0,
     SysCall_Screen = 1,

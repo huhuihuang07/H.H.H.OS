@@ -136,7 +136,7 @@ $(DIR_OBJS)/%.o : %.c
 $(DIR_OBJS)/%.obj : %.asm $(commonSrc)	
 	$(NASM) -f elf $< -o $@
 
-$(kernelElf) : $(ASM_OBJS) $(OBJS)
+$(kernelElf) : $(ASM_OBJS) $(OBJS) $(kernelLds)
 	$(LD) $(LDFLAGS) -T$(kernelLds) $^ -o $@	
 
 $(kernelBin) : $(kernelElf)

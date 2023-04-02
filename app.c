@@ -3,13 +3,13 @@
 
 void AMain()
 {
-    // uint32_t mutex = CreateMutex();
+    uint32_t mutex = CreateMutex();
 
-    printf("%s mutex = %p\n", __FUNCTION__, 0u);
+    printf("%s mutex = %p\n", __FUNCTION__, mutex);
 
-    // EnterCritical(mutex);
+    EnterCritical(mutex);
 
-    // ExitCritical(mutex);
+    ExitCritical(mutex);
 
-    // DestroyMutex(mutex);
+    DestroyMutex(mutex);
 }

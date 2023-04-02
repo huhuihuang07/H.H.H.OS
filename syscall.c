@@ -5,11 +5,9 @@
 #include "screen.h"
 #include "task.h"
 
-extern void SysCallInit();
-
 void SystemCallModuleInit()
 {
-    SetInterruptGate(0x80, (uint32_t)(SysCallHanderEntry));
+    SetInterruptGate(SYS_CALL_NUMBER, (uint32_t)(SysCallHanderEntry));
 }
 
 void Exit(int32_t status)
