@@ -144,10 +144,10 @@ void PrintLogo()
 
     for (uint8_t i = 0; !IsEqual(i, logoLen); ++i)
     {
-        print(logo[i]);
+        PrintString(logo[i]);
     }
 
-    print("\n");
+    putchar('\n');
 }
 
 void InitScreen()

@@ -80,9 +80,9 @@ typedef enum {
     SysCall_Task_Sleep    = 4,
 } SysCall_TASK_CMD_t;
 
-static TaskNode_t* AppInfoToTaskNode(AppInfo* appInfo);
+static TaskNode_t* AppInfoToTaskNode(const AppInfo* appInfo);
 
-static bool CreateTaskToReady(AppInfo* appInfo);
+static bool CreateTaskToReady(const AppInfo* appInfo);
 
 static void InitIdleTask();
 
