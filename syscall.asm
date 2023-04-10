@@ -8,7 +8,6 @@ SysCall:
 	push ebp
 	mov ebp, esp
 
-	push eax
 	push ebx
 	push ecx
 	push edx
@@ -23,7 +22,6 @@ SysCall:
 	pop edx
 	pop ecx
 	pop ebx
-	pop eax
 
 	leave
 	ret

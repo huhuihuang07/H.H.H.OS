@@ -7,13 +7,13 @@
 
 // Segment Attribute 段属性
 #define DA_32       0x4000 // 保护模式下32位段
-#define DA_DR       0x90   // 只读数据段
-#define DA_DRW      0x92   // 可读写数据段
-#define DA_DRWA     0x93   // 已访问可读写数据段
-#define DA_C        0x98   // 只执行代码段
-#define DA_CR       0x9a   // 可执行可读代码段
-#define DA_CCO      0x9c   // 只执行一致代码段
-#define DA_CCOR     0x9e   // 可执行可读一致代码段
+#define DA_DR       0x0090 // 只读数据段
+#define DA_DRW      0x0092 // 可读写数据段
+#define DA_DRWA     0x0093 // 已访问可读写数据段
+#define DA_C        0x0098 // 只执行代码段
+#define DA_CR       0x009a // 可执行可读代码段
+#define DA_CCO      0x009c // 只执行一致代码段
+#define DA_CCOR     0x009e // 可执行可读一致代码段
 #define DA_LIMIT_4K 0x8000 // 单位大小4K
 
 // Segment Pirvilege 段特权级

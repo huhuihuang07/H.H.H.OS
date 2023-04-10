@@ -105,7 +105,7 @@ static TaskNode_t* AppInfoToTaskNode(const AppInfo* appInfo)
 
     SetDescValue(AddrOffset(ret->task.ldt, LDT_Code32Index), 0u, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
     SetDescValue(AddrOffset(ret->task.ldt, LDT_Data32Index), 0u, 0xfffff, DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL3);
-    SetDescValue(AddrOffset(ret->task.ldt, LDT_Stack32Index), PGEIndex((uint32_t)(ret->task.stack)), PGEIndex((uint32_t)(ret->task.stack) + PAGE_SIZE), DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
+    SetDescValue(AddrOffset(ret->task.ldt, LDT_Stack32Index), 0u, PGEIndex((uint32_t)(ret->task.stack) + PAGE_SIZE), DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
 
     ret->task.rv.gs = GDT_UndefinedSelector;
 
