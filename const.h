@@ -10,6 +10,8 @@
 #define DA_DR       0x0090 // 只读数据段
 #define DA_DRW      0x0092 // 可读写数据段
 #define DA_DRWA     0x0093 // 已访问可读写数据段
+#define DA_SRW      0x0096 // 可读写栈段
+#define DA_SRWA     0x0097 // 已访问可读写栈段
 #define DA_C        0x0098 // 只执行代码段
 #define DA_CR       0x009a // 可执行可读代码段
 #define DA_CCO      0x009c // 只执行一致代码段
