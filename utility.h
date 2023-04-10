@@ -64,6 +64,11 @@
     ((value) & (~(1u << (pos))))
 #endif
 
+#ifndef InvertBit
+#define InvertBit(value, pos) \
+    ((value) ^ (1u << (pos)))
+#endif
+
 #ifndef TestBit
 #define TestBit(value, pos) \
     (IsEqual(((value) >> (pos)) & 0x01, 0x01))
