@@ -71,7 +71,12 @@ uint32_t CreateMutex()
 
 void EnterCritical(uint32_t ptr)
 {
-    SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr));
+    uint32_t ret = SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr));
+
+    while (IsEqual(ret, 0u))
+    {
+        ret = SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr));
+    }
 }
 
 void ExitCritical(uint32_t ptr)

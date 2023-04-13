@@ -29,7 +29,7 @@
 
 #ifndef StructOffset
 #define StructOffset(ptr, TYPE, MEMBER) \
-    ((void*)((uint32_t)(ptr) + offsetof(TYPE, MEMBER)))
+    ((void*)((char*)(ptr) + offsetof(TYPE, MEMBER)))
 #endif
 
 #ifndef IsEqual

@@ -92,7 +92,7 @@ static void PrepareForRun(volatile Task_t* pTask);
 
 static void TaskEntry();
 
-static void Schedule();
+void Schedule();
 
 static void KillTask();
 
@@ -102,9 +102,9 @@ static void RunningToReady();
 
 static void SleepToReady();
 
-static void WaitToReady(Queue_t* pWaitQueue);
+void WaitToReady(Queue_t* pWaitQueue);
 
-static void RunningToWait(Queue_t* pWaitQueue);
+void RunningToWait(Queue_t* pWaitQueue);
 
 static void RunningToSleep(uint32_t ms);
 
@@ -131,3 +131,5 @@ extern void ClockInit();
 extern void AMain();
 
 extern uint32_t jiffy;
+
+volatile Task_t* gCurrentTaskAddr;

@@ -86,7 +86,7 @@ typedef struct
     uint32_t free;
 } VMemHead_t;
 
-typedef List VMemList_t;
+typedef List_t VMemList_t;
 
 static VMemList_t gVMemList;
 static VMemList_t* pVMemList;

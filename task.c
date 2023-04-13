@@ -18,9 +18,9 @@ static Queue_t* pRunningQueue = nullptr;
 
 static Queue_t* pWaitingQueue = nullptr;
 
-static List* pSleepList = nullptr;
+static List_t* pSleepList = nullptr;
 
-static List* pTaskPool = nullptr;
+static List_t* pTaskPool = nullptr;
 
 static TaskNode_t* pIdleTaskNode = nullptr;
 
@@ -88,11 +88,11 @@ static void AppInfoToTaskDataStruct()
 
     Queue_Init(pWaitingQueue);
 
-    pSleepList = malloc(sizeof(List));
+    pSleepList = malloc(sizeof(List_t));
 
     List_Init(pSleepList);
 
-    pTaskPool = malloc(sizeof(List));
+    pTaskPool = malloc(sizeof(List_t));
 
     List_Init(pTaskPool);
 }
@@ -250,7 +250,7 @@ void LaunchTask()
     RunTask(gCurrentTaskAddr);
 }
 
-static void Schedule()
+void Schedule()
 {
     ReadyToRunning();
 
@@ -283,7 +283,7 @@ static void KillTask()
     Schedule();
 }
 
-static void WaitToReady(Queue_t* pWaitQueue)
+void WaitToReady(Queue_t* pWaitQueue)
 {
     while (!IsEqual(Queue_Length(pWaitQueue), 0u))
     {
@@ -291,7 +291,7 @@ static void WaitToReady(Queue_t* pWaitQueue)
     }
 }
 
-static void RunningToWait(Queue_t* pWaitQueue)
+void RunningToWait(Queue_t* pWaitQueue)
 {
     TaskNode_t* pCurrentTask = List_Node(Queue_Front(pRunningQueue), TaskNode_t, head.qHead);
 
