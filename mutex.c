@@ -20,7 +20,7 @@ bool Sys_EnterCritical(uint32_t mutex)
 {
     Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-    DisableIF();
+    state_t state = SetIFState(Disable);
 
     if (pMutex->lock)
     {
@@ -35,7 +35,7 @@ bool Sys_EnterCritical(uint32_t mutex)
         pMutex->lock = true;
     }
 
-    EnableIF();
+    SetIFState(state);
 
     return true;
 }
@@ -44,7 +44,7 @@ void Sys_ExitCritical(uint32_t mutex)
 {
     Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-    DisableIF();
+    state_t state = SetIFState(Disable);
 
     if (pMutex->lock)
     {
@@ -53,18 +53,22 @@ void Sys_ExitCritical(uint32_t mutex)
         WaitToReady(pMutex->queue);
     }
 
-    EnableIF();
+    SetIFState(state);
 }
 
 void Sys_DestroyMutex(uint32_t mutex)
 {
     Mutex_t* pMutex = (Mutex_t*)(mutex);
 
+    state_t state = SetIFState(Disable);
+
     WaitToReady(pMutex->queue);
 
     free(pMutex->queue);
 
     free(pMutex);
+
+    SetIFState(state);
 }
 
 uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)

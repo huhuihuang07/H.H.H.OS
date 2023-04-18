@@ -1,13 +1,53 @@
 #include "app.h"
 #include "syscall.h"
 
+static uint32_t mutex = 0u;
+
+static volatile uint32_t i = 0u;
+
+void createTask()
+{
+    mutex = CreateMutex();
+}
+
+void destroyTask()
+{
+    DestroyMutex(mutex);
+}
+
+void Task()
+{
+    for (uint32_t j = 0; !IsEqual(j, 1000000u); j++)
+    {
+        EnterCritical(mutex);
+
+        i++;
+
+        ExitCritical(mutex);
+    }
+}
+
 void AMain()
 {
-    uint32_t mutex = CreateMutex();
+    RegisterApp("create task", createTask, 255);
 
-    EnterCritical(mutex);
+    Wait("create task");
 
-    ExitCritical(mutex);
+    const char* tasksName[] = {"TaskA", "TaskB", "TaskC", "TaskD"};
 
-    DestroyMutex(mutex);
+    for (uint16_t j = 0; !IsEqual(j, ArraySize(tasksName)); j++)
+    {
+        RegisterApp(tasksName[j], Task, 250);
+    }
+
+    for (uint16_t j = 0; !IsEqual(j, ArraySize(tasksName)); j++)
+    {
+        Wait(tasksName[j]);
+    }
+
+    RegisterApp("destroy task", destroyTask, 255);
+
+    Wait("destroy task");
+
+    printf("i = %d", i);
 }

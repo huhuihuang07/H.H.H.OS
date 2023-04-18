@@ -39,12 +39,12 @@ state_t SetIFState(state_t state)
 
     if (IsEqual(state, Enable) && !IsEqual(ret, state))
     {
-        asm volatile("sti");
+        asm volatile("sti\n");
     }
 
     if (IsEqual(state, Disable) && !IsEqual(ret, state))
     {
-        asm volatile("cli");
+        asm volatile("cli\n");
     }
 
     return ret;
