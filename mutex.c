@@ -3,7 +3,16 @@
 #include "task.h"
 #include "pic.h"
 
-uint32_t Sys_CreateMutex()
+static List_t* gMutexList = nullptr;
+
+void MutexModuleInit()
+{
+    List_t* gMutexList = (List_t*)(malloc(sizeof(List_t)));
+
+    List_Init(gMutexList);
+}
+
+static uint32_t Sys_CreateMutex()
 {
     Mutex_t* mutex = (Mutex_t*)(malloc(sizeof(Mutex_t)));
 
@@ -13,62 +22,94 @@ uint32_t Sys_CreateMutex()
 
     Queue_Init(mutex->queue);
 
+    List_Add(gMutexList, StructOffset(mutex, Mutex_t, head));
+
     return (uint32_t)(mutex);
 }
 
-bool Sys_EnterCritical(uint32_t mutex)
+static bool Sys_EnterCritical(uint32_t mutex)
 {
-    Mutex_t* pMutex = (Mutex_t*)(mutex);
-
-    state_t state = SetIFState(Disable);
-
-    if (pMutex->lock)
+    if (IsMutexValid(mutex))
     {
-        gCurrentTaskAddr->rv.eax = 0u;
+        state_t state = SetIFState(Disable);
 
-        RunningToWait(pMutex->queue);
+        Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        Schedule();
+        if (IsEqual(pMutex->lock, true))
+        {
+            gCurrentTaskAddr->rv.eax = 0u;
+
+            RunningToWait(pMutex->queue);
+
+            Schedule();
+
+            RunTask(gCurrentTaskAddr);
+        }
+        else
+        {
+            pMutex->lock = true;
+        }
+
+        SetIFState(state);
     }
-    else
-    {
-        pMutex->lock = true;
-    }
-
-    SetIFState(state);
 
     return true;
 }
 
-void Sys_ExitCritical(uint32_t mutex)
+static void Sys_ExitCritical(uint32_t mutex)
 {
-    Mutex_t* pMutex = (Mutex_t*)(mutex);
-
-    state_t state = SetIFState(Disable);
-
-    if (pMutex->lock)
+    if (IsMutexValid(mutex))
     {
-        pMutex->lock = false;
+        state_t state = SetIFState(Disable);
 
-        WaitToReady(pMutex->queue);
+        Mutex_t* pMutex = (Mutex_t*)(mutex);
+
+        if (IsEqual(pMutex->lock, true))
+        {
+            pMutex->lock = false;
+
+            WaitToReady(pMutex->queue);
+        }
+
+        SetIFState(state);
     }
-
-    SetIFState(state);
 }
 
-void Sys_DestroyMutex(uint32_t mutex)
+static void Sys_DestroyMutex(uint32_t mutex)
 {
-    Mutex_t* pMutex = (Mutex_t*)(mutex);
+    if (IsMutexValid(mutex))
+    {
+        state_t state = SetIFState(Disable);
 
-    state_t state = SetIFState(Disable);
+        Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-    WaitToReady(pMutex->queue);
+        WaitToReady(pMutex->queue);
 
-    free(pMutex->queue);
+        List_DelNode(StructOffset(pMutex, Mutex_t, head));
 
-    free(pMutex);
+        free(pMutex->queue);
 
-    SetIFState(state);
+        free(pMutex);
+
+        SetIFState(state);
+    }
+}
+
+static bool IsMutexValid(uint32_t mutex)
+{
+    bool ret = false;
+
+    ListNode_t* pos = nullptr;
+
+    List_ForEach(gMutexList, pos)
+    {
+        if (ret = IsEqual(pos, mutex))
+        {
+            break;
+        }
+    }
+
+    return ret;
 }
 
 uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
@@ -82,7 +123,7 @@ uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
             break;
         }
         case SysCall_Mutex_Enter: {
-            ret = Sys_EnterCritical(param1);
+            ret = Sys_EnterCritical(param1) ? 1u : 0u;
             break;
         }
         case SysCall_Mutex_Exit: {

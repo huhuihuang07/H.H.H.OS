@@ -6,6 +6,8 @@ int32_t Kmain(int32_t argc, char* argv[]);
 
 extern void SystemCallModuleInit();
 
+extern void MutexModuleInit();
+
 extern void TaskModuleInit();
 
 extern void LaunchTask();

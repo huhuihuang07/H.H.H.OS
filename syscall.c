@@ -7,7 +7,7 @@
 
 void SystemCallModuleInit()
 {
-    SetInterruptGate(SYS_CALL_NUMBER, (uint32_t)(SysCallHanderEntry));
+    SetInterruptGate(SYS_CALL_NUMBER, (uint32_t)(SysCallHandlerEntry));
 }
 
 void Exit(int32_t status)
@@ -71,12 +71,8 @@ uint32_t CreateMutex()
 
 void EnterCritical(uint32_t ptr)
 {
-    uint32_t ret = SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr));
-
-    while (IsEqual(ret, 0u))
-    {
-        ret = SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr));
-    }
+    while (IsEqual(SysCall(SysCall_Mutex, SysCall_Mutex_Enter, ptr, (uint32_t)(nullptr)), 0u))
+        ;
 }
 
 void ExitCritical(uint32_t ptr)

@@ -24,5 +24,5 @@ void EnterCritical(uint32_t ptr);
 void ExitCritical(uint32_t ptr);
 void DestroyMutex(uint32_t ptr);
 
-extern void SysCallHanderEntry();
+extern void SysCallHandlerEntry();
 extern uint32_t SysCall(uint32_t type, uint32_t cmd, uint32_t param1, uint32_t param2);

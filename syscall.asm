@@ -1,5 +1,7 @@
 global SysCall
 
+extern gCurrentTaskAddr
+
 [section .text]
 [bits 32]
 
@@ -18,6 +20,9 @@ SysCall:
 	mov eax, dword [ebp +  8]
 
 	int 0x80
+
+	mov ebx, dword [gCurrentTaskAddr]
+	mov eax, dword [ebx + 0x2c]
 
 	pop edx
 	pop ecx

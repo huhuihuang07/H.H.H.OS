@@ -1,7 +1,7 @@
 %include "common.asm"
 
 global handler_entry_table
-global SysCallHanderEntry
+global SysCallHandlerEntry
 
 extern handler_table
 extern SysCallHandler
@@ -9,7 +9,7 @@ extern gCurrentTaskAddr
 
 [section .text]
 [bits 32]
-SysCallHanderEntry:
+SysCallHandlerEntry:
     sub esp, 4
 
 	pushad

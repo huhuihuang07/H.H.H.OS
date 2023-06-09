@@ -18,7 +18,7 @@
 #define DA_CCOR     0x009e // 可执行可读一致代码段
 #define DA_LIMIT_4K 0x8000 // 单位大小4K
 
-// Segment Pirvilege 段特权级
+// Segment Privilege level 段特权级
 #define DA_DPL0 0x00 // DPL = 0
 #define DA_DPL1 0x20 // DPL = 1
 #define DA_DPL2 0x40 // DPL = 2
