@@ -16,7 +16,7 @@ static Queue_t* pReadyQueue = nullptr;
 
 static Queue_t* pRunningQueue = nullptr;
 
-static Queue_t* pWaitingQueue = nullptr;
+static Queue_t* pWaittingingQueue = nullptr;
 
 static List_t* pSleepList = nullptr;
 
@@ -84,9 +84,9 @@ static void AppInfoToTaskDataStruct()
 
     Queue_Init(pRunningQueue);
 
-    pWaitingQueue = malloc(sizeof(Queue_t));
+    pWaittingingQueue = malloc(sizeof(Queue_t));
 
-    Queue_Init(pWaitingQueue);
+    Queue_Init(pWaittingingQueue);
 
     pSleepList = malloc(sizeof(List_t));
 
@@ -124,9 +124,9 @@ static TaskNode_t* AppInfoToTaskNode(const AppInfo* appInfo)
 
     ret->task.ldtSelector = GDT_LdtSelector;
 
-    ret->task.wait = malloc(sizeof(Queue_t));
+    ret->task.Waitting = malloc(sizeof(Queue_t));
 
-    Queue_Init(ret->task.wait);
+    Queue_Init(ret->task.Waitting);
 
     ret->task.tMain = appInfo->tMain;
 
@@ -268,13 +268,13 @@ static void KillTask()
 {
     TaskNode_t* pCurrentTask = List_Node(Queue_Remove(pRunningQueue), TaskNode_t, head.qHead);
 
-    WaitToReady(pCurrentTask->task.wait);
+    WaittingToReady(pCurrentTask->task.Waitting);
 
     List_DelNode(StructOffset(pCurrentTask, TaskNode_t, head.lHead));
 
     PMemFree(pCurrentTask->task.stack);
 
-    free(pCurrentTask->task.wait);
+    free(pCurrentTask->task.Waitting);
 
     free(pCurrentTask->task.name);
 
@@ -283,21 +283,21 @@ static void KillTask()
     Schedule();
 }
 
-void WaitToReady(Queue_t* pWaitQueue)
+void WaittingToReady(Queue_t* pWaittingQueue)
 {
-    while (!IsEqual(Queue_Length(pWaitQueue), 0u))
+    while (!IsEqual(Queue_Length(pWaittingQueue), 0u))
     {
-        Queue_Add(pReadyQueue, Queue_Remove(pWaitQueue));
+        Queue_Add(pReadyQueue, Queue_Remove(pWaittingQueue));
     }
 }
 
-void RunningToWait(Queue_t* pWaitQueue)
+void RunningToWaitting(Queue_t* pWaittingQueue)
 {
     TaskNode_t* pCurrentTask = List_Node(Queue_Front(pRunningQueue), TaskNode_t, head.qHead);
 
     if (IsEqual(gCurrentTaskAddr, StructOffset(pCurrentTask, TaskNode_t, task)))
     {
-        Queue_Add(pWaitQueue, Queue_Remove(pRunningQueue));
+        Queue_Add(pWaittingQueue, Queue_Remove(pRunningQueue));
     }
 }
 
@@ -333,7 +333,7 @@ static TaskNode_t* FindTaskByName(const char* name)
     return ret;
 }
 
-static bool WaitTask(const char* name)
+static bool WaittingTask(const char* name)
 {
     TaskNode_t* taskNode = FindTaskByName(name);
 
@@ -341,7 +341,7 @@ static bool WaitTask(const char* name)
 
     if (ret)
     {
-        RunningToWait(taskNode->task.wait);
+        RunningToWaitting(taskNode->task.Waitting);
 
         Schedule();
     }
@@ -383,8 +383,8 @@ uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
             ret = CreateTaskToReady((void*)(param1)) ? 1u : 0u;
             break;
         }
-        case SysCall_Task_Wait: {
-            WaitTask((void*)(param1));
+        case SysCall_Task_Waitting: {
+            WaittingTask((void*)(param1));
             break;
         }
         case SysCall_Task_Sleep: {

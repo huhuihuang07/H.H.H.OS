@@ -39,9 +39,9 @@ bool RegisterApp(const char* name, pFunc_t tMain, uint8_t priority)
     return ret;
 }
 
-void Wait(const char* name)
+void Waitting(const char* name)
 {
-    SysCall(SysCall_Task, SysCall_Task_Wait, (uint32_t)(name), (uint32_t)(nullptr));
+    SysCall(SysCall_Task, SysCall_Task_Waitting, (uint32_t)(name), (uint32_t)(nullptr));
 }
 
 void Sleep(uint32_t ms)

@@ -31,7 +31,7 @@ void AMain()
 {
     RegisterApp("create task", createTask, 255);
 
-    Wait("create task");
+    Waitting("create task");
 
     const char* tasksName[] = {"TaskA", "TaskB", "TaskC", "TaskD"};
 
@@ -42,12 +42,12 @@ void AMain()
 
     for (uint16_t j = 0; !IsEqual(j, ArraySize(tasksName)); j++)
     {
-        Wait(tasksName[j]);
+        Waitting(tasksName[j]);
     }
 
     RegisterApp("destroy task", destroyTask, 255);
 
-    Wait("destroy task");
+    Waitting("destroy task");
 
     printf("i = %d", i);
 }

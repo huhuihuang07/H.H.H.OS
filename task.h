@@ -44,7 +44,7 @@ typedef struct
     pid_t pid;
     pid_t ppid;
     pFunc_t tMain;
-    Queue_t* wait;
+    Queue_t* Waitting;
     int8_t* stack;
     char* name;
     uint32_t ticks;
@@ -76,7 +76,7 @@ typedef enum {
     SysCall_Task_Kill     = 0,
     SysCall_Task_Schedule = 1,
     SysCall_Task_Register = 2,
-    SysCall_Task_Wait     = 3,
+    SysCall_Task_Waitting = 3,
     SysCall_Task_Sleep    = 4,
 } SysCall_TASK_CMD_t;
 
@@ -102,9 +102,9 @@ static void RunningToReady();
 
 static void SleepToReady();
 
-void WaitToReady(Queue_t* pWaitQueue);
+void WaittingToReady(Queue_t* pWaittingQueue);
 
-void RunningToWait(Queue_t* pWaitQueue);
+void RunningToWaitting(Queue_t* pWaittingQueue);
 
 static void RunningToSleep(uint32_t ms);
 
@@ -112,7 +112,7 @@ static bool FindTarget(ListNode_t* lhs, ListNode_t* rhs);
 
 static TaskNode_t* FindTaskByName(const char* name);
 
-static bool WaitTask(const char* name);
+static bool WaittingTask(const char* name);
 
 static bool SleepTask(uint32_t ms);
 
