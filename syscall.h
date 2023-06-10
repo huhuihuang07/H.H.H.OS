@@ -14,7 +14,7 @@ void SystemCallModuleInit();
 
 void Exit(int32_t status);
 void Debug();
-void Waitting(const char* name);
+void Wait(const char* name);
 void Sleep(uint32_t ms);
 bool RegisterApp(const char* name, pFunc_t tMain, uint8_t priority);
 uint32_t printf(const char* format, ...);

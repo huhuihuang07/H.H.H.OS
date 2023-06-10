@@ -39,7 +39,7 @@ static bool Sys_EnterCritical(uint32_t mutex)
         {
             gCurrentTaskAddr->rv.eax = 0u;
 
-            RunningToWaitting(pMutex->queue);
+            RunningToWait(pMutex->queue);
 
             Schedule();
 
@@ -68,7 +68,7 @@ static void Sys_ExitCritical(uint32_t mutex)
         {
             pMutex->lock = false;
 
-            WaittingToReady(pMutex->queue);
+            WaitToReady(pMutex->queue);
         }
 
         SetIFState(state);
@@ -83,7 +83,7 @@ static void Sys_DestroyMutex(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        WaittingToReady(pMutex->queue);
+        WaitToReady(pMutex->queue);
 
         List_DelNode(StructOffset(pMutex, Mutex_t, head));
 
