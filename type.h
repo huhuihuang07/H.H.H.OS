@@ -32,7 +32,7 @@ typedef enum {
     Enable  = !Disable,
 } state_t;
 
-typedef void (*pFunc_t)();
+typedef int (*pFunc_t)(int argc, const char* argv[], const char* env[]);
 
 typedef signed char int8_t;
 

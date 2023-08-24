@@ -3,7 +3,7 @@
 #include "screen.h"
 #include "mutex.h"
 
-static char* messages[] = {
+static const char* messages[] = {
     "#DE Divide Error\0",
     "#DB RESERVED\0",
     "--  NMI Interrupt\0",

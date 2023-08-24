@@ -2,7 +2,6 @@
 #include "kernel.h"
 #include "utility.h"
 #include "assert.h"
-#include "screen.h"
 
 static PMemList_t gPMemList = {0}; // 定长分配 4K 内存页, 使用引用计数
 static FMemList_t gFMemList = {0}; // 定长分配 32bytes 内存，不使用引用计数
@@ -20,14 +19,14 @@ void pMemoryModuleInit()
 {
     for (uint16_t i = 0; !IsEqual(gMemInfo.ARDSNumber, i); ++i)
     {
-        if (IsEqual(ZONE_VAILD, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow < pageSize))
+        if (IsEqual(ZONE_VALID, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow < pageSize))
         {
             pageBase = gMemInfo.ards[i].BaseAddrLow;
 
             pageSize = gMemInfo.ards[i].LengthLow;
         }
 
-        if (IsEqual(ZONE_VAILD, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow > memorySize))
+        if (IsEqual(ZONE_VALID, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow > memorySize))
         {
             memoryBase = gMemInfo.ards[i].BaseAddrLow;
 

@@ -32,7 +32,7 @@ SysCallHandlerEntry:
 	mov ss, si
 	mov esp, BaseOfLoader
 	
-	sti
+	; sti
 
 	push edx
 	push ecx

@@ -5,19 +5,19 @@ static uint32_t mutex = 0u;
 
 static volatile uint32_t i = 0u;
 
-void createTask()
+int createTask(int argc, const char* argv[], const char* env[])
 {
     mutex = CreateMutex();
 }
 
-void destroyTask()
+int destroyTask(int argc, const char* argv[], const char* env[])
 {
     DestroyMutex(mutex);
 }
 
-void Task()
+int Task(int argc, const char* argv[], const char* env[])
 {
-    for (uint32_t j = 0; !IsEqual(j, 1000000u); j++)
+    for (uint32_t j = 0; !IsEqual(j, 10000u); j++)
     {
         EnterCritical(mutex);
 
@@ -27,7 +27,7 @@ void Task()
     }
 }
 
-void AMain()
+int AMain(int argc, const char* argv[], const char* env[])
 {
     RegisterApp("create task", createTask, 255);
 
@@ -50,4 +50,6 @@ void AMain()
     Wait("destroy task");
 
     printf("i = %d", i);
+
+    return 0;
 }

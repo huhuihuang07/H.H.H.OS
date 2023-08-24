@@ -14,17 +14,7 @@ bool Queue_IsEmpty(Queue_t* queue)
 
 bool Queue_IsContained(Queue_t* queue, QueueNode_t* node)
 {
-    QueueNode_t* pos = nullptr;
-
-    List_ForEach(StructOffset(queue, Queue_t, head), pos)
-    {
-        if (IsEqual(pos, node))
-        {
-            break;
-        }
-    }
-
-    return IsEqual(pos, node);
+    return List_IsContained(StructOffset(queue, Queue_t, head), node);
 }
 
 void Queue_Add(Queue_t* queue, QueueNode_t* node)

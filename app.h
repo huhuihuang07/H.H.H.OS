@@ -2,4 +2,4 @@
 
 #include "type.h"
 
-void AMain();
+int AMain(int argc, const char* argv[], const char* env[]);

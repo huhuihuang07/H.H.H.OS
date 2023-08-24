@@ -75,15 +75,15 @@ static void Sys_ExitCritical(uint32_t mutex)
     }
 }
 
-static void Sys_DestroyMutex(uint32_t mutex)
+static bool Sys_DestroyMutex(uint32_t mutex)
 {
-    if (IsMutexValid(mutex))
+    Mutex_t* pMutex = (Mutex_t*)(mutex);
+
+    bool ret = IsMutexValid(mutex) && (IsEqual(pMutex->lock, false)) && (Queue_IsEmpty(pMutex->queue));
+
+    if (ret)
     {
         state_t state = SetIFState(Disable);
-
-        Mutex_t* pMutex = (Mutex_t*)(mutex);
-
-        WaitToReady(pMutex->queue);
 
         List_DelNode(StructOffset(pMutex, Mutex_t, head));
 
@@ -93,23 +93,13 @@ static void Sys_DestroyMutex(uint32_t mutex)
 
         SetIFState(state);
     }
+
+    return ret;
 }
 
 static bool IsMutexValid(uint32_t mutex)
 {
-    bool ret = false;
-
-    ListNode_t* pos = nullptr;
-
-    List_ForEach(gMutexList, pos)
-    {
-        if (ret = IsEqual(pos, mutex))
-        {
-            break;
-        }
-    }
-
-    return ret;
+    return List_IsContained(gMutexList, StructOffset(mutex, Mutex_t, head));
 }
 
 uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
@@ -131,7 +121,7 @@ uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
             break;
         }
         case SysCall_Mutex_Destroy: {
-            Sys_DestroyMutex(param1);
+            ret = Sys_DestroyMutex(param1) ? 1u : 0u;
             break;
         }
         default:

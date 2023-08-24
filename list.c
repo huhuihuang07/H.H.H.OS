@@ -93,3 +93,20 @@ void List_Destroy(List_t* list, pDestroyFunc_t func)
         func(node);
     }
 }
+
+bool List_IsContained(List_t* list, ListNode_t* node)
+{
+    bool ret = false;
+
+    ListNode_t* pos = nullptr;
+
+    List_ForEach(list, pos)
+    {
+        if (ret = IsEqual(node, pos))
+        {
+            break;
+        }
+    }
+
+    return ret;
+}

@@ -24,7 +24,7 @@ static List_t* pTaskPool = nullptr;
 
 static TaskNode_t* pIdleTaskNode = nullptr;
 
-static void IdleTask()
+static int IdleTask(int argc, const char* argv[], const char* env[])
 {
     while (true)
         ;
@@ -32,12 +32,14 @@ static void IdleTask()
 
 static void TaskEntry()
 {
+    int ret = 0u;
+
     if (!IsEqual(gCurrentTaskAddr, nullptr))
     {
-        gCurrentTaskAddr->tMain();
+        ret = gCurrentTaskAddr->tMain(0, nullptr, nullptr);
     }
 
-    Exit(0u);
+    Exit(ret);
 }
 
 static void InitTSS()
@@ -74,7 +76,7 @@ static void PrepareForRun(volatile Task_t* pTask)
         : "ax");
 }
 
-static void AppInfoToTaskDataStruct()
+static void InitTaskDataStruct()
 {
     pReadyQueue = malloc(sizeof(Queue_t));
 
@@ -171,7 +173,7 @@ void TaskModuleInit()
 {
     InitTSS();
 
-    AppInfoToTaskDataStruct();
+    InitTaskDataStruct();
 
     InitIdleTask();
 
@@ -181,6 +183,11 @@ void TaskModuleInit()
 static bool RunningQueueIsFull()
 {
     return (Queue_Length(pRunningQueue) > MAX_RUNNING_TASK);
+}
+
+static bool TaskIsIdle()
+{
+    return IsEqual(gCurrentTaskAddr, StructOffset(pIdleTaskNode, TaskNode_t, task)) ? true : false;
 }
 
 static void ReadyToRunning()
@@ -197,7 +204,7 @@ static void ReadyToRunning()
 
 static void RunningToReady()
 {
-    if (!IsEqual(gCurrentTaskAddr, StructOffset(pIdleTaskNode, TaskNode_t, task)))
+    if (!TaskIsIdle())
     {
         if (IsEqual(++gCurrentTaskAddr->current, gCurrentTaskAddr->total))
         {
@@ -241,7 +248,7 @@ void LaunchTask()
 {
     ReadyToRunning();
 
-    gCurrentTaskAddr = Queue_Length(pRunningQueue) > 0u ? StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode_t, head.qHead), TaskNode_t, task) : StructOffset(pIdleTaskNode, TaskNode_t, task);
+    gCurrentTaskAddr = Queue_IsEmpty(pRunningQueue) ? StructOffset(pIdleTaskNode, TaskNode_t, task) : StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode_t, head.qHead), TaskNode_t, task);
 
     PrepareForRun(gCurrentTaskAddr);
 
@@ -254,38 +261,39 @@ void Schedule()
 {
     ReadyToRunning();
 
-    Task_t *pNextTask = Queue_Length(pRunningQueue) > 0u ? Queue_Rotate(pRunningQueue), StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode_t, head.qHead), TaskNode_t, task) : StructOffset(pIdleTaskNode, TaskNode_t, task);
+    Task_t* pNextTask = Queue_IsEmpty(pRunningQueue) ? StructOffset(pIdleTaskNode, TaskNode_t, task) : (Queue_Rotate(pRunningQueue), StructOffset(List_Node(Queue_Front(pRunningQueue), TaskNode_t, head.qHead), TaskNode_t, task));
 
     if (!IsEqual(pNextTask, gCurrentTaskAddr))
     {
-        gCurrentTaskAddr = pNextTask;
-
-        PrepareForRun(gCurrentTaskAddr);
+        PrepareForRun(gCurrentTaskAddr = pNextTask);
     }
 }
 
-static void KillTask()
+void KillTask()
 {
-    TaskNode_t* pCurrentTask = List_Node(Queue_Remove(pRunningQueue), TaskNode_t, head.qHead);
+    if (!TaskIsIdle() && !Queue_IsEmpty(pRunningQueue))
+    {
+        TaskNode_t* pCurrentTask = List_Node(Queue_Remove(pRunningQueue), TaskNode_t, head.qHead);
 
-    WaitToReady(pCurrentTask->task.wait);
+        WaitToReady(pCurrentTask->task.wait);
 
-    List_DelNode(StructOffset(pCurrentTask, TaskNode_t, head.lHead));
+        List_DelNode(StructOffset(pCurrentTask, TaskNode_t, head.lHead));
 
-    PMemFree(pCurrentTask->task.stack);
+        PMemFree(pCurrentTask->task.stack);
 
-    free(pCurrentTask->task.wait);
+        free(pCurrentTask->task.wait);
 
-    free(pCurrentTask->task.name);
+        free(pCurrentTask->task.name);
 
-    free(pCurrentTask);
+        free(pCurrentTask);
 
-    Schedule();
+        Schedule();
+    }
 }
 
 void WaitToReady(Queue_t* pWaitQueue)
 {
-    while (!IsEqual(Queue_Length(pWaitQueue), 0u))
+    while (!Queue_IsEmpty(pWaitQueue))
     {
         Queue_Add(pReadyQueue, Queue_Remove(pWaitQueue));
     }
@@ -351,7 +359,7 @@ static bool WaitTask(const char* name)
 
 static bool SleepTask(uint32_t ms)
 {
-    bool ret = !IsEqual(gCurrentTaskAddr, StructOffset(pIdleTaskNode, TaskNode_t, task));
+    bool ret = !TaskIsIdle();
 
     if (ret)
     {

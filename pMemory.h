@@ -2,8 +2,8 @@
 
 #include "list.h"
 
-#ifndef ZONE_VAILD
-#define ZONE_VAILD 1u // ARDS_t 可用内存区域
+#ifndef ZONE_VALID
+#define ZONE_VALID 1u // ARDS_t 可用内存区域
 #endif
 
 #ifndef ZONE_RESERVED

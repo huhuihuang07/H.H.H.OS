@@ -14,6 +14,6 @@ void InterruptModuleInit();
 
 bool InterruptGateInit();
 
-bool SetInterruptGate(uint8_t InterruptVectorNumber, uint32_t Handlerfunc);
+bool SetInterruptGate(uint8_t InterruptVectorNumber, uint32_t handlerFunc);
 
-bool SetInterruptHandler(uint8_t irq, uint32_t Handlerfunc);
+bool SetInterruptHandler(uint8_t irq, uint32_t handlerFunc);

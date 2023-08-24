@@ -94,7 +94,7 @@ static void TaskEntry();
 
 void Schedule();
 
-static void KillTask();
+void KillTask();
 
 static void ReadyToRunning();
 
@@ -118,6 +118,8 @@ static bool SleepTask(uint32_t ms);
 
 static bool RunningQueueIsFull();
 
+static bool TaskIsIdle();
+
 uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 
 void TaskModuleInit();
@@ -128,7 +130,7 @@ extern void RunTask(volatile const Task_t* const pTask);
 
 extern void ClockInit();
 
-extern void AMain();
+extern int AMain(int argc, const char* argv[], const char* env[]);
 
 extern uint32_t jiffy;
 

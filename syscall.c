@@ -32,7 +32,7 @@ bool RegisterApp(const char* name, pFunc_t tMain, uint8_t priority)
 
     appInfo->priority = priority;
 
-    ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (uint32_t)(appInfo), (uint32_t)(nullptr)), 0u) ? false : true;
+    ret = IsEqual(SysCall(SysCall_Task, SysCall_Task_Register, (uint32_t)(appInfo), (uint32_t)(nullptr)), 1u) ? true : false;
 
     free(appInfo);
 
@@ -80,7 +80,7 @@ void ExitCritical(uint32_t ptr)
     SysCall(SysCall_Mutex, SysCall_Mutex_Exit, ptr, (uint32_t)(nullptr));
 }
 
-void DestroyMutex(uint32_t ptr)
+bool DestroyMutex(uint32_t ptr)
 {
-    SysCall(SysCall_Mutex, SysCall_Mutex_Destroy, ptr, (uint32_t)(nullptr));
+    IsEqual(SysCall(SysCall_Mutex, SysCall_Mutex_Destroy, ptr, (uint32_t)(nullptr)), 1u) ? true : false;
 }

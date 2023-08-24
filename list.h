@@ -34,6 +34,7 @@ void List_AddAfter(ListNode_t* after, ListNode_t* node);
 void List_DelNode(ListNode_t* node);
 void List_Replace(ListNode_t* old, ListNode_t* new);
 bool List_IsLast(List_t* list, ListNode_t* node);
+bool List_IsContained(List_t* list, ListNode_t* node);
 bool List_IsEmpty(List_t* list);
 ListNode_t* List_FindNode(List_t* list, ListNode_t* node, pFindFunc_t func);
 void List_Destroy(List_t* list, pDestroyFunc_t func);

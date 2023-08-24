@@ -4,16 +4,16 @@
 #include "kernel.h"
 #include "pic.h"
 
-bool SetInterruptGate(uint8_t InterruptVectorNumber, uint32_t Handlerfunc)
+bool SetInterruptGate(uint8_t InterruptVectorNumber, uint32_t handlerFunc)
 {
-    return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, Handlerfunc, 0u, DA_386IGate + DA_DPL3);
+    return SetGateValue(AddrOffset(gIdtInfo.entry, InterruptVectorNumber), GDT_FlatModeCodeSelector, handlerFunc, 0u, DA_386IGate + DA_DPL3);
 }
 
-bool SetInterruptHandler(uint8_t irq, uint32_t Handlerfunc)
+bool SetInterruptHandler(uint8_t irq, uint32_t handlerFunc)
 {
     assert((IRQ_CLOCK <= irq) && (irq <= IRQ_HARDDISK2));
 
-    return SetInterruptGate(IRQ_MASTER_NR + irq, Handlerfunc);
+    return SetInterruptGate(IRQ_MASTER_NR + irq, handlerFunc);
 }
 
 bool InterruptGateInit()

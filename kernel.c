@@ -38,32 +38,32 @@ bool GetDescValue(Descriptor_t* pDescriptor, uint32_t* pBase, uint32_t* pLimit, 
     return ret;
 }
 
-bool SetGateValue(Gate_t* pGate, uint16_t selector, uint32_t offset, uint8_t paramterCount, uint8_t attribute)
+bool SetGateValue(Gate_t* pGate, uint16_t selector, uint32_t offset, uint8_t parameterCount, uint8_t attribute)
 {
     bool ret = !IsEqual(pGate, nullptr);
 
     if (ret)
     {
-        pGate->offset1       = offset & 0xffff;
-        pGate->selector      = selector;
-        pGate->paramterCount = paramterCount & 0x1f;
-        pGate->attribute     = attribute;
-        pGate->offset2       = (offset >> 16u) & 0xffff;
+        pGate->offset1        = offset & 0xffff;
+        pGate->selector       = selector;
+        pGate->parameterCount = parameterCount & 0x1f;
+        pGate->attribute      = attribute;
+        pGate->offset2        = (offset >> 16u) & 0xffff;
     }
 
     return ret;
 }
 
-bool GetGateValue(Gate_t* pGate, uint16_t* pSelector, uint32_t* pOffset, uint8_t* pParamterCount, uint8_t* pAttribute)
+bool GetGateValue(Gate_t* pGate, uint16_t* pSelector, uint32_t* pOffset, uint8_t* pParameterCount, uint8_t* pAttribute)
 {
-    bool ret = pGate && pSelector && pOffset && pParamterCount && pAttribute;
+    bool ret = pGate && pSelector && pOffset && pParameterCount && pAttribute;
 
     if (ret)
     {
-        *pSelector      = pGate->selector;
-        *pOffset        = (pGate->offset2 << 16u) | (pGate->offset1);
-        *pParamterCount = pGate->paramterCount;
-        *pAttribute     = pGate->attribute;
+        *pSelector       = pGate->selector;
+        *pOffset         = (pGate->offset2 << 16u) | (pGate->offset1);
+        *pParameterCount = pGate->parameterCount;
+        *pAttribute      = pGate->attribute;
     }
 
     return ret;
