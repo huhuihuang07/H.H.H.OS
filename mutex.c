@@ -16,13 +16,13 @@ static uint32_t Sys_CreateMutex()
 {
     Mutex_t* mutex = (Mutex_t*)(malloc(sizeof(Mutex_t)));
 
-    mutex->lock = false;
+    List_Add(gMutexList, StructOffset(mutex, Mutex_t, head));
 
     mutex->queue = (Queue_t*)(malloc(sizeof(Queue_t)));
 
     Queue_Init(mutex->queue);
 
-    List_Add(gMutexList, StructOffset(mutex, Mutex_t, head));
+    mutex->lock = 0u;
 
     return (uint32_t)(mutex);
 }
@@ -35,7 +35,11 @@ static bool Sys_EnterCritical(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        if (IsEqual(pMutex->lock, true))
+        if (IsEqual(pMutex->lock, gCurrentTaskAddr) || IsEqual(pMutex->lock, 0u))
+        {
+            pMutex->lock = (uint32_t)(gCurrentTaskAddr);
+        }
+        else
         {
             gCurrentTaskAddr->rv.eax = 0u;
 
@@ -44,10 +48,6 @@ static bool Sys_EnterCritical(uint32_t mutex)
             Schedule();
 
             RunTask(gCurrentTaskAddr);
-        }
-        else
-        {
-            pMutex->lock = true;
         }
 
         SetIFState(state);
@@ -64,11 +64,17 @@ static void Sys_ExitCritical(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        if (IsEqual(pMutex->lock, true))
+        if (IsEqual(pMutex->lock, gCurrentTaskAddr))
         {
-            pMutex->lock = false;
+            pMutex->lock = 0u;
 
             WaitToReady(pMutex->queue);
+        }
+        else
+        {
+            KillTask();
+
+            RunTask(gCurrentTaskAddr);
         }
 
         SetIFState(state);
@@ -79,7 +85,7 @@ static bool Sys_DestroyMutex(uint32_t mutex)
 {
     Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-    bool ret = IsMutexValid(mutex) && (IsEqual(pMutex->lock, false)) && (Queue_IsEmpty(pMutex->queue));
+    bool ret = IsMutexValid(mutex) && (IsEqual(pMutex->lock, 0u)) && (Queue_IsEmpty(pMutex->queue));
 
     if (ret)
     {

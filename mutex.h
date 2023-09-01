@@ -13,8 +13,8 @@ typedef enum {
 typedef struct
 {
     ListNode_t* head;
-    bool lock;
     Queue_t* queue;
+    uint32_t lock;
 } Mutex_t;
 
 static List_t* gMutexList;
