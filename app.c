@@ -7,7 +7,7 @@ static volatile uint32_t i = 0u;
 
 int createTask(int argc, const char* argv[], const char* env[])
 {
-    mutex = CreateMutex();
+    mutex = CreateMutex(Normal);
 }
 
 int destroyTask(int argc, const char* argv[], const char* env[])
@@ -17,7 +17,7 @@ int destroyTask(int argc, const char* argv[], const char* env[])
 
 int Task(int argc, const char* argv[], const char* env[])
 {
-    for (uint32_t j = 0; !IsEqual(j, 10000u); j++)
+    for (uint32_t j = 0; !IsEqual(j, 1000000u); j++)
     {
         EnterCritical(mutex);
 

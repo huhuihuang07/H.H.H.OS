@@ -12,7 +12,7 @@ void MutexModuleInit()
     List_Init(gMutexList);
 }
 
-static uint32_t Sys_CreateMutex()
+static uint32_t Sys_CreateMutex(Mutex_type type)
 {
     Mutex_t* mutex = (Mutex_t*)(malloc(sizeof(Mutex_t)));
 
@@ -24,7 +24,48 @@ static uint32_t Sys_CreateMutex()
 
     mutex->lock = 0u;
 
+    mutex->type = type;
+
     return (uint32_t)(mutex);
+}
+
+static void MutexSchedule(Mutex_t* pMutex)
+{
+    gCurrentTaskAddr->rv.eax = 0u;
+
+    RunningToWait(pMutex->queue);
+
+    Schedule();
+
+    RunTask(gCurrentTaskAddr);
+}
+
+static bool MutexNormalEnter(Mutex_t* pMutex)
+{
+    if (IsEqual(pMutex->lock, 0u))
+    {
+        pMutex->lock = (uint32_t)(gCurrentTaskAddr);
+    }
+    else
+    {
+        MutexSchedule(pMutex);
+    }
+
+    return true;
+}
+
+static bool MutexStrictEnter(Mutex_t* pMutex)
+{
+    if (IsEqual(pMutex->lock, gCurrentTaskAddr) || IsEqual(pMutex->lock, 0u))
+    {
+        pMutex->lock = (uint32_t)(gCurrentTaskAddr);
+    }
+    else
+    {
+        MutexSchedule(pMutex);
+    }
+
+    return true;
 }
 
 static bool Sys_EnterCritical(uint32_t mutex)
@@ -35,25 +76,44 @@ static bool Sys_EnterCritical(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        if (IsEqual(pMutex->lock, gCurrentTaskAddr) || IsEqual(pMutex->lock, 0u))
+        Mutex_type type = pMutex->type;
+
+        switch (type)
         {
-            pMutex->lock = (uint32_t)(gCurrentTaskAddr);
-        }
-        else
-        {
-            gCurrentTaskAddr->rv.eax = 0u;
-
-            RunningToWait(pMutex->queue);
-
-            Schedule();
-
-            RunTask(gCurrentTaskAddr);
+            case Normal: MutexNormalEnter(pMutex); break;
+            case Strict: MutexStrictEnter(pMutex); break;
         }
 
         SetIFState(state);
     }
 
     return true;
+}
+
+static void MutexNormalExit(Mutex_t* pMutex)
+{
+    if (!IsEqual(pMutex->lock, 0u))
+    {
+        pMutex->lock = 0u;
+
+        WaitToReady(pMutex->queue);
+    }
+}
+
+static void MutexStrictExit(Mutex_t* pMutex)
+{
+    if (IsEqual(pMutex->lock, gCurrentTaskAddr))
+    {
+        pMutex->lock = 0u;
+
+        WaitToReady(pMutex->queue);
+    }
+    else
+    {
+        KillTask();
+
+        RunTask(gCurrentTaskAddr);
+    }
 }
 
 static void Sys_ExitCritical(uint32_t mutex)
@@ -64,17 +124,12 @@ static void Sys_ExitCritical(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        if (IsEqual(pMutex->lock, gCurrentTaskAddr))
-        {
-            pMutex->lock = 0u;
+        Mutex_type type = pMutex->type;
 
-            WaitToReady(pMutex->queue);
-        }
-        else
+        switch (type)
         {
-            KillTask();
-
-            RunTask(gCurrentTaskAddr);
+            case Normal: MutexNormalExit(pMutex); break;
+            case Strict: MutexStrictExit(pMutex); break;
         }
 
         SetIFState(state);
@@ -115,7 +170,7 @@ uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
     switch (cmd)
     {
         case SysCall_Mutex_Create: {
-            ret = Sys_CreateMutex();
+            ret = Sys_CreateMutex(param1);
             break;
         }
         case SysCall_Mutex_Enter: {

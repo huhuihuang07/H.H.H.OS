@@ -1,6 +1,5 @@
 #include "syscall.h"
 #include "interrupt.h"
-#include "mutex.h"
 #include "memory.h"
 #include "screen.h"
 #include "task.h"
@@ -64,9 +63,9 @@ uint32_t printf(const char* format, ...)
     return ret;
 }
 
-uint32_t CreateMutex()
+uint32_t CreateMutex(Mutex_type type)
 {
-    return SysCall(SysCall_Mutex, SysCall_Mutex_Create, (uint32_t)(nullptr), (uint32_t)(nullptr));
+    return SysCall(SysCall_Mutex, SysCall_Mutex_Create, (uint32_t)(type), (uint32_t)(nullptr));
 }
 
 void EnterCritical(uint32_t ptr)
