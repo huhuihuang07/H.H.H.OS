@@ -2,6 +2,8 @@
 #include "syscall.h"
 #include "screen.h"
 #include "mutex.h"
+#include "keyboard.h"
+#include "io.h"
 
 static const char* messages[] = {
     "#DE Divide Error\0",
@@ -34,6 +36,13 @@ void TimerHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privile
     {
         TaskCallHandler(1u, 0u, 0u);
     }
+
+    SendEOI(MASTER_EOI_PORT);
+}
+
+void KeyBoardHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel)
+{
+    PutScanCode(inb(0x60));
 
     SendEOI(MASTER_EOI_PORT);
 }

@@ -4,7 +4,8 @@
 #include "pic.h"
 
 // define External interrupt
-#define TimerInterrupt IRQ_CLOCK
+#define TimerInterrupt    IRQ_CLOCK
+#define KeyBoardInterrupt IRQ_KEYBOARD
 
 // define Internal interrupt
 #define SysCallInterrupt 0x80
@@ -53,6 +54,7 @@ extern void PageFault(uint32_t error);
 
 // Declare External interrupt handler
 DeclExternalInterrupt(Timer)
+DeclExternalInterrupt(KeyBoard)
 
 // Declare Internal fault handler
 DeclInternalInterrupt(PageFault)

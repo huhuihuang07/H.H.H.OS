@@ -6,6 +6,8 @@ int32_t KMain(int32_t argc, char* argv[])
 
     MutexModuleInit();
 
+    KeyBoardModuleInit();
+
     TaskModuleInit();
 
     LaunchTask();

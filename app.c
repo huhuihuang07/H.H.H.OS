@@ -7,7 +7,7 @@ static volatile uint32_t i = 0u;
 
 int createTask(int argc, const char* argv[], const char* env[])
 {
-    mutex = CreateMutex(Normal);
+    mutex = CreateMutex(Strict);
 }
 
 int destroyTask(int argc, const char* argv[], const char* env[])

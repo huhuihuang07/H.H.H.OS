@@ -8,6 +8,8 @@ extern void SystemCallModuleInit();
 
 extern void MutexModuleInit();
 
+extern void KeyBoardModuleInit();
+
 extern void TaskModuleInit();
 
 extern void LaunchTask();
