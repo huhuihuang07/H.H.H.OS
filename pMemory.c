@@ -15,48 +15,6 @@ uint32_t memorySize = 0u; // 堆空间大小
 static uint32_t pageBase = -1;
 static uint32_t pageSize = -1;
 
-void pMemoryModuleInit()
-{
-    for (uint16_t i = 0; !IsEqual(gMemInfo.ARDSNumber, i); ++i)
-    {
-        if (IsEqual(ZONE_VALID, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow < pageSize))
-        {
-            pageBase = gMemInfo.ards[i].BaseAddrLow;
-
-            pageSize = gMemInfo.ards[i].LengthLow;
-        }
-
-        if (IsEqual(ZONE_VALID, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow > memorySize))
-        {
-            memoryBase = gMemInfo.ards[i].BaseAddrLow;
-
-            memorySize = gMemInfo.ards[i].LengthLow;
-        }
-    }
-
-    assert((pageBase <= PAGE_BASE < (pageBase + pageSize)));
-
-    uint32_t PMemSize = (pageSize - PAGE_BASE) & ((-1) << 12u);
-
-    PMemInit((void*)(PAGE_BASE), PMemSize);
-
-    assert(IsEqual(memoryBase, MEMORY_BASE) && PAGE_IsValid(memorySize));
-
-    uint32_t FMemSize = (FM_NODE_SIZE + FM_ALLOC_SIZE) * FM_SIZE;
-
-    assert((memorySize > FMemSize));
-
-    FMemInit((void*)(memoryBase), FMemSize);
-
-    uint32_t VMemSize = memorySize - FMemSize;
-
-    assert((VMemSize > 0u));
-
-    void* VMemBase = (void*)(memoryBase + FMemSize);
-
-    VMemInit(VMemBase, VMemSize);
-}
-
 static void FMemInit(void* mem, uint32_t size)
 {
     uint32_t max = size / (FM_NODE_SIZE + FM_ALLOC_SIZE);
@@ -341,4 +299,46 @@ bool pFree(const void* ptr)
     }
 
     return result;
+}
+
+void pMemoryModuleInit()
+{
+    for (uint16_t i = 0; !IsEqual(gMemInfo.ARDSNumber, i); ++i)
+    {
+        if (IsEqual(ZONE_VALID, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow < pageSize))
+        {
+            pageBase = gMemInfo.ards[i].BaseAddrLow;
+
+            pageSize = gMemInfo.ards[i].LengthLow;
+        }
+
+        if (IsEqual(ZONE_VALID, gMemInfo.ards[i].Type) && (gMemInfo.ards[i].LengthLow > memorySize))
+        {
+            memoryBase = gMemInfo.ards[i].BaseAddrLow;
+
+            memorySize = gMemInfo.ards[i].LengthLow;
+        }
+    }
+
+    assert((pageBase <= PAGE_BASE < (pageBase + pageSize)));
+
+    uint32_t PMemSize = (pageSize - PAGE_BASE) & ((-1) << 12u);
+
+    PMemInit((void*)(PAGE_BASE), PMemSize);
+
+    assert(IsEqual(memoryBase, MEMORY_BASE) && PAGE_IsValid(memorySize));
+
+    uint32_t FMemSize = (FM_NODE_SIZE + FM_ALLOC_SIZE) * FM_SIZE;
+
+    assert((memorySize > FMemSize));
+
+    FMemInit((void*)(memoryBase), FMemSize);
+
+    uint32_t VMemSize = memorySize - FMemSize;
+
+    assert((VMemSize > 0u));
+
+    void* VMemBase = (void*)(memoryBase + FMemSize);
+
+    VMemInit(VMemBase, VMemSize);
 }

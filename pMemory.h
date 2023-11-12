@@ -99,14 +99,5 @@ void pMemoryModuleInit();
 void* pMalloc(size_t size);
 bool pFree(const void* ptr);
 
-static void FMemInit(void* mem, uint32_t size);
-static void* FMemAlloc();
-static bool FMemFree(const void* ptr);
-
-static void VMemInit(void* mem, uint32_t size);
-static void* VMemAlloc(size_t size);
-static bool VMemFree(const void* ptr);
-
-static void PMemInit(void* mem, uint32_t size);
 void* PMemAlloc(const void* ptr);
 void PMemFree(const void* ptr);

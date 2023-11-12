@@ -3,13 +3,37 @@
 #include "string.h"
 #include "screen.h"
 
-void vMemoryModuleInit()
+static void SetPageEntry(page_entry_t* entry, uint32_t index)
 {
-    PageFaultInit();
+    memset(entry, 0u, sizeof(*entry));
 
-    SetCr3((uint32_t)(CreatePDE()));
+    entry->present = 1u;
+    entry->write   = 1u;
+    entry->user    = 1u;
+    entry->index   = index;
+}
 
-    EnablePage();
+static page_entry_t* GetPDE()
+{
+    return (page_entry_t*)(0x3ff << 22u | 0x3ff << 12u | 0u);
+}
+
+static page_entry_t* GetPTE(uint32_t vAddr, bool create)
+{
+    page_entry_t* ret = AddrOffset(GetPDE(), PDEIndex(vAddr));
+
+    assert(IsEqual(create, true) || (IsEqual(create, false) && IsEqual(ret->present, 1)));
+
+    if (IsEqual(ret->present, 0u))
+    {
+        page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
+
+        memset(pte, 0u, PAGE_SIZE);
+
+        SetPageEntry(ret, PGEIndex(pte));
+    }
+
+    return (page_entry_t*)(0x3ff << 22u | (PDEIndex(vAddr) << 12u) | 0u);
 }
 
 void* CreatePDE()
@@ -35,16 +59,6 @@ void* CreatePDE()
     SetPageEntry(AddrOffset(pde, PAGE_MAX - 1u), PGEIndex(pde));
 
     return (void*)(pde);
-}
-
-static void SetPageEntry(page_entry_t* entry, uint32_t index)
-{
-    memset(entry, 0u, sizeof(*entry));
-
-    entry->present = 1u;
-    entry->write   = 1u;
-    entry->user    = 1u;
-    entry->index   = index;
 }
 
 static void FlushTLB(uint32_t vaddr)
@@ -175,25 +189,11 @@ void UnLinkPage(uint32_t vAddr)
     }
 }
 
-static page_entry_t* GetPDE()
+void vMemoryModuleInit()
 {
-    return (page_entry_t*)(0x3ff << 22u | 0x3ff << 12u | 0u);
-}
+    PageFaultInit();
 
-static page_entry_t* GetPTE(uint32_t vAddr, bool create)
-{
-    page_entry_t* ret = AddrOffset(GetPDE(), PDEIndex(vAddr));
+    SetCr3((uint32_t)(CreatePDE()));
 
-    assert(IsEqual(create, true) || (IsEqual(create, false) && IsEqual(ret->present, 1)));
-
-    if (IsEqual(ret->present, 0u))
-    {
-        page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
-
-        memset(pte, 0u, PAGE_SIZE);
-
-        SetPageEntry(ret, PGEIndex(pte));
-    }
-
-    return (page_entry_t*)(0x3ff << 22u | (PDEIndex(vAddr) << 12u) | 0u);
+    EnablePage();
 }

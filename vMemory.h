@@ -68,21 +68,6 @@ void LinkPage(uint32_t vAddr, uint32_t pAddr);
 void UnLinkPage(uint32_t vAddr);
 void* CreatePDE();
 
-static page_entry_t* GetPDE();
-static page_entry_t* GetPTE(uint32_t vAddr, bool create);
-
-static void EnablePage();
-static void DisablePage();
-
-static uint32_t GetCr3();
-static void SetCr3(uint32_t pde);
-
-static uint32_t GetCr2();
-
-static void FlushTLB(uint32_t vaddr);
-
-static void SetPageEntry(page_entry_t* entry, uint32_t index);
-
 extern void PageFaultInit();
 
 extern const uint32_t gMemSize;

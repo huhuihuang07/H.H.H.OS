@@ -5,6 +5,12 @@
 
 static List_t* gMutexList = nullptr;
 
+typedef struct
+{
+    ListNode_t head;
+    Mutex_t* mutex;
+} MutexNode_t;
+
 void MutexModuleInit()
 {
     List_t* gMutexList = (List_t*)(malloc(sizeof(List_t)));
@@ -12,11 +18,9 @@ void MutexModuleInit()
     List_Init(gMutexList);
 }
 
-static uint32_t Sys_CreateMutex(Mutex_type type)
+static uint32_t Sys_CreateMutex(Mutex_type_t type)
 {
     Mutex_t* mutex = (Mutex_t*)(malloc(sizeof(Mutex_t)));
-
-    List_Add(gMutexList, StructOffset(mutex, Mutex_t, head));
 
     mutex->queue = (Queue_t*)(malloc(sizeof(Queue_t)));
 
@@ -26,7 +30,41 @@ static uint32_t Sys_CreateMutex(Mutex_type type)
 
     mutex->type = type;
 
+    MutexNode_t* node = (MutexNode_t*)(malloc(sizeof(MutexNode_t)));
+
+    node->mutex = mutex;
+
+    List_Add(gMutexList, StructOffset(node, MutexNode_t, head));
+
     return (uint32_t)(mutex);
+}
+
+static bool FindTarget(ListNode_t* lhs, ListNode_t* rhs)
+{
+    return IsEqual(List_Node(lhs, MutexNode_t, head)->mutex, List_Node(rhs, MutexNode_t, head)->mutex);
+}
+
+static MutexNode_t* GetMutexNodeByList(uint32_t mutex)
+{
+    MutexNode_t* ret = nullptr;
+
+    MutexNode_t node = {};
+
+    node.mutex = (Mutex_t*)(mutex);
+
+    ListNode_t* target = List_FindNode(gMutexList, StructOffset(&node, MutexNode_t, head), FindTarget);
+
+    if (!IsEqual(target, nullptr))
+    {
+        ret = List_Node(target, MutexNode_t, head);
+    }
+
+    return ret;
+}
+
+static bool IsMutexValid(uint32_t mutex)
+{
+    return IsEqual(GetMutexNodeByList(mutex), nullptr) ? false : true;
 }
 
 static void MutexSchedule(Mutex_t* pMutex)
@@ -76,7 +114,7 @@ static bool Sys_EnterCritical(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        Mutex_type type = pMutex->type;
+        Mutex_type_t type = pMutex->type;
 
         switch (type)
         {
@@ -124,7 +162,7 @@ static void Sys_ExitCritical(uint32_t mutex)
 
         Mutex_t* pMutex = (Mutex_t*)(mutex);
 
-        Mutex_type type = pMutex->type;
+        Mutex_type_t type = pMutex->type;
 
         switch (type)
         {
@@ -146,21 +184,20 @@ static bool Sys_DestroyMutex(uint32_t mutex)
     {
         state_t state = SetIFState(Disable);
 
-        List_DelNode(StructOffset(pMutex, Mutex_t, head));
-
         free(pMutex->queue);
 
         free(pMutex);
+
+        MutexNode_t* node = GetMutexNodeByList(mutex);
+
+        List_DelNode(StructOffset(node, MutexNode_t, head));
+
+        free(node);
 
         SetIFState(state);
     }
 
     return ret;
-}
-
-static bool IsMutexValid(uint32_t mutex)
-{
-    return List_IsContained(gMutexList, StructOffset(mutex, Mutex_t, head));
 }
 
 uint32_t MutexCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)

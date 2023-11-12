@@ -80,47 +80,13 @@ typedef enum {
     SysCall_Task_Sleep    = 4,
 } SysCall_TASK_CMD_t;
 
-static TaskNode_t* AppInfoToTaskNode(const AppInfo* appInfo);
-
-static bool CreateTaskToReady(const AppInfo* appInfo);
-
-static void InitIdleTask();
-
-static void InitInitTask();
-
-static void PrepareForRun(volatile Task_t* pTask);
-
-static void TaskEntry();
-
 void ScheduleNext();
 
-static void Schedule();
-
 void KillTask();
-
-static void ReadyToRunning();
-
-static void RunningToReady();
-
-static void SleepToReady();
 
 void WaitToReady(Queue_t* pWaitQueue);
 
 void RunningToWait(Queue_t* pWaitQueue);
-
-static void RunningToSleep(uint32_t ms);
-
-static bool FindTarget(ListNode_t* lhs, ListNode_t* rhs);
-
-static TaskNode_t* FindTaskByName(const char* name);
-
-static bool WaitTask(const char* name);
-
-static bool SleepTask(uint32_t ms);
-
-static bool RunningQueueIsFull();
-
-static bool TaskIsIdle();
 
 uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 

@@ -63,7 +63,7 @@ uint32_t printf(const char* format, ...)
     return ret;
 }
 
-uint32_t CreateMutex(Mutex_type type)
+uint32_t CreateMutex(Mutex_type_t type)
 {
     return SysCall(SysCall_Mutex, SysCall_Mutex_Create, (uint32_t)(type), (uint32_t)(nullptr));
 }

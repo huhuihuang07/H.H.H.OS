@@ -20,7 +20,7 @@ void Sleep(uint32_t ms);
 bool RegisterApp(const char* name, pFunc_t tMain, uint8_t priority);
 uint32_t printf(const char* format, ...);
 
-uint32_t CreateMutex(Mutex_type type);
+uint32_t CreateMutex(Mutex_type_t type);
 void EnterCritical(uint32_t ptr);
 void ExitCritical(uint32_t ptr);
 bool DestroyMutex(uint32_t ptr);
