@@ -35,7 +35,7 @@ static void MutexSchedule(Mutex_t* pMutex)
 
     RunningToWait(pMutex->queue);
 
-    Schedule();
+    ScheduleNext();
 
     RunTask(gCurrentTaskAddr);
 }

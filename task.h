@@ -92,7 +92,9 @@ static void PrepareForRun(volatile Task_t* pTask);
 
 static void TaskEntry();
 
-void Schedule();
+void ScheduleNext();
+
+static void Schedule();
 
 void KillTask();
 

@@ -64,25 +64,23 @@ void DefaultInterruptHandler(uint32_t vector, uint32_t error_code, PrivilegeLeve
 
 uint32_t SysCallHandler(uint32_t type, uint32_t cmd, uint32_t param1, uint32_t param2)
 {
-    uint32_t ret = 0u;
-
     switch (type)
     {
         case SysCall_Task: {
-            ret = TaskCallHandler(cmd, param1, param2);
+            return TaskCallHandler(cmd, param1, param2);
             break;
         }
         case SysCall_Screen: {
-            ret = ScreenCallHandler(cmd, param1, param2);
+            return ScreenCallHandler(cmd, param1, param2);
             break;
         }
         case SysCall_Mutex: {
-            ret = MutexCallHandler(cmd, param1, param2);
+            return MutexCallHandler(cmd, param1, param2);
             break;
         }
         default:
             break;
     }
 
-    return ret;
+    return 0u;
 }

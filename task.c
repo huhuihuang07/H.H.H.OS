@@ -257,7 +257,7 @@ void LaunchTask()
     RunTask(gCurrentTaskAddr);
 }
 
-void Schedule()
+void ScheduleNext()
 {
     ReadyToRunning();
 
@@ -267,6 +267,13 @@ void Schedule()
     {
         PrepareForRun(gCurrentTaskAddr = pNextTask);
     }
+}
+
+static void Schedule()
+{
+    SleepToReady();
+    RunningToReady();
+    ScheduleNext();
 }
 
 void KillTask()
@@ -287,7 +294,7 @@ void KillTask()
 
         free(pCurrentTask);
 
-        Schedule();
+        ScheduleNext();
     }
 }
 
@@ -351,7 +358,7 @@ static bool WaitTask(const char* name)
     {
         RunningToWait(taskNode->task.wait);
 
-        Schedule();
+        ScheduleNext();
     }
 
     return ret;
@@ -365,7 +372,7 @@ static bool SleepTask(uint32_t ms)
     {
         RunningToSleep(ms);
 
-        Schedule();
+        ScheduleNext();
     }
 
     return ret;
@@ -382,8 +389,6 @@ uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)
             break;
         }
         case SysCall_Task_Schedule: {
-            SleepToReady();
-            RunningToReady();
             Schedule();
             break;
         }

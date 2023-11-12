@@ -268,7 +268,7 @@ static bool IsNumPadKey(uint8_t scancode, bool E0)
     static const uint8_t cNumScancode[]               = {0x52, 0x53, 0x4f, 0x50, 0x51, 0x4b, 0x4c, 0x4d, 0x47, 0x48, 0x49, 0x35, 0x37, 0x4a, 0x4e, 0x1c};
     static const bool cNumE0[ArraySize(cNumScancode)] = {false, false, false, false, false, false, false, false, false, false, false, true, false, false, false, true};
 
-    for (int i = 0; i < ArraySize(cNumScancode); ++i)
+    for (uint8_t i = 0; i < ArraySize(cNumScancode); ++i)
     {
         uint8_t* pc = AddrOffset(cNumScancode, i);
         bool* pe    = AddrOffset(cNumE0, i);
@@ -317,17 +317,15 @@ static bool PauseHandler(uint8_t scancode)
 
 static uint32_t MakeNormalCode(KeyCode_t* pkc, bool shift, bool caps)
 {
-    uint32_t ret = 0u;
-
     if (!caps)
     {
         if (!shift)
         {
-            ret = (pkc->scode << 16) | (pkc->kcode << 8) | (pkc->ascii1);
+            return (pkc->scode << 16u) | (pkc->kcode << 8u) | (pkc->ascii1);
         }
         else
         {
-            ret = (pkc->scode << 16) | (pkc->kcode << 8) | (pkc->ascii2);
+            return (pkc->scode << 16u) | (pkc->kcode << 8u) | (pkc->ascii2);
         }
     }
     else
@@ -336,27 +334,27 @@ static uint32_t MakeNormalCode(KeyCode_t* pkc, bool shift, bool caps)
         {
             if (!shift)
             {
-                ret = (pkc->scode << 16) | (pkc->kcode << 8) | (pkc->ascii2);
+                return (pkc->scode << 16u) | (pkc->kcode << 8u) | (pkc->ascii2);
             }
             else
             {
-                ret = (pkc->scode << 16) | (pkc->kcode << 8) | (pkc->ascii1);
+                return (pkc->scode << 16u) | (pkc->kcode << 8u) | (pkc->ascii1);
             }
         }
         else
         {
             if (!shift)
             {
-                ret = (pkc->scode << 16) | (pkc->kcode << 8) | (pkc->ascii1);
+                return (pkc->scode << 16u) | (pkc->kcode << 8u) | (pkc->ascii1);
             }
             else
             {
-                ret = (pkc->scode << 16) | (pkc->kcode << 8) | (pkc->ascii2);
+                return (pkc->scode << 16u) | (pkc->kcode << 8u) | (pkc->ascii2);
             }
         }
     }
 
-    return ret;
+    return 0u;
 }
 
 static uint32_t MakeNumCode(KeyCode_t* pkc, bool shift, bool num)
@@ -382,9 +380,7 @@ static uint32_t MakeNumCode(KeyCode_t* pkc, bool shift, bool num)
             {  0,   0,    0,    0}
     };
 
-    uint32_t ret = 0u;
-
-    int i = 0;
+    uint8_t i = 0u;
 
     KeyCode_t* nkc = AddrOffset(cNumKeyMap, i);
 
@@ -403,22 +399,22 @@ static uint32_t MakeNumCode(KeyCode_t* pkc, bool shift, bool num)
     {
         if (!num)
         {
-            ret = (pkc->scode << 16) | (pkc->kcode << 8) | pkc->ascii2;
+            return (pkc->scode << 16u) | (pkc->kcode << 8u) | pkc->ascii2;
         }
         else
         {
             if (!shift)
             {
-                ret = (pkc->scode << 16) | (pkc->kcode << 8) | pkc->ascii1;
+                return (pkc->scode << 16u) | (pkc->kcode << 8u) | pkc->ascii1;
             }
             else
             {
-                ret = (pkc->scode << 16) | (pkc->kcode << 8) | pkc->ascii2;
+                return (pkc->scode << 16u) | (pkc->kcode << 8u) | pkc->ascii2;
             }
         }
     }
 
-    return ret;
+    return 0u;
 }
 
 static uint32_t MakeCode(KeyCode_t* pkc, bool shift, bool capsLock, bool numLock, bool E0)
@@ -460,8 +456,6 @@ static bool KeyHandler(uint8_t scancode)
 
         if (ret = !IsEqual(pkc->scode, 0))
         {
-            uint32_t code = 0u;
-
             if (IsShift(scancode))
             {
                 cShift = pressed;
@@ -475,9 +469,7 @@ static bool KeyHandler(uint8_t scancode)
                 cNumLock = !cNumLock;
             }
 
-            code = pressed | MakeCode(pkc, cShift, cCapsLock, cNumLock, E0);
-
-            StoreKeyCode(code);
+            StoreKeyCode((pressed | MakeCode(pkc, cShift, cCapsLock, cNumLock, E0)));
 
             E0 = false;
         }
