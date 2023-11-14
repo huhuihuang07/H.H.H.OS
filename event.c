@@ -66,7 +66,7 @@ static EventNode_t* GetEventNodeByList(Event_t* event)
 
 static bool IsEventValid(Event_t* event)
 {
-    return IsEqual(GetEventNodeByList(event), nullptr) ? false : true;
+    return !IsEqual(GetEventNodeByList(event), nullptr);
 }
 
 void DestroyEvent(Event_t* event)

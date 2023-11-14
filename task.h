@@ -80,6 +80,11 @@ typedef enum {
     SysCall_Task_Sleep    = 4,
 } SysCall_TASK_CMD_t;
 
+typedef enum {
+    WAIT,
+    NOTIFY
+} Action_t;
+
 void ScheduleNext();
 
 void KillTask();
@@ -93,6 +98,8 @@ uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2);
 void TaskModuleInit();
 
 void LaunchTask();
+
+uint32_t GetCurrentTaskID();
 
 extern void RunTask(volatile const Task_t* const pTask);
 

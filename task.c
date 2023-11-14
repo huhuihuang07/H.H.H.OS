@@ -16,8 +16,6 @@ static Queue_t* pReadyQueue = nullptr;
 
 static Queue_t* pRunningQueue = nullptr;
 
-static Queue_t* pWaitingQueue = nullptr;
-
 static List_t* pSleepList = nullptr;
 
 static List_t* pTaskPool = nullptr;
@@ -85,10 +83,6 @@ static void InitTaskDataStruct()
     pRunningQueue = malloc(sizeof(Queue_t));
 
     Queue_Init(pRunningQueue);
-
-    pWaitingQueue = malloc(sizeof(Queue_t));
-
-    Queue_Init(pWaitingQueue);
 
     pSleepList = malloc(sizeof(List_t));
 
@@ -376,6 +370,11 @@ static bool SleepTask(uint32_t ms)
     }
 
     return ret;
+}
+
+uint32_t GetCurrentTaskID()
+{
+    return (uint32_t)(gCurrentTaskAddr);
 }
 
 uint32_t TaskCallHandler(uint32_t cmd, uint32_t param1, uint32_t param2)

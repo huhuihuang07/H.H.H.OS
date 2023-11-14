@@ -64,7 +64,7 @@ static MutexNode_t* GetMutexNodeByList(uint32_t mutex)
 
 static bool IsMutexValid(uint32_t mutex)
 {
-    return IsEqual(GetMutexNodeByList(mutex), nullptr) ? false : true;
+    return !IsEqual(GetMutexNodeByList(mutex), nullptr);
 }
 
 static void MutexSchedule(Mutex_t* pMutex)
@@ -82,7 +82,7 @@ static bool MutexNormalEnter(Mutex_t* pMutex)
 {
     if (IsEqual(pMutex->lock, 0u))
     {
-        pMutex->lock = (uint32_t)(gCurrentTaskAddr);
+        pMutex->lock = GetCurrentTaskID();
     }
     else
     {
@@ -96,7 +96,7 @@ static bool MutexStrictEnter(Mutex_t* pMutex)
 {
     if (IsEqual(pMutex->lock, gCurrentTaskAddr) || IsEqual(pMutex->lock, 0u))
     {
-        pMutex->lock = (uint32_t)(gCurrentTaskAddr);
+        pMutex->lock = GetCurrentTaskID();
     }
     else
     {
@@ -140,11 +140,9 @@ static void MutexNormalExit(Mutex_t* pMutex)
 
 static void MutexStrictExit(Mutex_t* pMutex)
 {
-    if (IsEqual(pMutex->lock, gCurrentTaskAddr))
+    if (IsEqual(pMutex->lock, GetCurrentTaskID()))
     {
-        pMutex->lock = 0u;
-
-        WaitToReady(pMutex->queue);
+        MutexNormalExit(pMutex);
     }
     else
     {
