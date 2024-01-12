@@ -2,26 +2,18 @@
 
 #include "list.h"
 
-#ifndef ZONE_VALID
-#define ZONE_VALID 1u // ARDS_t 可用内存区域
-#endif
-
-#ifndef ZONE_RESERVED
-#define ZONE_RESERVED 2u // ARDS_t 不可用区域
-#endif
-
 #ifndef PAGE_SIZE
 #define PAGE_SIZE 0x1000 // 一页的大小 4K
-#endif
-
-#ifndef PAGE_BASE
-#define PAGE_BASE 0x1a000 // 104K, 页表起始位置
 #endif
 
 #ifndef PAGE_IsValid
 #define PAGE_IsValid(addr) \
     (IsEqual((uint32_t)(addr)&0xfff, 0u))
 #endif
+
+typedef enum {
+    MEM_LIST_NUM = 5u,
+} Mem_List_Num_t;
 
 #define PM_ALLOC_SIZE PAGE_SIZE
 #define PM_NODE_SIZE  sizeof(PMemNode_t)
@@ -49,15 +41,12 @@ typedef struct
     uint32_t max;
 } PMemList_t;
 
-static PMemList_t gPMemList;
-
 #ifndef MEMORY_BASE
 #define MEMORY_BASE 0x100000 // 1M，可用内存开始的位置
 #endif
 
 #define FM_ALLOC_SIZE 32u
 #define FM_NODE_SIZE  sizeof(FMemNode_t)
-#define FM_SIZE       0x400
 
 typedef int8_t(FMemUnit_t)[FM_ALLOC_SIZE];
 
@@ -74,8 +63,6 @@ typedef struct
     uint32_t max;
 } FMemList_t;
 
-static FMemList_t gFMemList;
-
 #define VM_HEAD_SIZE sizeof(VMemHead_t)
 
 typedef struct
@@ -88,16 +75,10 @@ typedef struct
 
 typedef List_t VMemList_t;
 
-static VMemList_t gVMemList;
-static VMemList_t* pVMemList;
-
-uint32_t memoryBase;
-uint32_t memorySize;
-
 void pMemoryModuleInit();
 
 void* pMalloc(size_t size);
 bool pFree(const void* ptr);
 
-void* PMemAlloc(const void* ptr);
-void PMemFree(const void* ptr);
+void* PageAlloc(const void* ptr);
+void PageFree(const void* ptr);

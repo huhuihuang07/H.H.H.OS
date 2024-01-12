@@ -26,7 +26,7 @@ static page_entry_t* GetPTE(uint32_t vAddr, bool create)
 
     if (IsEqual(ret->present, 0u))
     {
-        page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
+        page_entry_t* pte = (page_entry_t*)PageAlloc(nullptr);
 
         memset(pte, 0u, PAGE_SIZE);
 
@@ -38,13 +38,13 @@ static page_entry_t* GetPTE(uint32_t vAddr, bool create)
 
 void* CreatePDE()
 {
-    page_entry_t* pde = (page_entry_t*)PMemAlloc(nullptr);
+    page_entry_t* pde = (page_entry_t*)PageAlloc(nullptr);
 
     memset(pde, 0u, PAGE_SIZE);
 
     for (uint32_t i = 0; !IsEqual(i, 1u); ++i)
     {
-        page_entry_t* pte = (page_entry_t*)PMemAlloc(nullptr);
+        page_entry_t* pte = (page_entry_t*)PageAlloc(nullptr);
 
         memset(pte, 0u, PAGE_SIZE);
 
@@ -141,7 +141,7 @@ void PageFault(uint32_t error)
     {
         uint32_t vAddr = GetCr2();
 
-        uint32_t pAddr = vAddr > (memoryBase + memorySize) ? (uint32_t)(PMemAlloc(nullptr)) : vAddr;
+        uint32_t pAddr = vAddr > gMemSize ? (uint32_t)(PageAlloc(nullptr)) : vAddr;
 
         LinkPage(vAddr, pAddr);
     }
@@ -179,7 +179,7 @@ void UnLinkPage(uint32_t vAddr)
 
     if (IsEqual(clear, true))
     {
-        PMemFree(pte);
+        PageFree(pte);
 
         page_entry_t* pde = GetPDE();
 

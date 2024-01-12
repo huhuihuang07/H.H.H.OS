@@ -97,7 +97,7 @@ static TaskNode_t* AppInfoToTaskNode(const AppInfo* appInfo)
 {
     TaskNode_t* ret = malloc(sizeof(TaskNode_t));
 
-    ret->task.stack = PMemAlloc(nullptr);
+    ret->task.stack = PageAlloc(nullptr);
 
     SetDescValue(AddrOffset(ret->task.ldt, LDT_Code32Index), 0u, 0xfffff, DA_32 + DA_C + DA_LIMIT_4K + DA_DPL3);
     SetDescValue(AddrOffset(ret->task.ldt, LDT_Data32Index), 0u, 0xfffff, DA_32 + DA_DRW + DA_LIMIT_4K + DA_DPL3);
@@ -266,7 +266,9 @@ void ScheduleNext()
 static void Schedule()
 {
     SleepToReady();
+
     RunningToReady();
+
     ScheduleNext();
 }
 
@@ -280,7 +282,7 @@ void KillTask()
 
         List_DelNode(StructOffset(pCurrentTask, TaskNode_t, head.lHead));
 
-        PMemFree(pCurrentTask->task.stack);
+        PageFree(pCurrentTask->task.stack);
 
         free(pCurrentTask->task.wait);
 

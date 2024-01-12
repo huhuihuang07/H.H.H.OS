@@ -36,6 +36,11 @@ typedef struct
     const uint16_t size;
 } IdtInfo_t;
 
+typedef enum {
+    ZONE_VALID    = 1u, // ARDS_t 可用内存区域
+    ZONE_RESERVED = 2u  // ARDS_t 不可用区域
+} ARDSType_t;
+
 typedef struct
 {
     uint32_t BaseAddrLow;

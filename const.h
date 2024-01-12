@@ -4,6 +4,7 @@
 #define BaseOfBoot   0x7c00
 #define BaseOfLoader 0x9000
 #define BaseOfKernel 0xa000
+#define BaseOfAPP    0x1a000
 
 // Segment Attribute 段属性
 #define DA_32       0x4000 // 保护模式下32位段
