@@ -29,6 +29,7 @@ SysCallHandlerEntry:
 	mov es, si
 	mov fs, si
 
+	mov si, KernelStackSelector
 	mov ss, si
 	mov esp, BaseOfLoader
 
@@ -105,6 +106,7 @@ RPL3_%1:
 	mov es, ax
 	mov fs, ax
 
+	mov ax, KernelStackSelector
 	mov ss, ax
 	mov esp, BaseOfLoader
 

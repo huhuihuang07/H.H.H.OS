@@ -16,7 +16,8 @@ interface:
 GDT_ENTRY           :      Descriptor         0,            0,                  0
 FLAT_MODE_CODE_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_C + DA_LIMIT_4K + DA_DPL0
 VIDEO32_DESC        :      Descriptor     0xB8000,       0x07FFF,          DA_32 + DA_DRWA + DA_DPL0
-KERNELDATA_DESC     :      Descriptor         0,     KernelDataLen - 1,    DA_32 + DA_DRWA + DA_DPL0
+KERNEL_DATA_DESC    :      Descriptor         0,     KernelDataLen - 1,    DA_32 + DA_DRWA + DA_DPL0
+KERNEL_STACK_DESC   :      Descriptor         0,            0,             DA_32 + DA_SRWA + DA_DPL0
 FLAT_MODE_DATA_DESC :      Descriptor         0,         0xfffff,          DA_32 + DA_DRWA + DA_LIMIT_4K + DA_DPL0
 CODE32_DESC         :      Descriptor         0,   Code32SegmentLen - 1,   DA_32 + DA_C + DA_DPL0
 LDT_DESC            :      Descriptor         0,            0,             0
@@ -42,7 +43,7 @@ IdtLen      equ         $ - IDT_ENTRY
 
 [section .kernelData]
 [bits 32]
-KERNELDATA_SEGMENT:
+KERNEL_DATA_SEGMENT:
 	; GDT pointer
 	GdtPtr:
 			dw          GdtLen - 1 ; GDT 界限
@@ -62,7 +63,7 @@ KERNELDATA_SEGMENT:
 	ARDSPointer:	
 		times 5 * 20 dd  0
 
-KernelDataLen     equ       $ - KERNELDATA_SEGMENT	
+KernelDataLen     equ       $ - KERNEL_DATA_SEGMENT	
 ; end of [section .kernelData]	
 
 [section .s16]
@@ -100,8 +101,8 @@ Next:
 	call getMemorySize
 
 	; initialize GDT for 32 bits code segment
-	mov esi, KERNELDATA_SEGMENT
-	mov edi, KERNELDATA_DESC
+	mov esi, KERNEL_DATA_SEGMENT
+	mov edi, KERNEL_DATA_DESC
 	call InitDescItem
 
 	mov esi, CODE32_SEGMENT
@@ -255,6 +256,7 @@ CODE32_SEGMENT:
 	mov es, ax
 	mov fs, ax
 
+	mov ax, KernelStackSelector
 	mov ss, ax
 	mov esp, BaseOfLoader
 

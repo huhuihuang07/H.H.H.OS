@@ -34,7 +34,7 @@ typedef struct
     uint32_t ss0;         // 4
     uint32_t unused[22u]; // 4 * 22 = 88
     uint16_t reserved;    // 2
-    uint16_t iomb;        // 2
+    uint16_t io_map;      // 2
 } TSS_t;                  /* Task_t state segment */
 
 typedef struct
@@ -48,7 +48,7 @@ typedef struct
     int8_t* stack;
     char* name;
     uint32_t ticks;
-    uint16_t ldtSelector;
+    uint16_t LDTSelector;
     uint16_t total;
     uint16_t current;
 } Task_t;

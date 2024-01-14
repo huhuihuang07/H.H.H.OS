@@ -52,20 +52,22 @@
 #define GDT_FlatModeCodeIndex 0x0001
 #define GDT_Video32Index      0x0002
 #define GDT_KernelDataIndex   0x0003
-#define GDT_FlatModeDataIndex 0x0004
-#define GDT_Code32Index       0x0005
-#define GDT_LDTIndex          0x0006
-#define GDT_TSSIndex          0x0007
+#define GDT_KernelStackIndex  0x0004
+#define GDT_FlatModeDataIndex 0x0005
+#define GDT_Code32Index       0x0006
+#define GDT_LDTIndex          0x0007
+#define GDT_TSSIndex          0x0008
 
 // GDT Selector GDT 选择子
 #define GDT_UndefinedSelector    (GDT_UndefinedIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_FlatModeCodeSelector (GDT_FlatModeCodeIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_Video32Selector      (GDT_Video32Index << 3) + SA_TIG + SA_RPL0
 #define GDT_KernelDataSelector   (GDT_KernelDataIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_KernelStackSelector  (GDT_KernelStackIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_FlatModeDataSelector (GDT_FlatModeDataIndex << 3) + SA_TIG + SA_RPL0
 #define GDT_Code32Selector       (GDT_Code32Index << 3) + SA_TIG + SA_RPL0
-#define GDT_LdtSelector          (GDT_LDTIndex << 3) + SA_TIG + SA_RPL0
-#define GDT_TssSelector          (GDT_TSSIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_LDTSelector          (GDT_LDTIndex << 3) + SA_TIG + SA_RPL0
+#define GDT_TSSSelector          (GDT_TSSIndex << 3) + SA_TIG + SA_RPL0
 
 #define LDT_Code32Index  0x0000
 #define LDT_Data32Index  0x0001

@@ -46,11 +46,11 @@ static void InitTSS()
 
     SetDescValue(AddrOffset(gGdtInfo.entry, GDT_TSSIndex), (uint32_t)(pTSS), sizeof(TSS_t) - 1u, DA_386TSS + DA_DPL0);
 
-    pTSS->ss0  = GDT_FlatModeDataSelector;
-    pTSS->esp0 = BaseOfLoader;
-    pTSS->iomb = sizeof(TSS_t);
+    pTSS->ss0    = GDT_FlatModeDataSelector;
+    pTSS->esp0   = BaseOfLoader;
+    pTSS->io_map = sizeof(TSS_t);
 
-    uint16_t ax = GDT_TssSelector;
+    uint16_t ax = GDT_TSSSelector;
 
     asm volatile(
         "movw %0, %%ax\n"
@@ -70,7 +70,7 @@ static void PrepareForRun(volatile Task_t* pTask)
         "movw %0, %%ax\n"
         "lldt     %%ax\n"
         :
-        : "r"(pTask->ldtSelector)
+        : "r"(pTask->LDTSelector)
         : "ax");
 }
 
@@ -118,7 +118,7 @@ static TaskNode_t* AppInfoToTaskNode(const AppInfo* appInfo)
 
     ret->task.rv.eflags = 0x3202;
 
-    ret->task.ldtSelector = GDT_LdtSelector;
+    ret->task.LDTSelector = GDT_LDTSelector;
 
     ret->task.wait = malloc(sizeof(Queue_t));
 

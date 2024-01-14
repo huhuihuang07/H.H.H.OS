@@ -6,13 +6,15 @@ BaseOfAPP    equ 0x1a000
 
 ; Segment Attribute 段属性
 DA_32       equ 0x4000 ; 保护模式下32位段
-DA_DR       equ 0x90   ; 只读数据段
-DA_DRW      equ 0x92   ; 可读写数据段
-DA_DRWA     equ 0x93   ; 已访问可读写数据段
-DA_C        equ 0x98   ; 只执行代码段
-DA_CR       equ 0x9a   ; 可执行可读代码段
-DA_CCO      equ 0x9c   ; 只执行一致代码段
-DA_CCOR     equ 0x9e   ; 可执行可读一致代码段
+DA_DR       equ 0x0090 ; 只读数据段
+DA_DRW      equ 0x0092 ; 可读写数据段
+DA_SRW      equ 0x0096 ; 可读写栈段
+DA_DRWA     equ 0x0093 ; 已访问可读写数据段
+DA_SRWA     equ 0x0097 ; 已访问可读写栈段
+DA_C        equ 0x0098 ; 只执行代码段
+DA_CR       equ 0x009a ; 可执行可读代码段
+DA_CCO      equ 0x009c ; 只执行一致代码段
+DA_CCOR     equ 0x009e ; 可执行可读一致代码段
 DA_LIMIT_4K equ 0x8000 ; 单位大小4K
 
 ; Segment Pirvilege 段特权级
@@ -46,10 +48,11 @@ UndefinedSelector      equ (0x0000 << 3) + SA_TIG + SA_RPL0
 FlatModeCodeSelector   equ (0x0001 << 3) + SA_TIG + SA_RPL0
 Video32Selector        equ (0x0002 << 3) + SA_TIG + SA_RPL0
 KernelDataSelector     equ (0x0003 << 3) + SA_TIG + SA_RPL0
-FlatModeDataSelector   equ (0x0004 << 3) + SA_TIG + SA_RPL0
-Code32Selector         equ (0x0005 << 3) + SA_TIG + SA_RPL0
-LdtSelector            equ (0x0006 << 3) + SA_TIG + SA_RPL0
-TssSelector            equ (0x0007 << 3) + SA_TIG + SA_RPL0
+KernelStackSelector    equ (0x0004 << 3) + SA_TIG + SA_RPL0
+FlatModeDataSelector   equ (0x0005 << 3) + SA_TIG + SA_RPL0
+Code32Selector         equ (0x0006 << 3) + SA_TIG + SA_RPL0
+LdtSelector            equ (0x0007 << 3) + SA_TIG + SA_RPL0
+TssSelector            equ (0x0008 << 3) + SA_TIG + SA_RPL0
 
 ; 描述符
 ; usage: Descriptor Base, Limit, Attribute
