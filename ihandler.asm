@@ -31,15 +31,17 @@ SysCallHandlerEntry:
 
 	mov ss, si
 	mov esp, BaseOfLoader
-	
-	; sti
 
 	push edx
 	push ecx
 	push ebx
 	push eax
 
+	sti
+
 	call SysCallHandler
+
+	cli
 
 	; save system call return value
 	mov ebx, dword [gCurrentTaskAddr]
