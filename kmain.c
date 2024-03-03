@@ -1,7 +1,13 @@
 #include "kmain.h"
 
-int32_t KMain(int32_t argc, char* argv[])
+void Kernel_init()
 {
+    ScreenInit();
+
+    MemoryModuleInit();
+
+    InterruptModuleInit();
+
     SystemCallModuleInit();
 
     MutexModuleInit();
@@ -11,6 +17,11 @@ int32_t KMain(int32_t argc, char* argv[])
     TaskModuleInit();
 
     LaunchTask();
+}
+
+int32_t KMain(int32_t argc, char* argv[])
+{
+    Kernel_init();
 
     return 0;
 }

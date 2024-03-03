@@ -1,4 +1,3 @@
-.PHONY:clean build rebuild
 
 build:
 
@@ -26,16 +25,28 @@ GFILES := GPATH GRTAGS GTAGS
 
 V := @
 
-CFLAGS  := -I. -m32 -fno-builtin -fno-stack-protector -nostdlib
+CFLAGS  := -m32 # 32 位的程序
+CFLAGS  += -fno-builtin # 不需要 gcc 内置函数
+CFLAGS  += -nostdinc    # 不需要标准头文件
+CFLAGS  += -nostdlib    # 不需要标准库
+CFLAGS  += -fno-pic     # 不需要位置无关的代码 position independent code
+CFLAGS  += -fno-pie     # 不需要位置无关的可执行程序 position independent executable
+CFLAGS  += -fno-stack-protector # 不需要栈保护
+
+CFLAGS  := $(strip $(CFLAGS))
+
 EFLAGS  := -E -MM
-LDFLAGS := -m elf_i386 -s
+NMLAGS  := -f elf32
+LDFLAGS := -m elf_i386 -static
 DDFLAGS := bs=512 count=1 conv=notrunc
 RMFLAGS := -rf
+
+DEBUG := -g
 
 MOUNTFLAGS := -o loop
 
 OBJCOPYFLAGS := -O binary -R .note -R .comment -S
-BXIMAGEFLAGS := -q -fd -size=1.44
+BXIMAGEFLAGS := -q -func=create -fd=1.44M
 
 DIR_DEPS := deps
 DIR_EXES := exes
@@ -133,13 +144,13 @@ $(loadBin) : $(loadSrc) $(blfuncSrc) $(commonSrc)
 	$(SUDO) $(UMOUNT) $(MNTPATH)
 
 $(DIR_OBJS)/%.o : %.c
-	$(CC) $(CFLAGS) -c $(filter %.c, $^) -o $@
+	$(CC) $(CFLAGS) $(DEBUG) -c $(filter %.c, $^) -o $@
 
 $(DIR_OBJS)/%.obj : %.asm $(commonSrc)	
-	$(NASM) -f elf $< -o $@
+	$(NASM) $(NMLAGS) $(DEBUG) $< -o $@
 
 $(kernelElf) : $(ASM_OBJS) $(OBJS) $(kernelLds)
-	$(LD) $(LDFLAGS) -T$(kernelLds) $^ -o $@	
+	$(LD) $(LDFLAGS) -T$(kernelLds) $(filter %.o %.obj, $^) -o $@	
 
 $(kernelBin) : $(kernelElf)
 	$(OBJCOPY) $(OBJCOPYFLAGS) $< $@	
@@ -166,14 +177,25 @@ endif
 	$(V)set -e; \
 	$(CC) $(EFLAGS) $(filter %.c, $^) | sed 's,\(.*\)\.o[ :]*,objs/\1.o : ,g' > $@
 
+.PHONY: build
+build:$(DIR_OBJS) $(dataImg) $(bootBin) $(loadBin) $(kernelBin) $(GFILES)
+	$(V)$(ECHO) "build Success!"
+
+.PHONY: clean
 clean:
 	$(RM) $(RMFLAGS) $(rmFiles)
 	$(V)$(ECHO) "clean Success!"
 
-build:$(DIR_OBJS) $(dataImg) $(bootBin) $(loadBin) $(kernelBin) $(GFILES)
-	$(V)$(ECHO) "build Success!"
-
+.PHONY: rebuild
 rebuild:
 	$(V)$(MAKE) clean
 	$(V)$(MAKE) build
 	$(V)$(ECHO) "rebuild Success!"
+
+.PHONY: bochs-gui
+bochs-gui:
+	bochs -q -f ${RootDIR}/bochs/bochsrc.gui
+
+.PHONY: bochs-gdb
+bochs-gdb:
+	bochs-gdb -q -f ${RootDIR}/bochs/bochsrc.gdb		

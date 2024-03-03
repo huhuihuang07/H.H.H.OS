@@ -150,7 +150,7 @@ void PrintLogo()
     putchar('\n');
 }
 
-void InitScreen()
+void ScreenInit()
 {
     assert(ClearScreen());
 

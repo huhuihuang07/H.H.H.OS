@@ -82,7 +82,7 @@ typedef enum {
     SysCall_Screen_Printf = 0,
 } SysCall_SCREEN_CMD_t;
 
-void InitScreen();
+void ScreenInit();
 
 bool ClearScreen();
 bool SetPrintPos(uint8_t w, uint8_t h);

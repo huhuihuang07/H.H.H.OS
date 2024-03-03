@@ -25,7 +25,6 @@ TSS_DESC            :      Descriptor         0,            0,             0
 ; end of global descriptor table
 
 GdtLen         equ          $ - GDT_ENTRY
-
 ; end of [section .gdt]
 
 [section .idt]
@@ -35,7 +34,6 @@ IDT_ENTRY:
 %rep 256
 	Gate                     0,             0,                0,           DA_386IGate + DA_DPL3             
 %endrep                                 
-
 ; end of interrupt descriptor table
 
 IdtLen      equ         $ - IDT_ENTRY
@@ -54,6 +52,7 @@ KERNEL_DATA_SEGMENT:
 			dw          IdtLen - 1 ; IDT 界限
 			dd          0          ; IDT 基地址
 
+; end of [section .kernelData]	
 
 	; Memory size
 	MemorySize       dd  0
@@ -64,7 +63,6 @@ KERNEL_DATA_SEGMENT:
 		times 5 * 20 dd  0
 
 KernelDataLen     equ       $ - KERNEL_DATA_SEGMENT	
-; end of [section .kernelData]	
 
 [section .s16]
 [bits 16]
@@ -261,6 +259,8 @@ CODE32_SEGMENT:
 	mov esp, BaseOfLoader
 
 	jmp dword FlatModeCodeSelector : BaseOfKernel
+
+	ud2 ; 表示出错
 Code32SegmentLen     equ       $ - CODE32_SEGMENT
 ; end of [section .code32]
 

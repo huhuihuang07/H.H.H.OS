@@ -9,7 +9,7 @@
 #endif
 
 #ifndef _packed
-#define _packed __attribute__((packed))
+#define _packed __attribute__((packed)) // 用于定义特殊的结构体
 #endif
 
 #ifndef EOF
@@ -21,36 +21,29 @@
 #endif
 
 #ifndef __cplusplus
-typedef enum {
-    false = 0,
-    true  = !false,
-} bool;
+#define bool _Bool
+#define true 1u
+#define false 0u
 #endif
 
 typedef enum {
-    Disable = 0,
+    Disable = 0u,
     Enable  = !Disable,
 } state_t;
 
 typedef int (*pFunc_t)(int argc, const char* argv[], const char* env[]);
 
+typedef unsigned int size_t;
+
 typedef signed char int8_t;
-
 typedef signed short int16_t;
-
 typedef signed int int32_t;
-
 typedef signed long long int64_t;
 
 typedef unsigned char uint8_t;
-
 typedef unsigned short uint16_t;
-
 typedef unsigned int uint32_t;
-
 typedef unsigned long long uint64_t;
-
-typedef unsigned int size_t;
 
 typedef int32_t pid_t;
 
