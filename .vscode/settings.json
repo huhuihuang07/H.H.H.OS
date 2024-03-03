@@ -1,0 +1,24 @@
+{
+  "makefile.launchConfigurations": [
+    {
+      "cwd": "/home/huihuanghu/Desktop/H.H.H.OS",
+      "binaryPath": "/home/huihuanghu/Desktop/H.H.H.OS/objs/kernel.elf",
+      "binaryArgs": []
+    }
+  ],
+  "files.autoSave": "afterDelay",
+  "editor.formatOnSave": true,
+  "editor.minimap.enabled": true,
+  "C_Cpp.autocomplete": "default",
+  "[c]": {
+    "editor.quickSuggestions": {
+      "other": "on",
+      "comments": "on",
+      "strings": "on"
+    }
+  },
+  "files.associations": {
+    "queue.h": "c",
+    "type.h": "c"
+  }
+}
