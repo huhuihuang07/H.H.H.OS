@@ -95,9 +95,6 @@ LoadKernel:
 
 	add sp, 0x0a
 
-	xor ax, ax
-	mov es, ax
-
 	cmp dx, 0
 	jnz Enter
 

@@ -35,8 +35,6 @@ BLMain:
 
 	call loadTarget
 
-	add sp, 0x0a
-
 	cmp dx, 0
 	jnz Enter
 

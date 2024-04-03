@@ -79,6 +79,7 @@ loadTarget:
 	mov bx, FAT1Address
 	call readSector
 
+	push es
 	mov si, word [ss : bp + 0x0a]
 	shr si, 4
 	mov es, si
@@ -86,6 +87,7 @@ loadTarget:
 	mov bx, word [ss : bp + 0x0c]
 	mov dx, word [ss : bx + DIR_FstClus]
 	call loadFile
+	pop es
 
 loadTargetEnd:
 	mov sp, bp
