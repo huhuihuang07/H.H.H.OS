@@ -44,26 +44,25 @@ BOOT_CODE:                             ; 引导代码，由偏移0字节处的�
 	jmp BLMain
 
 ; loading the target file
+; params :
+; ss : bp + 0x04 Buffer: store root entry
+; ss : bp + 0x06 TargetStr: target file string
+; ss : bp + 0x08 TargetLen: target file length
+; ss : bp + 0x0a LoadAddress: loader file address
+; ss : bp + 0x0c DirBuffer: strore directory info
 ; return : 
 ; 		dx --> 0 : failure !0 : success
 loadTarget:
-	push ax
-	push bx
-	push cx
-
-	push si
-	push di
-
-	push es
 	push bp
+	mov bp, sp
 
 	mov ax, RootEntryOffset
 	mov cx, RootEntryLength
-	mov bx, Buffer
+	mov bx, word [ss : bp + 0x04]
 	call readSector
 
-	mov si, TargetStr
-	mov cx, TargetLen
+	mov si, word [ss : bp + 0x06]
+	mov cx, word [ss : bp + 0x08]
 	xor dx, dx
 	call findEntry
 
@@ -71,7 +70,7 @@ loadTarget:
 	jz loadTargetEnd
 
 	mov si, bx
-	mov di, BaseOfStack
+	mov di, word [ss : bp + 0x0c]
 	mov cx, DIR_Length
 	call memCpy
 
@@ -80,35 +79,23 @@ loadTarget:
 	mov bx, FAT1Address
 	call readSector
 
-	mov bp, BaseOfStack
-	mov dx, word [bp + DIR_FstClus]
-	mov si, LoadAddress
+	mov si, word [ss : bp + 0x0a]
 	shr si, 4
 	mov es, si
 	xor si, si
+	mov bx, word [ss : bp + 0x0c]
+	mov dx, word [ss : bx + DIR_FstClus]
 	call loadFile
 
 loadTargetEnd:
+	mov sp, bp
 	pop bp
-	pop es
-
-	pop di
-	pop si
-
-	pop cx
-	pop bx
-	pop ax
 
 	ret
 
 ; loading file to memory
 ; dx --> sector number
 loadFile:
-	push ax
-	push bx
-	push cx
-	push dx
-	push si
 
 load:
 	cmp dx, 0x0ff7
@@ -138,12 +125,6 @@ load:
 	jmp load
 	
 loadFileEnd:
-	pop si
-	pop dx
-	pop cx
-	pop bx
-	pop ax
-
 	ret
 
 ; in fat table find sector number
@@ -151,10 +132,8 @@ loadFileEnd:
 ; return:
 ; 	dx --> sector number
 fatVec:
-	push ax
 	push bx
 	push si
-	push di
 	push bp 
 
 	mov bp, sp
@@ -172,7 +151,7 @@ fatVec:
 	
 	mov bx, FAT1Address
 
-	mov ax, word [bp + 0x06]
+	mov ax, word [bp + 0x04]
 	test ax, 0x01
 	jz evenNumber
 
@@ -206,10 +185,8 @@ evenNumber:
 
 fatVecEnd:
 	pop bp
-	pop di
 	pop si
 	pop bx
-	pop ax
 
 	ret
 
@@ -259,9 +236,6 @@ exist:
 ; es:di --> destination
 ; cx    --> length
 memCpy:
-	push cx
-	push si
-	push di
 
 	cmp si, di
 	ja bToe
@@ -284,10 +258,6 @@ bToe:
 	rep movsb
 
 memCpyEnd:
-	pop di
-	pop si
-	pop cx
-
 	ret
 
 ; memory compare
@@ -318,8 +288,6 @@ equal:
 ; cx    --> number of sector
 ; es:bx --> target address
 readSector:
-
-	push ax
 	push bx
 	push cx
 	push dx
@@ -354,7 +322,6 @@ read:
 	pop dx
 	pop cx
 	pop bx
-	pop ax
 
 	ret	
 

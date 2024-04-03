@@ -4,21 +4,38 @@
 org BaseOfBoot
 
 interface:
-	BaseOfStack equ BaseOfBoot - DIR_Length
+	BaseOfStack equ BaseOfBoot
 	LoadAddress equ BaseOfLoader
 
 	TargetStr db  "LOAD    BIN"
 	TargetLen equ $ - TargetStr
 
 BLMain:                             
-	mov ax, cs
+	xor ax, ax
 	mov ds,	ax
 	mov es, ax
 	mov ss, ax
 
 	mov sp, BaseOfStack
 
+	sub sp, DIR_Length
+	push sp
+
+	mov ax, LoadAddress
+	push ax
+
+	mov ax, TargetLen
+	push ax
+
+	mov ax, TargetStr
+	push ax
+
+	mov ax, Buffer
+	push ax
+
 	call loadTarget
+
+	add sp, 0x0a
 
 	cmp dx, 0
 	jnz Enter
@@ -29,7 +46,7 @@ BLMain:
 
 Enter:
 	mov eax, LoadAddress
-	add eax, dword [BaseOfStack + DIR_FileSize]
+	add eax, dword [BaseOfStack - DIR_Length + DIR_FileSize]
 	cmp eax, BaseOfKernel
 	jna Next
 

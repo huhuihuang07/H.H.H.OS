@@ -4,7 +4,7 @@
 org BaseOfLoader
 
 interface:
-	BaseOfStack equ BaseOfBoot - DIR_Length
+	BaseOfStack equ BaseOfBoot
 	LoadAddress equ BaseOfKernel
 
 	TargetStr db  "KERNEL  BIN"
@@ -68,15 +68,35 @@ KernelDataLen     equ       $ - KERNEL_DATA_SEGMENT
 [bits 16]
 BLMain:
 
-	mov ax, cs
+LoadKernel:
+	xor ax, ax
 	mov ds, ax
 	mov es, ax
 	mov ss, ax
 
 	mov sp, BaseOfStack
 
-	; loading kernel to memory
+	sub sp, DIR_Length
+	push sp
+
+	mov ax, LoadAddress
+	push ax
+
+	mov ax, TargetLen
+	push ax
+
+	mov ax, TargetStr
+	push ax
+
+	mov ax, Buffer
+	push ax
+
 	call loadTarget
+
+	add sp, 0x0a
+
+	xor ax, ax
+	mov es, ax
 
 	cmp dx, 0
 	jnz Enter
@@ -87,7 +107,7 @@ BLMain:
 
 Enter:
 	mov eax, LoadAddress
-	add eax, dword [BaseOfStack + DIR_FileSize]
+	add eax, dword [BaseOfStack - DIR_Length + DIR_FileSize]
 	cmp eax, BaseOfAPP
 	jna Next
 
