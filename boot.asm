@@ -59,7 +59,7 @@ DefineStr:
 	FindErrorStr db "find error"
 	FindErrorLen equ $ - FindErrorStr
 
-	LenErrorStr db "len error"
+	LenErrorStr db "len error!"
 	LenErrorLen equ $ - LenErrorStr
 
 Buffer:
