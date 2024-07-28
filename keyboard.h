@@ -2,6 +2,8 @@
 
 #include "type.h"
 
+#define KBD_BUFFER_PORT 0x60
+
 typedef enum {
     KeyRelease = 0,
     KeyPress   = 0x1000000

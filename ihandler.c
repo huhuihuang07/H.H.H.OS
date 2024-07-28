@@ -42,7 +42,7 @@ void TimerHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privile
 
 void KeyBoardHandler(uint32_t vector, uint32_t error_code, PrivilegeLevel_t privilegeLevel)
 {
-    PutScanCode(inb(0x60));
+    PutScanCode(inb(KBD_BUFFER_PORT));
 
     SendEOI(MASTER_EOI_PORT);
 }
